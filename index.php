@@ -3,8 +3,8 @@ include "./includes/header.php";
 
 ?>
 <main class="px-4">
-    <div class="container mx-auto pt-5">
-        <div class="flex justify-between items-center gap-15">
+    <div class="container mx-auto pt-32">
+        <div class="flex justify-between lg:flex-row flex-col items-center gap-15">
             <div class="w-full">
                 <div class="w-fit py-2 px-4 bg-indigo-800 text-white leading-[none] rounded-full mb-6">
                     <p>Inovasi Teknologi Keamanan</p>
