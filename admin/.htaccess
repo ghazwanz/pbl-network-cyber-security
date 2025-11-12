@@ -1,0 +1,29 @@
+# .htaccess untuk Admin Directory
+# File: admin/.htaccess
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /pbl-modular/admin/
+</IfModule>
+
+# Prevent Directory Listing
+Options -Indexes
+
+# Set Default File
+DirectoryIndex index.php
+
+# PHP Configuration
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 5M
+    php_value post_max_size 5M
+    php_value max_execution_time 300
+    php_value memory_limit 128M
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>

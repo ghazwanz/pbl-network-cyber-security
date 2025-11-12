@@ -1,0 +1,17 @@
+# Root .htaccess
+# File: .htaccess (root project)
+
+# Prevent access to sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect config files
+<FilesMatch "\.(env|ini|log|sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Prevent Directory Listing
+Options -Indexes
