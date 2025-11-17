@@ -67,9 +67,8 @@ require_once __DIR__ . '/functions.php';
             <div class="flex justify-between h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="/index.php" class="flex items-center space-x-3">
-                        <img src="<?php echo ASSETS_URL; ?>/img/logo.png" alt="Logo NCS" class="h-10 w-10" onerror="this.style.display='none'">
-                        <span class="text-xl font-bold text-blue-600"><?php echo SITE_NAME; ?></span>
+                    <a href="/index.php" class="flex items-center"> 
+                        <img src="../assets/img/logo-jti.png" alt="Logo JTI" class="h-8 w-auto"> 
                     </a>
                 </div>
                 
