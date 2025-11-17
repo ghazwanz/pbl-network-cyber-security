@@ -2,70 +2,71 @@
     <!-- End Main Content Wrapper -->
     
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- About Section -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Tentang Lab NCS</h3>
-                    <p class="text-gray-300 leading-relaxed">
-                        Laboratorium Network and Cybersecurity adalah pusat penelitian dan pengembangan 
-                        di bidang jaringan komputer dan keamanan siber.
+    <footer class="bg-[#1B2D62] text-white">
+        <div class="container mx-auto max-w-7xl px-4 py-16 sm:py-24">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-12">
+                
+                <div class="sm:col-span-2 md:col-span-5 ">
+                    <a href="#" class="inline-block bg-white p-2 rounded-lg mb-4">
+                        <img src="../assets/img/jti.webp">
+                    </a>
+                    <p class="text-indigo-200 leading-relaxed">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsam minima voluptatem aperiam commodi accusantium nobis in, illum ipsa sint officia.
                     </p>
                 </div>
-                
-                <!-- Quick Links -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Menu Cepat</h3>
-                    <ul class="space-y-2">
-                        <li><a href="<?php echo SITE_URL; ?>/index.php" class="text-gray-300 hover:text-white transition duration-200">Beranda</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/profil.php" class="text-gray-300 hover:text-white transition duration-200">Profil</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/galeri.php" class="text-gray-300 hover:text-white transition duration-200">Galeri</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/arsip.php" class="text-gray-300 hover:text-white transition duration-200">Arsip</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/layanan.php" class="text-gray-300 hover:text-white transition duration-200">Layanan</a></li>
+
+                <div class="md:col-span-2 md:ml-auto ">
+                    <h4 class="text-lg font-semibold text-white mb-5">Menu</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-indigo-200 hover:text-white transition-colors">Profil</a></li>
+                        <li><a href="#" class="text-indigo-200 hover:text-white transition-colors">Arsip</a></li>
+                        <li><a href="#" class="text-indigo-200 hover:text-white transition-colors">Galeri</a></li>
+                        <li><a href="#" class="text-indigo-200 hover:text-white transition-colors">Layanan</a></li>
                     </ul>
                 </div>
-                
-                <!-- Contact Info -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Kontak</h3>
-                    <ul class="space-y-2 text-gray-300">
-                        <li class="flex items-center">
-                            <i class="fas fa-map-marker-alt mr-3"></i>
-                            <span>Jl. Universitas No. 123, Indonesia</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone mr-3"></i>
-                            <span>+62 123 4567 890</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope mr-3"></i>
-                            <span>info@lab.ncs.ac.id</span>
-                        </li>
+
+                <div class="md:col-span-3">
+                    <h4 class="text-lg font-semibold text-white mb-5">Kontak Kami</h4>
+                    <ul class="space-y-3 text-indigo-200">
+                        <li>+628123456789</li>
+                        <li>labncs@mail.com</li>
                     </ul>
-                    
-                    <!-- Social Media -->
-                    <div class="flex space-x-4 mt-4">
-                        <a href="#" class="text-gray-300 hover:text-white transition duration-200">
-                            <i class="fab fa-facebook fa-lg"></i>
+                </div>
+
+                <div class="md:col-span-2">
+                    <h4 class="text-lg font-semibold text-white mb-5">Social</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-indigo-200 hover:text-white transition-colors">
+                            <span class="sr-only">Facebook</span>
+                            <img src="../assets/icons/facebook.svg">
                         </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition duration-200">
-                            <i class="fab fa-instagram fa-lg"></i>
+                        <a href="#" class="text-indigo-200 hover:text-white transition-colors">
+                            <span class="sr-only">Instagram</span>
+                            <img src="../assets/icons/instagram.svg">
                         </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition duration-200">
-                            <i class="fab fa-twitter fa-lg"></i>
+                        <a href="#" class="text-indigo-200 hover:text-white transition-colors">
+                            <span class="sr-only">Twitter</span>
+                            <img src="../assets/icons/twitter.svg">
                         </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition duration-200">
-                            <i class="fab fa-youtube fa-lg"></i>
+                        <a href="#" class="text-indigo-200 hover:text-white transition-colors">
+                            <span class="sr-only">YouTube</span>
+                            <img src="../assets/icons/youtube.svg">
                         </a>
                     </div>
                 </div>
+
             </div>
-            
-            <!-- Copyright -->
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?>. All rights reserved.</p>
-                <p class="mt-2 text-sm">Developed with <i class="fas fa-heart text-red-500"></i> by Lab NCS Team</p>
+        </div>
+
+        <div class="container mx-auto max-w-7xl px-4">
+            <div class="border-t border-indigo-800"></div>
+        </div>
+
+        <div>
+            <div class="container mx-auto max-w-7xl px-4 py-8">
+                <p class="text-center text-indigo-300 text-sm">
+                    © 2025 Laboratorium Network & Security | All Rights Reserved
+                </p>
             </div>
         </div>
     </footer>
