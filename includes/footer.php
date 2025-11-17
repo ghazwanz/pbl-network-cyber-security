@@ -19,7 +19,7 @@
                     <h4 class="text-lg font-semibold text-white mb-5">Menu</h4>
                     <ul class="space-y-3">
                         <li><a href="#" class="text-indigo-200 hover:text-white transition-colors">Profil</a></li>
-                        <li><a href="#" class="text-indigo-200 hover:text-white transition-colors">Arsip</a></li>
+                        <li><a href="./arsip.php" class="text-indigo-200 hover:text-white transition-colors">Arsip</a></li>
                         <li><a href="#" class="text-indigo-200 hover:text-white transition-colors">Galeri</a></li>
                         <li><a href="#" class="text-indigo-200 hover:text-white transition-colors">Layanan</a></li>
                     </ul>

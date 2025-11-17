@@ -221,7 +221,7 @@
                 </div>
 
                 <div class="text-center mt-16"> 
-                    <a href="#" class="inline-flex items-center space-x-2 bg-[#1B2D62] text-white font-bold text-base px-7 py-3.5 rounded-lg shadow-sm transition hover:bg-[#2C4AA4] hover:-translate-y-0.5">
+                    <a href="./arsip.php" class="inline-flex items-center space-x-2 bg-[#1B2D62] text-white font-bold text-base px-7 py-3.5 rounded-lg shadow-sm transition hover:bg-[#2C4AA4] hover:-translate-y-0.5">
                         <span>Lihat Semua Dokumen</span>
                         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
@@ -345,7 +345,7 @@
                 </div>
 
                 <div class="text-center mt-16">
-                    <a href="#" class="inline-flex items-center space-x-2 bg-[#1B2D62] text-white font-bold text-base px-7 py-3.5 rounded-lg shadow-sm transition hover:bg-[#2C4AA4] hover:-translate-y-0.5">
+                    <a href="./galeri.php" class="inline-flex items-center space-x-2 bg-[#1B2D62] text-white font-bold text-base px-7 py-3.5 rounded-lg shadow-sm transition hover:bg-[#2C4AA4] hover:-translate-y-0.5">
                         <span>Lihat Semua Kegiatan</span>
                         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
