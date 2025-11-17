@@ -2,7 +2,7 @@
 /**
  * Public Arsip Page
  * File: public/arsip.php
- * Design Reference: Active SaaS (Orange Accent)
+ * Design Reference: Clean & Modern
  */
 
 // Set page title
@@ -63,18 +63,27 @@ if ($search) {
 
 $where_clause = implode(' AND ', $where);
 
-// Get data
-$query = "SELECT * FROM arsip WHERE " . $where_clause . " ORDER BY tahun_publikasi DESC, created_at DESC LIMIT 50";
+// Pagination settings
+$records_per_page = 9; // 3x3 grid
+$current_page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($current_page - 1) * $records_per_page;
+
+// Count total records for pagination
+$count_query = "SELECT COUNT(*) FROM arsip WHERE " . $where_clause;
+$total_records = countRows($count_query, $params);
+$total_pages = ceil($total_records / $records_per_page);
+
+// Get data with pagination
+$query = "SELECT * FROM arsip WHERE " . $where_clause . " ORDER BY tahun_publikasi DESC, created_at DESC LIMIT $records_per_page OFFSET $offset";
 $arsip_list = executeQuery($query, $params);
 
-// Get counts
+// Get counts for filter
 $count_penelitian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'penelitian' AND is_active = true");
 $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'pengabdian' AND is_active = true");
-$total_downloads = executeQuerySingle("SELECT SUM(jumlah_download) as total FROM arsip WHERE is_active = true");
 ?>
 
 <style>
-/* Active SaaS Inspired Design */
+/* Clean & Modern Design */
 :root {
     --orange-50: #FFF7ED;
     --orange-100: #FFEDD5;
@@ -86,160 +95,112 @@ $total_downloads = executeQuerySingle("SELECT SUM(jumlah_download) as total FROM
     --gray-900: #111827;
 }
 
-.hero-gradient {
-    background: linear-gradient(135deg, var(--orange-600) 0%, var(--orange-700) 100%);
-}
-
 .arsip-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid #E5E7EB;
     background: white;
+    height: 100%;
 }
 
 .arsip-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-8px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     border-color: var(--orange-500);
-}
-
-.download-btn {
-    background: linear-gradient(135deg, var(--orange-500) 0%, var(--orange-600) 100%);
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.download-btn:hover {
-    box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.4);
-    transform: translateY(-2px);
-}
-
-.filter-btn {
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
-    border-radius: 9999px;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
-
-.filter-btn:not(.active) {
-    background: white;
-    color: var(--gray-800);
-    border-color: #E5E7EB;
-}
-
-.filter-btn:not(.active):hover {
-    border-color: var(--orange-500);
-    color: var(--orange-600);
-}
-
-.filter-btn.active {
-    background: linear-gradient(135deg, var(--orange-500) 0%, var(--orange-600) 100%);
-    color: white;
-    box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3);
 }
 
 .badge-kategori {
     background: var(--orange-50);
     color: var(--orange-700);
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    font-weight: 600;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
 }
 
-.keyword-tag {
-    background: #F3F4F6;
-    color: #4B5563;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 </style>
 
 <!-- Hero Section -->
-<section class="hero-gradient text-white py-20 relative" data-aos="fade-down">
+<section class="bg-gray-50 py-20 relative" data-aos="fade-down">
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-5xl md:text-6xl font-bold mb-6" data-aos="fade-up" data-aos-delay="100">
-                Arsip Penelitian & Pengabdian
-            </h1>
-            <p class="text-xl md:text-2xl text-orange-100 mb-8" data-aos="fade-up" data-aos-delay="200">
-                Koleksi hasil penelitian dan pengabdian masyarakat Laboratorium NCS
-            </p>
-            
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-6 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="300">
-                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                    <div class="text-3xl font-bold mb-1"><?php echo $count_penelitian; ?>+</div>
-                    <div class="text-orange-100">Penelitian</div>
-                </div>
-                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                    <div class="text-3xl font-bold mb-1"><?php echo $count_pengabdian; ?>+</div>
-                    <div class="text-orange-100">Pengabdian</div>
-                </div>
-                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                    <div class="text-3xl font-bold mb-1"><?php echo number_format($total_downloads['total'] ?? 0); ?></div>
-                    <div class="text-orange-100">Download</div>
-                </div>
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 rounded-full text-orange-600 font-semibold mb-6" data-aos="fade-up" data-aos-delay="100">
+                <i class="fas fa-bolt"></i>
+                <span>INOVASI TEKNOLOGI KEAMANAN</span>
             </div>
+            
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4" data-aos="fade-up" data-aos-delay="200">
+                Pusat Riset & Dokumentasi
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 leading-relaxed" data-aos="fade-up" data-aos-delay="300">
+                Repositori resmi untuk semua publikasi ilmiah dan laporan<br>
+                pengabdian Laboratorium Network & Cyber Security.
+            </p>
         </div>
-    </div>
-    
-    <!-- Wave Divider -->
-    <div class="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
-        </svg>
     </div>
 </section>
 
 <!-- Filter & Search Section -->
 <section class="py-12 bg-white">
     <div class="container mx-auto px-4">
-        <form method="GET" class="space-y-6" data-aos="fade-up">
-            <!-- Filter Buttons -->
-            <div class="flex justify-center items-center gap-4 flex-wrap">
-                <a href="?" class="filter-btn <?php echo empty($filter_kategori) ? 'active' : ''; ?>">
-                    <i class="fas fa-th mr-2"></i>Semua
-                    <span class="ml-2 inline-flex items-center justify-center w-6 h-6 text-xs rounded-full <?php echo empty($filter_kategori) ? 'bg-white/20' : 'bg-gray-200'; ?>">
-                        <?php echo $count_penelitian + $count_pengabdian; ?>
-                    </span>
-                </a>
+        <div class="max-w-6xl mx-auto">
+            <form method="GET" class="space-y-6" data-aos="fade-up">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Search Box - Left Side -->
+                    <div class="lg:col-span-2">
+                        <label class="block text-gray-700 font-semibold mb-3 text-lg">Cari Dokumen</label>
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input 
+                                type="text" 
+                                name="search" 
+                                value="<?php echo htmlspecialchars($search); ?>"
+                                placeholder="Cari berdasarkan judul atau deskripsi..." 
+                                class="w-full pl-12 pr-4 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all"
+                            >
+                        </div>
+                    </div>
+                    
+                    <!-- Category Filter - Right Side -->
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-3 text-lg">Kategori</label>
+                        <div class="relative">
+                            <select 
+                                name="filter" 
+                                onchange="this.form.submit()"
+                                class="w-full px-4 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 appearance-none bg-white cursor-pointer transition-all"
+                            >
+                                <option value="">Semua Kategori</option>
+                                <option value="penelitian" <?php echo $filter_kategori === 'penelitian' ? 'selected' : ''; ?>>Penelitian</option>
+                                <option value="pengabdian" <?php echo $filter_kategori === 'pengabdian' ? 'selected' : ''; ?>>Pengabdian</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+                </div>
                 
-                <a href="?filter=penelitian" class="filter-btn <?php echo $filter_kategori === 'penelitian' ? 'active' : ''; ?>">
-                    <i class="fas fa-flask mr-2"></i>Penelitian
-                    <span class="ml-2 inline-flex items-center justify-center w-6 h-6 text-xs rounded-full <?php echo $filter_kategori === 'penelitian' ? 'bg-white/20' : 'bg-gray-200'; ?>">
-                        <?php echo $count_penelitian; ?>
-                    </span>
-                </a>
-                
-                <a href="?filter=pengabdian" class="filter-btn <?php echo $filter_kategori === 'pengabdian' ? 'active' : ''; ?>">
-                    <i class="fas fa-hands-helping mr-2"></i>Pengabdian
-                    <span class="ml-2 inline-flex items-center justify-center w-6 h-6 text-xs rounded-full <?php echo $filter_kategori === 'pengabdian' ? 'bg-white/20' : 'bg-gray-200'; ?>">
-                        <?php echo $count_pengabdian; ?>
-                    </span>
-                </a>
-            </div>
-            
-            <!-- Search Box -->
-            <div class="max-w-2xl mx-auto">
-                <div class="relative">
-                    <input 
-                        type="text" 
-                        name="search" 
-                        value="<?php echo htmlspecialchars($search); ?>"
-                        placeholder="Cari judul, abstrak, penerbit, atau keywords..." 
-                        class="w-full px-6 py-4 pr-32 text-lg border-2 border-gray-200 rounded-full focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
-                    >
-                    <?php if ($filter_kategori): ?>
-                    <input type="hidden" name="filter" value="<?php echo htmlspecialchars($filter_kategori); ?>">
-                    <?php endif; ?>
-                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-full hover:shadow-lg transition-all">
-                        <i class="fas fa-search mr-2"></i>Cari
+                <!-- Search Button (Mobile Friendly) -->
+                <div class="lg:hidden">
+                    <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold px-6 py-4 rounded-xl hover:shadow-lg transition-all">
+                        <i class="fas fa-search mr-2"></i>Cari Dokumen
                     </button>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </section>
 
@@ -249,131 +210,159 @@ $total_downloads = executeQuerySingle("SELECT SUM(jumlah_download) as total FROM
         
         <?php if ($arsip_list && count($arsip_list) > 0): ?>
         
-        <div class="grid grid-cols-1 gap-6 max-w-4xl mx-auto">
+        <!-- Card Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             <?php foreach ($arsip_list as $index => $item): ?>
-            <?php
-            // Get authors
-            $authors = executeQuery(
-                "SELECT p.nama_lengkap, ap.peran 
-                 FROM arsip_pengelola ap 
-                 JOIN pengelola p ON ap.pengelola_id = p.id 
-                 WHERE ap.arsip_id = ? 
-                 ORDER BY ap.urutan_penulis",
-                [$item['id']]
-            );
-            ?>
             
-            <div class="arsip-card rounded-xl p-6" data-aos="fade-up" data-aos-delay="<?php echo ($index * 50); ?>">
-                <div class="flex flex-col md:flex-row gap-6">
-                    <!-- PDF Icon -->
-                    <div class="flex-shrink-0">
-                        <div class="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-                            <i class="fas fa-file-pdf text-white text-3xl"></i>
-                        </div>
+            <div class="arsip-card rounded-2xl p-6 flex flex-col" data-aos="fade-up" data-aos-delay="<?php echo ($index * 50); ?>">
+                <!-- Icon & Badge -->
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-file-alt text-white text-2xl"></i>
                     </div>
+                    <span class="badge-kategori">
+                        <?php echo strtoupper($item['kategori']); ?>
+                    </span>
+                </div>
+                
+                <!-- Title -->
+                <h3 class="text-lg font-bold text-gray-900 mb-3 line-clamp-2 hover:text-orange-600 transition-colors">
+                    <?php echo htmlspecialchars($item['judul']); ?>
+                </h3>
+                
+                <!-- Abstract/Description -->
+                <p class="text-sm text-gray-600 mb-4 leading-relaxed line-clamp-3 flex-grow">
+                    <?php echo htmlspecialchars($item['abstrak'] ?: 'Tidak ada deskripsi'); ?>
+                </p>
+                
+                <!-- Footer -->
+                <div class="flex items-center justify-between pt-4 border-t border-gray-200 mt-auto">
+                    <a href="?download=<?php echo $item['id']; ?>" 
+                       class="text-orange-600 font-semibold hover:text-orange-700 transition-colors inline-flex items-center gap-2">
+                        Unduh PDF
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
                     
-                    <!-- Content -->
-                    <div class="flex-1">
-                        <!-- Category & Year -->
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="badge-kategori">
-                                <i class="fas <?php echo $item['kategori'] === 'penelitian' ? 'fa-flask' : 'fa-hands-helping'; ?> mr-1"></i>
-                                <?php echo ucfirst($item['kategori']); ?>
-                            </span>
-                            <span class="text-gray-500 text-sm font-semibold">
-                                <i class="fas fa-calendar mr-1"></i><?php echo $item['tahun_publikasi']; ?>
-                            </span>
-                            <?php if ($item['is_featured']): ?>
-                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold">
-                                <i class="fas fa-star mr-1"></i>Featured
-                            </span>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <!-- Title -->
-                        <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-orange-600 transition-colors">
-                            <?php echo htmlspecialchars($item['judul']); ?>
-                        </h3>
-                        
-                        <!-- Authors -->
-                        <?php if ($authors): ?>
-                        <p class="text-sm text-blue-600 mb-3">
-                            <i class="fas fa-user-edit mr-1"></i>
-                            <?php 
-                            $author_names = array_map(function($a) { return $a['nama_lengkap']; }, $authors);
-                            echo htmlspecialchars(implode(', ', $author_names));
-                            ?>
-                        </p>
-                        <?php endif; ?>
-                        
-                        <!-- Abstract -->
-                        <?php if ($item['abstrak']): ?>
-                        <p class="text-gray-600 mb-4 leading-relaxed line-clamp-3">
-                            <?php echo htmlspecialchars($item['abstrak']); ?>
-                        </p>
-                        <?php endif; ?>
-                        
-                        <!-- Publisher -->
-                        <?php if ($item['penerbit']): ?>
-                        <p class="text-sm text-gray-500 mb-3">
-                            <i class="fas fa-book mr-1 text-orange-500"></i>
-                            <?php echo htmlspecialchars($item['penerbit']); ?>
-                        </p>
-                        <?php endif; ?>
-                        
-                        <!-- Keywords -->
-                        <?php if ($item['keywords']): ?>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <?php 
-                            $keywords = array_map('trim', explode(',', $item['keywords']));
-                            foreach ($keywords as $keyword): 
-                            ?>
-                            <span class="keyword-tag">
-                                <i class="fas fa-tag mr-1"></i><?php echo htmlspecialchars($keyword); ?>
-                            </span>
-                            <?php endforeach; ?>
-                        </div>
-                        <?php endif; ?>
-                        
-                        <!-- Footer -->
-                        <div class="flex items-center justify-between pt-4 border-t">
-                            <div class="flex items-center gap-4 text-sm text-gray-500">
-                                <span>
-                                    <i class="fas fa-download text-purple-500 mr-1"></i>
-                                    <?php echo number_format($item['jumlah_download']); ?> download
-                                </span>
-                            </div>
-                            
-                            <a href="?download=<?php echo $item['id']; ?>" 
-                               class="download-btn px-6 py-2 rounded-lg font-semibold inline-flex items-center gap-2 shadow-md">
-                                <i class="fas fa-download"></i>
-                                Download PDF
-                            </a>
-                        </div>
+                    <div class="flex items-center gap-1 text-sm text-gray-500">
+                        <i class="fas fa-download"></i>
+                        <span class="font-semibold"><?php echo number_format($item['jumlah_download']); ?></span>
                     </div>
                 </div>
             </div>
+            
             <?php endforeach; ?>
         </div>
+        
+        <!-- Pagination -->
+        <?php if ($total_pages > 1): ?>
+        <?php
+        // Build pagination URL dengan filter & search
+        $base_url = '?';
+        $url_params = [];
+        if ($filter_kategori) $url_params[] = 'filter=' . urlencode($filter_kategori);
+        if ($search) $url_params[] = 'search=' . urlencode($search);
+        if (!empty($url_params)) $base_url .= implode('&', $url_params) . '&';
+        ?>
+        
+        <div class="flex justify-center items-center gap-2 mt-12" data-aos="fade-up">
+            <!-- Previous Button -->
+            <?php if ($current_page > 1): ?>
+            <a href="<?php echo $base_url; ?>page=<?php echo $current_page - 1; ?>" 
+               class="w-10 h-10 flex items-center justify-center border-2 border-gray-300 rounded-lg hover:border-orange-500 hover:text-orange-500 transition-all bg-white">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <?php else: ?>
+            <span class="w-10 h-10 flex items-center justify-center border-2 border-gray-200 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed">
+                <i class="fas fa-chevron-left"></i>
+            </span>
+            <?php endif; ?>
+            
+            <!-- Page Numbers -->
+            <?php
+            // Tampilkan maksimal 5 page numbers (current ± 2)
+            $start_page = max(1, $current_page - 2);
+            $end_page = min($total_pages, $current_page + 2);
+            
+            // Adjust jika di awal atau akhir
+            if ($current_page <= 3) {
+                $end_page = min(5, $total_pages);
+            }
+            if ($current_page > $total_pages - 3) {
+                $start_page = max(1, $total_pages - 4);
+            }
+            
+            // Tampilkan page 1 jika tidak termasuk range
+            if ($start_page > 1) {
+                echo '<a href="' . $base_url . 'page=1" class="w-10 h-10 flex items-center justify-center border-2 border-gray-300 rounded-lg hover:border-orange-500 hover:text-orange-500 transition-all bg-white font-semibold">1</a>';
+                if ($start_page > 2) {
+                    echo '<span class="w-10 h-10 flex items-center justify-center text-gray-400">...</span>';
+                }
+            }
+            
+            // Loop page numbers
+            for ($i = $start_page; $i <= $end_page; $i++):
+            ?>
+                <?php if ($i == $current_page): ?>
+                <span class="w-10 h-10 flex items-center justify-center border-2 border-orange-500 rounded-lg bg-orange-500 text-white font-semibold shadow-lg">
+                    <?php echo $i; ?>
+                </span>
+                <?php else: ?>
+                <a href="<?php echo $base_url; ?>page=<?php echo $i; ?>" 
+                   class="w-10 h-10 flex items-center justify-center border-2 border-gray-300 rounded-lg hover:border-orange-500 hover:text-orange-500 transition-all bg-white font-semibold">
+                    <?php echo $i; ?>
+                </a>
+                <?php endif; ?>
+            <?php endfor; ?>
+            
+            <?php
+            // Tampilkan page terakhir jika tidak termasuk range
+            if ($end_page < $total_pages) {
+                if ($end_page < $total_pages - 1) {
+                    echo '<span class="w-10 h-10 flex items-center justify-center text-gray-400">...</span>';
+                }
+                echo '<a href="' . $base_url . 'page=' . $total_pages . '" class="w-10 h-10 flex items-center justify-center border-2 border-gray-300 rounded-lg hover:border-orange-500 hover:text-orange-500 transition-all bg-white font-semibold">' . $total_pages . '</a>';
+            }
+            ?>
+            
+            <!-- Next Button -->
+            <?php if ($current_page < $total_pages): ?>
+            <a href="<?php echo $base_url; ?>page=<?php echo $current_page + 1; ?>" 
+               class="w-10 h-10 flex items-center justify-center border-2 border-gray-300 rounded-lg hover:border-orange-500 hover:text-orange-500 transition-all bg-white">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <?php else: ?>
+            <span class="w-10 h-10 flex items-center justify-center border-2 border-gray-200 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed">
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
         
         <?php else: ?>
         
         <!-- Empty State -->
         <div class="text-center py-16 max-w-lg mx-auto" data-aos="fade-up">
-            <i class="fas fa-file-pdf text-gray-300 text-8xl mb-6"></i>
+            <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-file-pdf text-gray-400 text-5xl"></i>
+            </div>
             <h3 class="text-2xl font-bold text-gray-700 mb-3">
                 Arsip Tidak Ditemukan
             </h3>
             <p class="text-gray-500 text-lg mb-6">
                 <?php if ($search): ?>
-                Tidak ada hasil untuk pencarian "<?php echo htmlspecialchars($search); ?>".
+                Tidak ada hasil untuk pencarian "<strong><?php echo htmlspecialchars($search); ?></strong>".
+                <?php elseif ($filter_kategori): ?>
+                Belum ada arsip <strong><?php echo ucfirst($filter_kategori); ?></strong> yang dipublikasikan.
                 <?php else: ?>
-                Belum ada arsip <?php echo $filter_kategori ? ucfirst($filter_kategori) : ''; ?> yang dipublikasikan.
+                Belum ada arsip yang dipublikasikan. Silakan cek kembali nanti.
                 <?php endif; ?>
             </p>
-            <a href="?" class="inline-block bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold px-6 py-3 rounded-lg hover:shadow-lg transition-all">
-                <i class="fas fa-arrow-left mr-2"></i>Lihat Semua Arsip
+            <?php if ($search || $filter_kategori): ?>
+            <a href="?" class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold px-6 py-3 rounded-lg hover:shadow-lg transition-all">
+                <i class="fas fa-arrow-left"></i>
+                Lihat Semua Arsip
             </a>
+            <?php endif; ?>
         </div>
         
         <?php endif; ?>

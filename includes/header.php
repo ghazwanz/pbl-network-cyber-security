@@ -40,6 +40,10 @@ require_once __DIR__ . '/functions.php';
     
     <!-- Font Awesome CDN (untuk icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     
     <!-- Custom CSS (jika diperlukan) -->
     <link rel="stylesheet" href="<?php echo ASSETS_URL; ?>/css/style.css">
@@ -53,46 +57,30 @@ require_once __DIR__ . '/functions.php';
                         primary: '#3B82F6',
                         secondary: '#10B981',
                         accent: '#F59E0B',
-                    }
+                    },
+                    fontFamily: {
+                        'inter': ['Plus Jakarta Sans', 'sans-serif'],
+                    },
                 }
             }
         }
     </script>
 </head>
-<body class="bg-gray-50 font-sans antialiased">
+<body class="font-inter bg-[#F8FCFF] text-gray-600">
     
     <!-- Navbar -->
-    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <a href="/index.php" class="flex items-center"> 
-                        <img src="../assets/img/logo-jti.png" alt="Logo JTI" class="h-8 w-auto"> 
-                    </a>
-                </div>
-                
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="index.php" class="text-gray-700 hover:text-blue-600 transition duration-200 <?php echo (basename($_SERVER['PHP_SELF']) == 'index.php') ? 'text-blue-600 font-semibold' : ''; ?>">
-                        Beranda
-                    </a>
-                    <a href="profil.php" class="text-gray-700 hover:text-blue-600 transition duration-200 <?php echo (basename($_SERVER['PHP_SELF']) == 'profil.php') ? 'text-blue-600 font-semibold' : ''; ?>">
-                        Profil
-                    </a>
-                    <a href="galeri.php" class="text-gray-700 hover:text-blue-600 transition duration-200 <?php echo (basename($_SERVER['PHP_SELF']) == 'galeri.php') ? 'text-blue-600 font-semibold' : ''; ?>">
-                        Galeri
-                    </a>
-                    <a href="arsip.php" class="text-gray-700 hover:text-blue-600 transition duration-200 <?php echo (basename($_SERVER['PHP_SELF']) == 'arsip.php') ? 'text-blue-600 font-semibold' : ''; ?>">
-                        Arsip
-                    </a>
-                    <a href="layanan.php" class="text-gray-700 hover:text-blue-600 transition duration-200 <?php echo (basename($_SERVER['PHP_SELF']) == 'layanan.php') ? 'text-blue-600 font-semibold' : ''; ?>">
-                        Layanan
-                    </a>
-                    <a href="pengelola.php" class="text-gray-700 hover:text-blue-600 transition duration-200 <?php echo (basename($_SERVER['PHP_SELF']) == 'pengelola.php') ? 'text-blue-600 font-semibold' : ''; ?>">
-                        Pengelola
-                    </a>
-                </div>
+        <header class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-10">
+            <nav class="container mx-auto max-w-7xl flex justify-between items-center py-5 px-4">
+                <img src="../assets/img/jti.webp">
+                <ul class="hidden sm:flex items-center space-x-8">
+                    <li><a href="#" class="font-semibold text-gray-900">Beranda</a></li>
+                    <li><a href="#" class="font-medium hover:text-gray-900">Profil</a></li>
+                    <li><a href="#" class="font-medium hover:text-gray-900">Arsip</a></li>
+                    <li><a href="#" class="font-medium hover:text-gray-900">Galeri</a></li>
+                    <li><a href="#" class="font-medium hover:text-gray-900">Layanan</a></li>
+                </ul>
+            </nav>
+        </header>
                 
                 <!-- Mobile Menu Button -->
                 <div class="md:hidden flex items-center">
