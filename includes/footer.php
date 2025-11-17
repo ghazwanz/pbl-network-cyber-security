@@ -1,128 +1,147 @@
-    </div>
-    <!-- End Main Content Wrapper -->
-    
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- About Section -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Tentang Lab NCS</h3>
-                    <p class="text-gray-300 leading-relaxed">
-                        Laboratorium Network and Cybersecurity adalah pusat penelitian dan pengembangan 
-                        di bidang jaringan komputer dan keamanan siber.
-                    </p>
-                </div>
-                
-                <!-- Quick Links -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Menu Cepat</h3>
-                    <ul class="space-y-2">
-                        <li><a href="<?php echo SITE_URL; ?>/index.php" class="text-gray-300 hover:text-white transition duration-200">Beranda</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/profil.php" class="text-gray-300 hover:text-white transition duration-200">Profil</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/galeri.php" class="text-gray-300 hover:text-white transition duration-200">Galeri</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/arsip.php" class="text-gray-300 hover:text-white transition duration-200">Arsip</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/layanan.php" class="text-gray-300 hover:text-white transition duration-200">Layanan</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Contact Info -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Kontak</h3>
-                    <ul class="space-y-2 text-gray-300">
-                        <li class="flex items-center">
-                            <i class="fas fa-map-marker-alt mr-3"></i>
-                            <span>Jl. Universitas No. 123, Indonesia</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone mr-3"></i>
-                            <span>+62 123 4567 890</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope mr-3"></i>
-                            <span>info@lab.ncs.ac.id</span>
-                        </li>
-                    </ul>
-                    
-                    <!-- Social Media -->
-                    <div class="flex space-x-4 mt-4">
-                        <a href="#" class="text-gray-300 hover:text-white transition duration-200">
-                            <i class="fab fa-facebook fa-lg"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition duration-200">
-                            <i class="fab fa-instagram fa-lg"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition duration-200">
-                            <i class="fab fa-twitter fa-lg"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition duration-200">
-                            <i class="fab fa-youtube fa-lg"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Copyright -->
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?>. All rights reserved.</p>
-                <p class="mt-2 text-sm">Developed with <i class="fas fa-heart text-red-500"></i> by Lab NCS Team</p>
+</main>
+<footer class="footer">
+    <div class="container footer-content">
+        <div class="footer-col footer-brand">
+            <img src="../assets/img/logo-jti.png" alt="Logo JTI" class="h-8 w-auto"> 
+            <p>Jl. Soekarno Hatta No.9, Jatimulyo, Kec. Lowokwaru, Kota Malang, Jawa Timur 65141</p>
+        </div>
+        <div class="footer-col">
+            <h4>Menu</h4>
+            <ul>
+                <li><a href="#">Beranda</a></li>
+                <li><a href="#">Profil</a></li>
+                <li><a href="#">Arsip</a></li>
+                <li><a href="#">Galeri</a></li>
+                <li><a href="#">Layanan</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Kontak Kami</h4>
+            <p>+628123456789</p>
+            <p>Email: labncs@mail.com</p>
+        </div>
+        <div class="footer-col">
+            <h4>Social</h4>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
-    </footer>
-    
-    <!-- Back to Top Button -->
-    <button id="back-to-top" class="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition duration-200 hidden z-50">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-    
-    <!-- jQuery CDN -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    
-    <!-- AOS JS -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
-    <!-- Custom JavaScript -->
-    <script src="<?php echo ASSETS_URL; ?>/js/script.js"></script>
-    
-    <!-- Initialize AOS -->
-    <script>
-        AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
-            once: true,
-            offset: 100
-        });
-    </script>
-    
-    <!-- Mobile Menu Toggle -->
-    <script>
-        $(document).ready(function() {
-            // Mobile menu toggle
-            $('#mobile-menu-button').click(function() {
-                $('#mobile-menu').slideToggle(200);
-            });
-            
-            // Back to top button
-            $(window).scroll(function() {
-                if ($(this).scrollTop() > 300) {
-                    $('#back-to-top').fadeIn();
-                } else {
-                    $('#back-to-top').fadeOut();
-                }
-            });
-            
-            $('#back-to-top').click(function() {
-                $('html, body').animate({scrollTop: 0}, 600);
-                return false;
-            });
-            
-            // Close mobile menu when clicking outside
-            $(document).click(function(event) {
-                if (!$(event.target).closest('#mobile-menu-button, #mobile-menu').length) {
-                    $('#mobile-menu').slideUp(200);
-                }
-            });
-        });
-    </script>
+    </div>
+    <div class="copyright-bar text-center">
+        &copy; 2025 Laboratorium Network & Security | All Rights Reserved
+    </div>
+</footer>
+
+<style>
+    /* Variabel yang dibutuhkan footer */
+    :root {
+        --primary-color: #004d99;
+        /* Biru Tua */
+        --secondary-color: #ff6600;
+        /* Oranye */
+    }
+
+    /* --- Footer Styles --- */
+    .footer {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 30px 0 0;
+        font-family: Arial, sans-serif;
+        /* Pastikan font konsisten */
+    }
+
+    .footer .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 30px;
+        gap: 30px;
+    }
+
+    .footer-col {
+        max-width: 250px;
+    }
+
+    .footer-logo {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 15px;
+        background-color: white;
+        /* Placeholder */
+        border-radius: 4px;
+    }
+
+    .footer-col h4 {
+        margin-bottom: 15px;
+        font-size: 1.1em;
+        color: white;
+    }
+
+    .footer-col p {
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+
+    .footer-col ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-col ul li a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.9em;
+        transition: color 0.2s;
+    }
+
+    .footer-col ul li a:hover {
+        color: var(--secondary-color);
+    }
+
+    .social-links a {
+        color: white;
+        margin-right: 15px;
+        font-size: 1.2em;
+        transition: color 0.2s;
+    }
+
+    .social-links a:hover {
+        color: var(--secondary-color);
+    }
+
+    .copyright-bar {
+        padding: 20px 0;
+        font-size: 0.9em;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+    }
+
+    /* --- Responsiveness Footer Saja --- */
+    @media (max-width: 768px) {
+        .footer-content {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+
+        .footer-col {
+            margin-bottom: 20px;
+            max-width: 90%;
+        }
+    }
+</style>
+
 </body>
+
 </html>
