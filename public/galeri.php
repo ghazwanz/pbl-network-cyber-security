@@ -197,7 +197,7 @@ $kegiatan_halaman = array_slice($kegiatan_list, $offset, $limit);
             outline: none;
         }
 
-        .select-group i {
+        .select-group i {s
             pointer-events: none;
             position: absolute;
             right: 10px;

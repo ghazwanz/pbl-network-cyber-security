@@ -35,7 +35,7 @@
                     </div>
                 </div>
 
-                <a href="#" class="inline-flex items-center space-x-2 bg-[#1B2D62] text-white font-bold text-base px-7 py-3.5 rounded-lg shadow-sm transition hover:bg-[#2C4AA4] hover:-translate-y-0.5">
+                <a href="./layanan.php" class="inline-flex items-center space-x-2 bg-[#1B2D62] text-white font-bold text-base px-7 py-3.5 rounded-lg shadow-sm transition hover:bg-[#2C4AA4] hover:-translate-y-0.5">
                     <span>Jelajahi Tentang Kami</span>
                     <img src="../assets/icons/arrow-up-right1.svg">
                 </a>
@@ -53,7 +53,7 @@
                         <span>INOVASI KARYA</span>
                     </div>
 
-                    <h2 class="text-4xl md:text-5xl font-inter text-gray-900 leading-tight mb-6">
+                    <h2 class="text-4xl md:text-5xl font-inter font-medium text-gray-900 leading-tight mb-6">
                         Jelajahi Layanan Terbaik Kami
                     </h2>
                     
@@ -61,7 +61,7 @@
                         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsam minima voluptatem aperiam commodi accusantium nobis in, illum ipsa sint.
                     </p>
 
-                    <a href="#" class="self-start inline-flex items-center space-x-2 bg-[#1B2D62] text-white font-bold text-base px-7 py-3.5 rounded-lg shadow-sm transition hover:bg-[#2C4AA4] hover:-translate-y-0.5">
+                    <a href="./profil.php" class="self-start inline-flex items-center space-x-2 bg-[#1B2D62] text-white font-bold text-base px-7 py-3.5 rounded-lg shadow-sm transition hover:bg-[#2C4AA4] hover:-translate-y-0.5">
                         <span>Pelajari Lebih Lanjut</span>
                         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
@@ -149,7 +149,7 @@
                         </div>
                         <div class="flex-grow">
                             <h3 class="text-2xl font-inter font-medium text-gray-900 mb-4">Analisis Material Nano untuk Aplikasi</h3>
-                            <p class="text-gray-500 mb-8">Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...</p>
+                            <p class="text-gray-500 mb-8">Nequ  e porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...</p>
                         </div>
                         <div class="flex justify-between items-center text-sm">
                             <a href="#" class="text-[#1B2D62] font-semibold inline-flex items-center space-x-1.5 group">

@@ -36,7 +36,7 @@ require_once __DIR__ . '/functions.php';
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- AOS (Animate On Scroll) CDN -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"> -->
     
     <!-- Font Awesome CDN (untuk icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -73,11 +73,11 @@ require_once __DIR__ . '/functions.php';
             <nav class="container mx-auto max-w-7xl flex justify-between items-center py-5 px-4">
                 <img src="../assets/img/jti.webp">
                 <ul class="hidden sm:flex items-center space-x-8">
-                    <li><a href="./" class="font-semibold text-gray-900">Beranda</a></li>
-                    <li><a href="#" class="font-medium hover:text-gray-900">Profil</a></li>
+                    <li><a href="./index.php" class="font-semibold text-gray-900">Beranda</a></li>
+                    <li><a href="./profil.php" class="font-medium hover:text-gray-900">Profil</a></li>
                     <li><a href="./arsip.php" class="font-medium hover:text-gray-900">Arsip</a></li>
-                    <li><a href="#" class="font-medium hover:text-gray-900">Galeri</a></li>
-                    <li><a href="#" class="font-medium hover:text-gray-900">Layanan</a></li>
+                    <li><a href="./galeri.php" class="font-medium hover:text-gray-900">Galeri</a></li>
+                    <li><a href="./layanan.php" class="font-medium hover:text-gray-900">Layanan</a></li>
                 </ul>
             </nav>
         </header>

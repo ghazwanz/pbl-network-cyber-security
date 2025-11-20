@@ -1,3 +1,7 @@
+<?php
+    require_once __DIR__ . '/../includes/header.php';
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -211,5 +215,9 @@
             });
         });
     </script>
+
+    <?php
+        require_once __DIR__ . '/../includes/footer.php';
+    ?>
 </body>
 </html>
