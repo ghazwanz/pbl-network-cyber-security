@@ -38,6 +38,34 @@ if ($action === 'delete' && $id) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit'])) {
     $nama_sarana = sanitize($_POST['nama_sarana'] ?? '');
     $deskripsi = sanitize($_POST['deskripsi'] ?? '');
+    
+    // Handle image upload
+    $gambar_url = '';
+    if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === UPLOAD_ERR_OK) {
+        $allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+        $max_size = 2 * 1024 * 1024; // 2MB
+        
+        if (in_array($_FILES['gambar']['type'], $allowed_types) && $_FILES['gambar']['size'] <= $max_size) {
+            $upload_dir = __DIR__ . '/../uploads/sarana/';
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+            }
+            
+            $file_extension = pathinfo($_FILES['gambar']['name'], PATHINFO_EXTENSION);
+            $file_name = uniqid('sarana_') . '.' . $file_extension;
+            $upload_path = $upload_dir . $file_name;
+            
+            if (move_uploaded_file($_FILES['gambar']['tmp_name'], $upload_path)) {
+                $gambar_url = '/uploads/sarana/' . $file_name;
+            }
+        } else {
+            $errors[] = "Format gambar tidak valid atau ukuran terlalu besar (max 2MB)";
+        }
+    } elseif ($action === 'edit' && $edit_data) {
+        // Keep existing image if no new upload
+        $gambar_url = $edit_data['gambar'];
+    }
+
     $spesifikasi = sanitize($_POST['spesifikasi'] ?? '');
     $jumlah = isset($_POST['jumlah']) ? (int)$_POST['jumlah'] : 1;
     $kondisi = sanitize($_POST['kondisi'] ?? 'Baik');
@@ -53,9 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
     // If no errors, save to database
     if (empty($errors)) {
         if ($action === 'add') {
-            $query = "INSERT INTO sarana (nama_sarana, deskripsi, spesifikasi, jumlah, kondisi, is_active) 
-                      VALUES (?, ?, ?, ?, ?, ?)";
-            $params = [$nama_sarana, $deskripsi, $spesifikasi, $jumlah, $kondisi, 
+            $query = "INSERT INTO sarana (nama_sarana, gambar, deskripsi, spesifikasi, jumlah, kondisi, is_active) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $params = [$nama_sarana, $gambar_url, $deskripsi, $spesifikasi, $jumlah, $kondisi, 
                     $is_active];
             
             $result = executeInsert($query, $params);
@@ -67,9 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
                 $errors[] = "Gagal menyimpan data";
             }
         } elseif ($action === 'edit' && $id) {
-            $query = "UPDATE sarana SET nama_sarana = ?, deskripsi = ?, spesifikasi = ?, 
+            $query = "UPDATE sarana SET nama_sarana = ?, gambar = ?, deskripsi = ?, spesifikasi = ?, 
                       jumlah = ?, kondisi = ?, is_active = ? WHERE id = ?";
-            $params = [$nama_sarana, $deskripsi, $spesifikasi, $jumlah, $kondisi, 
+            $params = [$nama_sarana, $gambar_url, $deskripsi, $spesifikasi, $jumlah, $kondisi, 
                     $is_active, $id];
             
             $result = executeNonQuery($query, $params);
@@ -230,6 +258,7 @@ if ($action === 'list') {
                 <thead>
                     <tr>
                         <th>Nama Sarana</th>
+                        <th class="w-32 text-center">Gambar</th>
                         <th class="w-64">Spesifikasi</th>
                         <th class="w-24 text-center">Jumlah</th>
                         <th class="w-32">Kondisi</th>
@@ -244,6 +273,26 @@ if ($action === 'list') {
                             <p class="font-semibold text-gray-800"><?php echo htmlspecialchars($item['nama_sarana']); ?></p>
                             <?php if ($item['deskripsi']): ?>
                             <p class="text-sm text-gray-500 mt-1 line-clamp-2"><?php echo htmlspecialchars($item['deskripsi']); ?></p>
+                            <?php endif; ?>
+                        </td>
+                       <td class="text-center">
+                            <?php if (!empty($item['gambar'])): ?>
+                                <?php
+                                // Buat full URL untuk gambar
+                                $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+                                $host = $_SERVER['HTTP_HOST'];
+                                $script_path = dirname($_SERVER['SCRIPT_NAME']); // /labkom/admin
+                                $base_path = dirname($script_path); // /labkom
+                                $image_url = $protocol . '://' . $host . $base_path . $item['gambar'];
+                                ?>
+                                <img src="<?php echo htmlspecialchars($image_url); ?>" 
+                                    alt="<?php echo htmlspecialchars($item['nama_sarana']); ?>" 
+                                    class="w-16 h-16 object-cover rounded mx-auto"
+                                    onerror="this.parentElement.innerHTML='<div class=\'w-16 h-16 bg-gray-200 rounded mx-auto flex items-center justify-center\'><i class=\'fas fa-image text-gray-400\'></i></div>';">
+                            <?php else: ?>
+                                <div class="w-16 h-16 bg-gray-200 rounded mx-auto flex items-center justify-center">
+                                    <i class="fas fa-image text-gray-400 text-xl"></i>
+                                </div>
                             <?php endif; ?>
                         </td>
                         <td class="text-sm text-gray-600">
@@ -329,10 +378,10 @@ if ($action === 'list') {
     
     <!-- Form -->
     <div class="bg-white rounded-lg shadow-md p-6">
-        <form method="POST" class="needs-validation">
-            
-            <!-- Nama Sarana -->
-            <div class="form-group">
+        <form method="POST" enctype="multipart/form-data" class="needs-validation">
+    
+                <!-- Nama Sarana -->
+                <div class="form-group">
                 <label class="form-label" for="nama_sarana">Nama Sarana <span class="text-red-500">*</span></label>
                 <input 
                     type="text" 
@@ -344,10 +393,44 @@ if ($action === 'list') {
                     maxlength="100"
                     placeholder="Contoh: Server Rack 42U"
                 >
-            </div>
-            
-            <!-- Deskripsi -->
-            <div class="form-group">
+                </div>
+    
+                <!-- Gambar -->
+                <div class="form-group">
+                    <label class="form-label" for="gambar">Gambar Sarana</label>
+                    <?php if ($edit_data && !empty($edit_data['gambar'])): ?>
+                    <div class="mb-2">
+                        <?php
+                        // Buat full URL untuk gambar
+                        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+                        $host = $_SERVER['HTTP_HOST'];
+                        
+                        // Ambil base path dari URL saat ini
+                        $script_path = dirname($_SERVER['SCRIPT_NAME']); // Misal: /labkom/admin
+                        $base_path = dirname($script_path); // Misal: /labkom
+                        
+                        $image_url = $protocol . '://' . $host . $base_path . $edit_data['gambar'];
+                        ?>
+                        <img src="<?php echo htmlspecialchars($image_url); ?>" 
+                            alt="Preview" 
+                            class="w-32 h-32 object-cover rounded border"
+                            onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><rect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>No Image</text></svg>';">
+                    </div>
+                    <?php endif; ?>
+                    <input 
+                        type="file" 
+                        id="gambar" 
+                        name="gambar" 
+                        class="form-input" 
+                        accept="image/jpeg,image/png,image/jpg,image/gif"
+                        onchange="previewImage(this)"
+                    >
+                    <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF. Maksimal 2MB</p>
+                    <div id="preview-container" class="mt-2"></div>
+                </div>
+                
+                <!-- Deskripsi -->
+                <div class="form-group">
                 <label class="form-label" for="deskripsi">Deskripsi</label>
                 <textarea 
                     id="deskripsi" 
@@ -427,6 +510,22 @@ if ($action === 'list') {
 </div>
 
 <script>
+function previewImage(input) {
+    const preview = document.getElementById('preview-container');
+    preview.innerHTML = '';
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <img src="${e.target.result}" 
+                     class="w-32 h-32 object-cover rounded border" 
+                     alt="Preview">
+            `;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 function formatCurrency(input) {
     // Remove all non-numeric characters
     let value = input.value.replace(/\D/g, '');
