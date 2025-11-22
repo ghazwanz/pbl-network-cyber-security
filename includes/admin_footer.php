@@ -64,6 +64,13 @@
                         <span>Konsultatif</span>
                     </a>
                 </li>
+
+                <li>
+                    <a href="<?php echo ADMIN_URL; ?>/layanan.php" class="flex items-center px-4 py-3 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-comments mr-3"></i>
+                        <span>Layanan</span>
+                    </a>
+                </li>
                 
                 <li class="pt-4 pb-2 px-4">
                     <span class="text-xs font-semibold text-gray-400 uppercase">Settings</span>

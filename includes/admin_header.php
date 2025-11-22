@@ -117,6 +117,13 @@ $current_user = getCurrentUser();
                             <span>Konsultatif</span>
                         </a>
                     </li>
+
+                    <li>
+                        <a href="<?php echo ADMIN_URL; ?>/layanan.php" class="flex items-center px-4 py-3 rounded hover:bg-gray-700 transition <?php echo (basename($_SERVER['PHP_SELF']) == 'layanan.php') ? 'bg-gray-700' : ''; ?>">
+                            <i class="fa-solid fa-headset mr-3"></i>
+                            <span>Layanan</span>
+                        </a>
+                    </li>
                     
                     <li class="pt-4 pb-2 px-4">
                         <span class="text-xs font-semibold text-gray-400 uppercase">Settings</span>
