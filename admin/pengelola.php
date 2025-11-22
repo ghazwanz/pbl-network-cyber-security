@@ -106,10 +106,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
     if (empty($errors)) {
         if ($action === 'add') {
             $query = "INSERT INTO pengelola (nama_lengkap, nip_nidn, jabatan, pendidikan_terakhir, 
-                      bidang_keahlian, email, no_telepon, foto_path, urutan_tampil, is_active) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     bidang_keahlian, email, no_telepon, foto_path, urutan_tampil, is_active) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $params = [$nama_lengkap, $nip_nidn, $jabatan, $pendidikan_terakhir, 
-                      $bidang_keahlian, $email, $no_telepon, $foto_path, $urutan_tampil, $is_active];
+                     $bidang_keahlian, $email, $no_telepon, $foto_path, $urutan_tampil, $is_active];
             
             $result = executeInsert($query, $params);
             
@@ -150,26 +150,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
         foreach ($errors as $error) {
             setFlashMessage('error', $error);
         }
-    }
-}
-
-// Handle reorder
-if ($action === 'reorder' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $order = $_POST['order'] ?? [];
-    
-    if (!empty($order)) {
-        $pdo = beginTransaction();
-        try {
-            foreach ($order as $index => $pengelola_id) {
-                executeNonQuery("UPDATE pengelola SET urutan_tampil = ? WHERE id = ?", [$index + 1, $pengelola_id]);
-            }
-            commitTransaction($pdo);
-            echo json_encode(['success' => true]);
-        } catch (Exception $e) {
-            rollbackTransaction($pdo);
-            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-        }
-        exit;
     }
 }
 
@@ -306,20 +286,10 @@ if ($action === 'list') {
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <?php if ($pengelola_list && count($pengelola_list) > 0): ?>
         
-        <div class="p-4 border-b bg-gray-50">
-            <p class="text-sm text-gray-600">
-                <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                Drag & drop baris untuk mengubah urutan tampilan di halaman publik
-            </p>
-        </div>
-        
         <div class="overflow-x-auto">
-            <table class="admin-table" id="sortable-table">
+            <table class="admin-table" id="pengelola-table">
                 <thead>
                     <tr>
-                        <th class="w-12 text-center">
-                            <i class="fas fa-grip-vertical text-gray-400"></i>
-                        </th>
                         <th class="w-20">Foto</th>
                         <th>Nama & NIP/NIDN</th>
                         <th class="w-48">Jabatan</th>
@@ -329,12 +299,9 @@ if ($action === 'list') {
                         <th class="w-32 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="sortable-body">
+                <tbody>
                     <?php foreach ($pengelola_list as $item): ?>
-                    <tr data-id="<?php echo $item['id']; ?>" class="sortable-row">
-                        <td class="text-center cursor-move">
-                            <i class="fas fa-grip-vertical text-gray-400"></i>
-                        </td>
+                    <tr>
                         <td>
                             <img 
                                 src="<?php echo UPLOAD_URL . htmlspecialchars($item['foto_path']); ?>" 
@@ -411,44 +378,6 @@ if ($action === 'list') {
     </div>
     
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script>
-// Initialize Sortable for drag & drop
-<?php if ($pengelola_list && count($pengelola_list) > 0): ?>
-const tbody = document.getElementById('sortable-body');
-const sortable = new Sortable(tbody, {
-    animation: 150,
-    handle: '.cursor-move',
-    ghostClass: 'bg-blue-50',
-    onEnd: function(evt) {
-        // Get new order
-        const rows = tbody.querySelectorAll('.sortable-row');
-        const order = Array.from(rows).map(row => row.dataset.id);
-        
-        // Send to server
-        fetch('?action=reorder', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'order=' + JSON.stringify(order)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast('Urutan berhasil diupdate', 'success');
-            } else {
-                showToast('Gagal update urutan: ' + data.message, 'error');
-            }
-        })
-        .catch(error => {
-            showToast('Error: ' + error.message, 'error');
-        });
-    }
-});
-<?php endif; ?>
-</script>
 
 <?php elseif (in_array($action, ['add', 'edit'])): ?>
 
