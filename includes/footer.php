@@ -71,6 +71,7 @@
     </div>
     </div>
 </footer>
+<script src="https://unpkg.com/@material-tailwind/html@3.0.0-beta.7/dist/material-tailwind.umd.min.js" defer></script>
 </body>
 
 </html>
