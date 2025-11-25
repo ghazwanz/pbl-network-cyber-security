@@ -206,7 +206,7 @@ if ($action === 'list') {
             </div>
             
             <!-- Filter Tipe -->
-            <select name="filter_tipe" class="form-input md:w-48">
+            <select name="filter_tipe" class="form-input md:w-48" onchange="this.form.submit()">
                 <option value="">Semua Tipe</option>
                 <option value="agenda" <?php echo $filter_tipe === 'agenda' ? 'selected' : ''; ?>>Agenda</option>
                 <option value="kegiatan" <?php echo $filter_tipe === 'kegiatan' ? 'selected' : ''; ?>>Kegiatan</option>
