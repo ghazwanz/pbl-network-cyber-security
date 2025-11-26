@@ -166,7 +166,9 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
             <div class="flex-1">
                 <input type="text" name="search" placeholder="Cari judul, deskripsi, atau lokasi..." value="<?php echo htmlspecialchars($search); ?>" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
             </div>
-            <select name="filter_tipe" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none md:w-48">
+            
+            <!-- Filter Tipe -->
+            <select name="filter_tipe" class="form-input md:w-48" onchange="this.form.submit()">
                 <option value="">Semua Tipe</option>
                 <option value="agenda" <?php echo $filter_tipe === 'agenda' ? 'selected' : ''; ?>>Agenda</option>
                 <option value="kegiatan" <?php echo $filter_tipe === 'kegiatan' ? 'selected' : ''; ?>>Kegiatan</option>
