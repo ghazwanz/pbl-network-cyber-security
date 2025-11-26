@@ -8,6 +8,7 @@ $id = $_GET['id'] ?? ($_POST['id'] ?? null);
 
 // Handle Delete
 if ($action === 'delete' && $id) {
+    // Pastikan fungsi executeQuerySingle ada di sistem Anda
     $layanan = executeQuerySingle("SELECT * FROM layanan WHERE id = ?", [(int)$id]);
     
     if ($layanan) {
@@ -117,16 +118,22 @@ if ($search) {
 
 $where_clause = count($where) > 0 ? 'WHERE ' . implode(' AND ', $where) : '';
 $count_query = "SELECT COUNT(*) FROM layanan " . $where_clause;
-$total_records = countRows($count_query, $params);
+$total_records = countRows($count_query, $params); 
 $total_pages = ceil($total_records / $limit);
 
 $query = "SELECT * FROM layanan " . $where_clause . " ORDER BY id DESC LIMIT ? OFFSET ?";
 $params[] = $limit;
 $params[] = $offset;
 $layanan_list = executeQuery($query, $params);
+
+// Hitung Statistik
+$count_aktif = countRows("SELECT COUNT(*) FROM layanan WHERE status = 'Aktif'");
+$count_nonaktif = countRows("SELECT COUNT(*) FROM layanan WHERE status = 'Non-Aktif'");
+$count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
+
 ?>
 
-<div class="flex overflow-hidden">
+<div class="flex flex-col overflow-hidden">
     <div class="flex-1 flex flex-col overflow-hidden">
         <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
@@ -142,8 +149,24 @@ $layanan_list = executeQuery($query, $params);
                 <button type="button" data-toggle="modal" data-target="#modalLayanan" onclick="resetForm()" class="inline-flex items-center justify-center border select-none font-sans font-medium text-center transition-all duration-300 ease-in text-sm rounded-md py-2.5 px-5 shadow-sm hover:shadow-md bg-blue-600 border-blue-600 text-white hover:bg-blue-700 gap-2">
                     <i class="fas fa-plus"></i> Tambah Layanan
                 </button>
+                </div>
             </div>
         </div>
+
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Total Layanan</p>
+            <p class="text-2xl font-bold text-gray-800"><?php echo $count_layanan; ?></p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Status Aktif</p>
+            <p class="text-2xl font-bold text-green-600"><?php echo $count_aktif; ?></p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Status Non-Aktif</p>
+            <p class="text-2xl font-bold text-orange-600"><?php echo $count_nonaktif; ?></p>
+        </div>
+    </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="overflow-x-auto">
@@ -187,6 +210,9 @@ $layanan_list = executeQuery($query, $params);
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
+                                    <button data-toggle="modal" data-target="#modalDetail"' onclick='getData(<?= json_encode($row) ?>)' class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition mr-1" title="Lihat Detail">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
                                     <button data-toggle="modal" data-target="#modalLayanan" onclick='editData(<?= json_encode($row) ?>)' class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition mr-1" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -206,6 +232,7 @@ $layanan_list = executeQuery($query, $params);
                     </tbody>
                 </table>
             </div>
+        </div>
 
             <?php if($total_pages > 1): ?>
             <div class="px-6 py-4 border-t flex justify-between items-center">
@@ -221,8 +248,6 @@ $layanan_list = executeQuery($query, $params);
             </div>
             <?php endif; ?>
         </div>
-    </div>
-</div>
 
 <!-- Modal -->
 <div class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]" id="modalLayanan" aria-hidden="true">
@@ -301,6 +326,62 @@ $layanan_list = executeQuery($query, $params);
     </div>
 </div>
 
+<div id="modalDetail" aria-hidden="true" class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
+        
+        <div class="p-5 pb-3 flex justify-between items-center border-b border-slate-200 sticky top-0 bg-white z-10">
+            <h1 class="text-lg text-slate-800 font-semibold">
+                <i class="fas fa-eye mr-2 text-blue-600"></i>Detail Layanan
+            </h1>
+            <button type="button" data-dismiss="modal" class="inline-grid place-items-center text-slate-600 hover:bg-slate-200/30 rounded-md min-w-[34px] min-h-[34px] transition-all">
+                <svg width="1.5em" height="1.5em" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor" class="h-5 w-5">
+                    <path d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="p-6 pt-4">
+            <div class="flex flex-col md:flex-row gap-6">
+                
+                <div class="w-full md:w-1/2">
+                    <div class="rounded-lg overflow-hidden shadow-sm border border-gray-200 bg-gray-100 flex items-center justify-center min-h-[200px]">
+                        <img id="detail-preview-image" src="" alt="Detail Gambar" class="w-full h-auto object-cover max-h-64">
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/2 space-y-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Nama Layanan</label>
+                        <h4 id="detail-nama" class="text-xl font-bold text-gray-900 mt-1"></h4>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Tipe</label>
+                            <div id="detail-tipe" class="mt-1 text-sm text-gray-800 font-medium"></div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Status</label>
+                            <div id="detail-status" class="mt-1"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Deskripsi</label>
+                        <p id="detail-deskripsi" class="text-gray-600 text-sm mt-1 leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-5 pt-3 flex justify-end gap-3 border-t border-slate-200 sticky bottom-0 bg-white">
+            <button type="button" data-dismiss="modal" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                <i class="fas fa-times mr-2"></i>Tutup
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     function resetForm() {
         $('#inputId').val('');
@@ -328,6 +409,23 @@ $layanan_list = executeQuery($query, $params);
             $('#preview-image').attr('src', `../uploads/${data.gambar_path}`).removeClass('hidden');
         } else {
             $('#preview-image').attr('src', '').addClass('hidden');
+        }
+    }
+
+    function getData(data) {
+        $('#detail-nama').text(data.nama_layanan);
+        $('#detail-tipe').html(`<span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${data.tipe_layanan}</span>`);
+        
+        const statusClass = data.status === 'Aktif' ? 'text-green-600' : 'text-red-500';
+        const statusIcon = data.status === 'Aktif' ? 'check' : 'times';
+        $('#detail-status').html(`<span class="inline-flex items-center gap-1 text-sm font-medium ${statusClass}"><i class="fas fa-${statusIcon}-circle"></i> ${data.status}</span>`);
+        
+        $('#detail-deskripsi').text(data.deskripsi);
+        
+        if (data.gambar_path) {
+            $('#detail-preview-image').attr('src', `../uploads/${data.gambar_path}`);
+        } else {
+            $('#detail-preview-image').attr('src', 'https://via.placeholder.com/400x300?text=No+Image');
         }
     }
 </script>
