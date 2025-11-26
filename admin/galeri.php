@@ -166,9 +166,7 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
             <div class="flex-1">
                 <input type="text" name="search" placeholder="Cari judul, deskripsi, atau lokasi..." value="<?php echo htmlspecialchars($search); ?>" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
             </div>
-            
-            <!-- Filter Tipe -->
-            <select name="filter_tipe" class="form-input md:w-48" onchange="this.form.submit()">
+            <select name="filter_tipe" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none md:w-48" onchange="this.form.submit()">
                 <option value="">Semua Tipe</option>
                 <option value="agenda" <?php echo $filter_tipe === 'agenda' ? 'selected' : ''; ?>>Agenda</option>
                 <option value="kegiatan" <?php echo $filter_tipe === 'kegiatan' ? 'selected' : ''; ?>>Kegiatan</option>
@@ -281,7 +279,7 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
 </div>
 
 <div id="modalForm" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl transform scale-95 transition-transform duration-300 overflow-hidden" id="modalFormContent">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl transform overflow-y-auto scale-95 max-h-[80vh] transition-transform duration-300 overflow-hidden" id="modalFormContent">
         
         <div class="flex justify-between items-center p-5 border-b bg-gray-50">
             <h3 id="modalFormTitle" class="text-lg font-bold text-gray-800">Tambah Galeri</h3>
