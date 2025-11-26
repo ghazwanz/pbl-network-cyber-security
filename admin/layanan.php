@@ -1,4 +1,5 @@
 <?php
+
 $page_title = "Layanan";
 require_once __DIR__ . '/../includes/admin_header.php';
 
@@ -16,6 +17,7 @@ if ($action === 'delete' && $id) {
         if ($layanan['gambar_path']) {
             deleteFile($layanan['gambar_path']);
         }
+
         
         // Delete from database
         $result = executeNonQuery("DELETE FROM layanan WHERE id = ?", [(int)$id]);
