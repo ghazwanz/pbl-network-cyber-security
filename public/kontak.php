@@ -9,32 +9,32 @@
 // Include header
 include '../includes/header.php';
 
+// Include functions helper
+require_once __DIR__ . '/../includes/functions.php';
+
 // Form handling
 $success_message = '';
 $error_message = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitize input data
-    $name = htmlspecialchars(trim($_POST['name'] ?? ''));
-    $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
-    $subject = htmlspecialchars(trim($_POST['subject'] ?? ''));
-    $phone = htmlspecialchars(trim($_POST['phone'] ?? ''));
-    $message = htmlspecialchars(trim($_POST['message'] ?? ''));
-    
-    // Basic validation
-    if (empty($name) || empty($email) || empty($subject) || empty($message)) {
-        $error_message = "Semua field yang bertanda * wajib diisi.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error_message = "Format email tidak valid.";
+    // Sanitize input data menggunakan fungsi helper
+    $message = sanitize($_POST['message'] ?? '');
+    // Validasi menggunakan fungsi helper
+    if (empty($message)) {
+        $error_message = "Pesan wajib diisi.";
     } elseif (strlen($message) < 10) {
         $error_message = "Pesan minimal harus 10 karakter.";
     } else {
-        // Here you can add email sending logic or database storage
-        // For now, just show success message
-        $success_message = "Terima kasih! Pesan Anda telah berhasil dikirim. Kami akan segera menghubungi Anda.";
+        $query = "INSERT INTO konsultatif (pertanyaan, created_at) VALUES (?, NOW())";
+        $result = executeInsert($query, [$message]);
         
-        // Clear form data after successful submission
-        $name = $email = $subject = $phone = $message = '';
+        if ($result) {
+            $success_message = "Terima kasih! Pesan Anda telah berhasil dikirim. Kami akan segera menghubungi Anda.";
+            // Clear form data after successful submission
+            $message = '';
+        } else {
+            $error_message = "Maaf, terjadi kesalahan saat mengirim pesan. Silakan coba lagi.";
+        }
     }
 }
 ?>
@@ -44,11 +44,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="mx-auto max-w-7xl">
         <div class="text-center max-w-3xl mx-auto">
             <!-- Badge -->
-            <div class="inline-flex items-center space-x-2 bg-orange-100 px-4 py-2 rounded-full mb-6" data-aos="fade-up">
-                <svg class="w-5 h-5 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="inline-flex items-center space-x-2 bg-white border border-gray-200 rounded-full px-5 py-2.5 text-orange-500 font-medium text-sm mb-6" data-aos="fade-up">
+                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
-                <span class="text-orange-700 font-medium text-sm">Kontak Kami</span>
+                <span class="text-orange-500 font-medium text-sm">Kontak Kami</span>
             </div>
             
             <!-- Heading -->
