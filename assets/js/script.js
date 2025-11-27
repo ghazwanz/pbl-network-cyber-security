@@ -20,21 +20,21 @@ $(document).ready(function() {
     });
     
     // Lazy loading images
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
+    // if ('IntersectionObserver' in window) {
+    //     const imageObserver = new IntersectionObserver((entries, observer) => {
+    //         entries.forEach(entry => {
+    //             if (entry.isIntersecting) {
+    //                 const img = entry.target;
+    //                 img.src = img.dataset.src;
+    //                 img.classList.remove('lazy');
+    //                 imageObserver.unobserve(img);
+    //             }
+    //         });
+    //     });
         
-        const images = document.querySelectorAll('img.lazy');
-        images.forEach(img => imageObserver.observe(img));
-    }
+    //     const images = document.querySelectorAll('img.lazy');
+    //     images.forEach(img => imageObserver.observe(img));
+    // }
     
     // Auto-hide alerts after 5 seconds
     setTimeout(function() {
@@ -124,4 +124,22 @@ $(document).ready(function() {
         }, 3000);
     };
     
+    let lastScrollY = 100;
+    $(document).ready(()=>{
+        $(window).on("scroll",()=>{
+            console.log(window.scrollY);
+            if(lastScrollY < window.scrollY){
+                // scroll down
+                $("#nav").addClass("translate-y-[-100%]");
+            } else {
+                // scroll up
+                $("#nav").removeClass("translate-y-[-100%]");
+            }
+            lastScrollY = window.scrollY;
+        })
+    })
+
+    $("#mobile-menu-button").on("click", ()=>{
+        $("#mobile-menu").toggleClass("hidden");
+    })
 });
