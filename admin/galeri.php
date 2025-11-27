@@ -19,12 +19,12 @@ if ($action === 'delete' && $id) {
     $galeri = executeQuerySingle("SELECT * FROM galeri WHERE id = ?", [$id]);
     
     if ($galeri) {
+        // Delete image file using deleteFile function
         if ($galeri['gambar_path']) {
-            $file_path_abs = $_SERVER['DOCUMENT_ROOT'] . $galeri['gambar_path'];
-            if (file_exists($file_path_abs)) {
-                unlink($file_path_abs);
-            }
+            deleteFile($galeri['gambar_path']);
         }
+        
+        // Delete from database
         $result = executeNonQuery("DELETE FROM galeri WHERE id = ?", [$id]);
         if ($result) {
             setFlashMessage('success', 'Galeri berhasil dihapus');
@@ -62,15 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_action'])) {
         $upload_result = uploadImage($_FILES['gambar'], 'galeri'); 
         
         if ($upload_result['success']) {
-            $gambar_path = '/uploads/galeri/' . $upload_result['filename'];
+            $gambar_path = '/galeri/' . $upload_result['filename'];
             
             // Hapus gambar lama jika edit
             if ($form_action === 'edit' && $id_edit) {
                 $old_galeri = executeQuerySingle("SELECT gambar_path FROM galeri WHERE id = ?", [$id_edit]);
                 if ($old_galeri && $old_galeri['gambar_path']) {
-                     if (file_exists($_SERVER['DOCUMENT_ROOT'] . $old_galeri['gambar_path'])) {
-                        unlink($_SERVER['DOCUMENT_ROOT'] . $old_galeri['gambar_path']);
-                    }
+                    deleteFile($old_galeri['gambar_path']);
                 }
             }
         } else {
@@ -156,7 +154,7 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
             <h2 class="text-2xl font-bold text-gray-800">Galeri & Agenda</h2>
             <p class="text-gray-600 mt-1">Kelola foto kegiatan dan agenda laboratorium</p>
         </div>
-        <button onclick="openModalAdd()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow transition flex items-center gap-2">
+        <button type="button" data-toggle="modal" data-target="#modalForm" onclick="openModalAdd()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow transition flex items-center gap-2">
             <i class="fas fa-plus"></i>Tambah Galeri
         </button>
     </div>
@@ -212,7 +210,7 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4">
                             <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border">
-                                <img src="<?php echo htmlspecialchars($item['gambar_path']); ?>" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150?text=No+Img'">
+                                <img src="<?php echo "../uploads/" . htmlspecialchars($item['gambar_path']); ?>" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150?text=No+Img'">
                             </div>
                         </td>
                         <td class="px-6 py-4">
@@ -244,8 +242,8 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
                         </td>
                         <td class="px-6 py-4 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <button onclick='viewDetail(<?php echo json_encode($item); ?>)' class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition" title="Lihat Detail"><i class="fas fa-eye"></i></button>
-                                <button onclick='openModalEdit(<?php echo json_encode($item); ?>)' class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button type="button" data-toggle="modal" data-target="#modalDetail" onclick='viewDetail(<?php echo json_encode($item); ?>)' class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition" title="Lihat Detail"><i class="fas fa-eye"></i></button>
+                                <button type="button" data-toggle="modal" data-target="#modalForm" onclick='openModalEdit(<?php echo json_encode($item); ?>)' class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition" title="Edit"><i class="fas fa-edit"></i></button>
                                 <a href="?action=delete&id=<?php echo $item['id']; ?>" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?');"><i class="fas fa-trash"></i></a>
                             </div>
                         </td>
@@ -272,248 +270,231 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
         <div class="text-center py-12">
             <i class="fas fa-images text-6xl text-gray-300 mb-4"></i>
             <p class="text-gray-500 text-lg">Belum ada galeri</p>
-            <button onclick="openModalAdd()" class="inline-block mt-4 text-blue-600 hover:underline">Tambah Galeri Pertama</button>
+            <button type="button" data-toggle="modal" data-target="#modalForm" onclick="openModalAdd()" class="inline-block mt-4 text-blue-600 hover:underline">Tambah Galeri Pertama</button>
         </div>
         <?php endif; ?>
     </div>
 </div>
 
-<div id="modalForm" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl transform overflow-y-auto scale-95 max-h-[80vh] transition-transform duration-300 overflow-hidden" id="modalFormContent">
+<div id="modalForm" aria-hidden="true" class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
         
-        <div class="flex justify-between items-center p-5 border-b bg-gray-50">
-            <h3 id="modalFormTitle" class="text-lg font-bold text-gray-800">Tambah Galeri</h3>
-            <button onclick="closeModalForm()" class="text-gray-400 hover:text-red-500 text-xl transition"><i class="fas fa-times"></i></button>
+        <div class="p-5 pb-3 flex justify-between items-center border-b border-slate-200 sticky top-0 bg-white z-10">
+            <h1 id="modalFormTitle" class="text-lg text-slate-800 font-semibold">
+                <i class="fas fa-images mr-2 text-blue-600"></i>Tambah Galeri
+            </h1>
+            <button type="button" data-dismiss="modal" class="inline-grid place-items-center text-slate-600 hover:bg-slate-200/30 rounded-md min-w-[34px] min-h-[34px] transition-all">
+                <svg width="1.5em" height="1.5em" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor" class="h-5 w-5">
+                    <path d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
         </div>
         
-        <form method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
-            <input type="hidden" name="form_action" id="formAction" value="add">
-            <input type="hidden" name="id" id="formId">
-            <input type="hidden" name="gambar_lama" id="formGambarLama">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="p-6 pt-4">
+                <input type="hidden" name="form_action" id="formAction" value="add">
+                <input type="hidden" name="id" id="formId">
+                <input type="hidden" name="gambar_lama" id="formGambarLama">
 
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Judul <span class="text-red-500">*</span></label>
-                <input type="text" name="judul" id="formJudul" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" required placeholder="Judul kegiatan...">
-            </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Judul <span class="text-red-500">*</span></label>
+                        <input type="text" name="judul" id="formJudul" required 
+                               class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                               placeholder="Judul kegiatan...">
+                    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Tipe <span class="text-red-500">*</span></label>
-                    <select name="tipe" id="formTipe" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
-                        <option value="kegiatan">Kegiatan (Dokumentasi)</option>
-                        <option value="agenda">Agenda (Akan Datang)</option>
-                    </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Tipe <span class="text-red-500">*</span></label>
+                            <select name="tipe" id="formTipe" required class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none">
+                                <option value="kegiatan">Kegiatan (Dokumentasi)</option>
+                                <option value="agenda">Agenda (Akan Datang)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Tanggal Kegiatan <span class="text-red-500">*</span></label>
+                            <input type="date" name="tanggal_kegiatan" id="formTanggal" required 
+                                   class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Lokasi</label>
+                        <input type="text" name="lokasi" id="formLokasi" 
+                               class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                               placeholder="Lokasi kegiatan...">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Gambar</label>
+                        <input type="file" name="gambar" id="formGambar" data-preview="#preview-image" accept="image/*"
+                               class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                        <p class="text-xs text-slate-500 mt-2" id="formGambarHelp">
+                            <i class="fas fa-info-circle mr-1"></i>Format: JPG, PNG, GIF, WEBP. Maksimal 5MB.
+                        </p>
+                        <div class="mt-3">
+                            <img id="preview-image" src="" alt="Preview" class="w-32 h-32 object-cover rounded-lg border hidden">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Deskripsi</label>
+                        <textarea name="deskripsi" id="formDeskripsi" rows="4"
+                                  class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                                  placeholder="Deskripsi singkat kegiatan..."></textarea>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input type="checkbox" name="is_featured" id="formFeatured" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="formFeatured" class="ml-2 block text-sm text-gray-900">Tampilkan di homepage sebagai <strong>Featured</strong></label>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Tanggal Kegiatan <span class="text-red-500">*</span></label>
-                    <input type="date" name="tanggal_kegiatan" id="formTanggal" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
-                </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Lokasi</label>
-                <input type="text" name="lokasi" id="formLokasi" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Lokasi kegiatan...">
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Gambar</label>
-                <input type="file" name="gambar" id="formGambar" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept="image/*" onchange="previewImage(this)">
-                <p class="text-xs text-gray-500 mt-1" id="formGambarHelp">Upload gambar baru (JPG, PNG). Maks 2MB.</p>
-                <div class="mt-2">
-                    <img id="formPreviewImg" src="" class="max-h-32 rounded shadow hidden">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Deskripsi</label>
-                <textarea name="deskripsi" id="formDeskripsi" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Deskripsi singkat..."></textarea>
-            </div>
-
-            <div class="flex items-center">
-                <input type="checkbox" name="is_featured" id="formFeatured" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                <label for="formFeatured" class="ml-2 block text-sm text-gray-900">Tampilkan di homepage sebagai <strong>Featured</strong></label>
-            </div>
-
-            <div class="flex items-center gap-4 pt-4 border-t">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow transition font-medium"><i class="fas fa-save mr-2"></i>Simpan</button>
-                <button type="button" onclick="closeModalForm()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition font-medium">Batal</button>
+            <div class="p-5 pt-3 flex justify-end gap-3 border-t border-slate-200 sticky bottom-0 bg-white">
+                <button type="button" data-dismiss="modal" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                    <i class="fas fa-times mr-2"></i>Batal
+                </button>
+                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium shadow-sm bg-blue-600 text-white hover:bg-blue-700 transition-all">
+                    <i class="fas fa-save mr-2"></i>Simpan
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-<div id="modalDetail" class="fixed inset-0 bg-black bg-opacity-50 z-[70] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl transform scale-95 transition-transform duration-300 overflow-hidden" id="modalDetailContent">
-        <div class="flex justify-between items-center p-5 border-b bg-gray-50">
-            <h3 class="text-lg font-bold text-gray-800">Detail Galeri</h3>
-            <button onclick="closeModalDetail()" class="text-gray-400 hover:text-red-500 text-xl transition"><i class="fas fa-times"></i></button>
+<div id="modalDetail" aria-hidden="true" class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
+        
+        <div class="p-5 pb-3 flex justify-between items-center border-b border-slate-200 sticky top-0 bg-white z-10">
+            <h1 class="text-lg text-slate-800 font-semibold">
+                <i class="fas fa-eye mr-2 text-blue-600"></i>Detail Galeri
+            </h1>
+            <button type="button" data-dismiss="modal" class="inline-grid place-items-center text-slate-600 hover:bg-slate-200/30 rounded-md min-w-[34px] min-h-[34px] transition-all">
+                <svg width="1.5em" height="1.5em" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor" class="h-5 w-5">
+                    <path d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
         </div>
-        <div class="p-6 overflow-y-auto max-h-[80vh]">
-            <div class="flex flex-col md:flex-row gap-6">
-                <div class="w-full md:w-1/2">
-                    <div class="rounded-lg overflow-hidden shadow-sm border border-gray-200 bg-gray-100 flex items-center justify-center">
-                        <img id="detailGambar" src="" class="w-full h-auto object-cover max-h-64">
+        
+        <div class="p-5 pt-4">
+            <div class="flex flex-col gap-6">
+                
+                <div class="w-fit mx-auto">
+                    <div class="rounded-lg overflow-hidden shadow-sm border border-gray-200 bg-gray-100 flex items-center justify-center min-h-[200px]">
+                        <img id="detailGambar" src="" alt="Detail Gambar" class="w-full max-w-[350px] aspect-square object-cover">
                     </div>
                 </div>
-                <div class="w-full md:w-1/2 space-y-4">
+
+                <div class="w-full space-y-4">
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Judul</label>
-                        <h4 id="detailJudul" class="text-xl font-bold text-gray-900 mt-1 leading-tight"></h4>
-                        <div id="detailFeatured" class="mt-1"></div>
+                        <h4 id="detailJudul" class="text-xl font-bold text-gray-900 mt-1"></h4>
+                        <div id="detailFeatured" class="mt-2"></div>
                     </div>
-                    <div class="flex gap-3">
+
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Tipe</label>
-                            <div id="detailTipe" class="mt-1"></div>
+                            <div id="detailTipe" class="mt-1 text-sm text-gray-800 font-medium"></div>
                         </div>
                         <div>
                             <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Tanggal</label>
                             <p id="detailTanggal" class="text-sm font-medium text-gray-800 mt-1"></p>
                         </div>
                     </div>
+
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Lokasi</label>
-                        <p id="detailLokasi" class="text-sm text-gray-700 mt-1"><i class="fas fa-map-marker-alt text-red-500 mr-1"></i><span></span></p>
+                        <p id="detailLokasi" class="text-sm text-gray-700 mt-1">
+                            <i class="fas fa-map-marker-alt text-red-500 mr-1"></i><span></span>
+                        </p>
                     </div>
+
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Deskripsi</label>
-                        <p id="detailDeskripsi" class="text-gray-600 text-sm mt-1 leading-relaxed text-justify"></p>
+                        <p id="detailDeskripsi" class="text-gray-600 text-sm leading-relaxed break-words"></p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="bg-gray-50 p-4 flex justify-end">
-            <button onclick="closeModalDetail()" class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium">Tutup</button>
+
+        <div class="p-5 pt-3 flex justify-end gap-3 border-t border-slate-200 sticky bottom-0 bg-white">
+            <button type="button" data-dismiss="modal" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                <i class="fas fa-times mr-2"></i>Tutup
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- VARIABLES ---
-    const modalForm = document.getElementById('modalForm');
-    const modalFormContent = document.getElementById('modalFormContent');
-    const modalDetail = document.getElementById('modalDetail');
-    const modalDetailContent = document.getElementById('modalDetailContent');
-
     // --- FORM MODAL LOGIC (ADD/EDIT) ---
     function openModalAdd() {
         // Reset Form
-        document.getElementById('modalFormTitle').innerText = 'Tambah Galeri';
-        document.getElementById('formAction').value = 'add';
-        document.getElementById('formId').value = '';
-        document.getElementById('formGambarLama').value = '';
+        $('#modalFormTitle').html('<i class="fas fa-plus-circle mr-2 text-blue-600"></i>Tambah Galeri');
+        $('#formAction').val('add');
+        $('#formId').val('');
+        $('#formGambarLama').val('');
         
-        document.getElementById('formJudul').value = '';
-        document.getElementById('formTipe').value = 'kegiatan';
-        document.getElementById('formTanggal').value = '';
-        document.getElementById('formLokasi').value = '';
-        document.getElementById('formDeskripsi').value = '';
-        document.getElementById('formFeatured').checked = false;
+        $('#formJudul').val('');
+        $('#formTipe').val('kegiatan');
+        $('#formTanggal').val('');
+        $('#formLokasi').val('');
+        $('#formDeskripsi').val('');
+        $('#formFeatured').prop('checked', false);
         
-        document.getElementById('formGambar').value = ''; // Reset file input
-        document.getElementById('formGambarHelp').innerText = 'Upload gambar baru (JPG, PNG). Maks 2MB.';
-        document.getElementById('formPreviewImg').src = '';
-        document.getElementById('formPreviewImg').classList.add('hidden');
-        
-        showModal(modalForm, modalFormContent);
+        $('#formGambar').val('');
+        $('#formGambarHelp').html('<i class="fas fa-info-circle mr-1"></i>Format: JPG, PNG, GIF, WEBP. Maksimal 5MB.');
+        $('#preview-image').attr('src', '').addClass('hidden');
     }
 
     function openModalEdit(data) {
         // Populate Form
-        document.getElementById('modalFormTitle').innerText = 'Edit Galeri';
-        document.getElementById('formAction').value = 'edit';
-        document.getElementById('formId').value = data.id;
-        document.getElementById('formGambarLama').value = data.gambar_path;
+        $('#modalFormTitle').html('<i class="fas fa-edit mr-2 text-blue-600"></i>Edit Galeri');
+        $('#formAction').val('edit');
+        $('#formId').val(data.id);
+        $('#formGambarLama').val(data.gambar_path);
         
-        document.getElementById('formJudul').value = data.judul;
-        document.getElementById('formTipe').value = data.tipe;
-        document.getElementById('formTanggal').value = data.tanggal_kegiatan;
-        document.getElementById('formLokasi').value = data.lokasi;
-        document.getElementById('formDeskripsi').value = data.deskripsi;
-        document.getElementById('formFeatured').checked = (data.is_featured == 1);
+        $('#formJudul').val(data.judul);
+        $('#formTipe').val(data.tipe);
+        $('#formTanggal').val(data.tanggal_kegiatan);
+        $('#formLokasi').val(data.lokasi || '');
+        $('#formDeskripsi').val(data.deskripsi || '');
+        $('#formFeatured').prop('checked', data.is_featured == 1);
         
-        document.getElementById('formGambar').value = ''; // Reset file input
-        document.getElementById('formGambarHelp').innerText = 'Biarkan kosong jika tidak ingin mengganti gambar.';
-        
+        $('#formGambar').val('');
+        $('#formGambarHelp').html('<i class="fas fa-info-circle mr-1"></i>Biarkan kosong jika tidak ingin mengganti gambar.');
         if (data.gambar_path) {
-            document.getElementById('formPreviewImg').src = data.gambar_path;
-            document.getElementById('formPreviewImg').classList.remove('hidden');
+            $('#preview-image').attr('src', `../uploads/${data.gambar_path}`).removeClass('hidden');
         } else {
-            document.getElementById('formPreviewImg').classList.add('hidden');
-        }
-        
-        showModal(modalForm, modalFormContent);
-    }
-
-    function closeModalForm() {
-        hideModal(modalForm, modalFormContent);
-    }
-
-    function previewImage(input) {
-        const preview = document.getElementById('formPreviewImg');
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.classList.remove('hidden');
-            }
-            reader.readAsDataURL(input.files[0]);
+            $('#preview-image').attr('src', '').addClass('hidden');
         }
     }
 
     // --- DETAIL MODAL LOGIC (READ ONLY) ---
     function viewDetail(data) {
-        document.getElementById('detailJudul').innerText = data.judul;
-        document.getElementById('detailDeskripsi').innerText = data.deskripsi || '-';
-        document.getElementById('detailLokasi').querySelector('span').innerText = data.lokasi || '-';
+        $('#detailJudul').text(data.judul);
+        $('#detailDeskripsi').text(data.deskripsi || '-');
+        $('#detailLokasi span').text(data.lokasi || '-');
         
         const dateObj = new Date(data.tanggal_kegiatan);
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('detailTanggal').innerText = dateObj.toLocaleDateString('id-ID', options);
+        $('#detailTanggal').text(dateObj.toLocaleDateString('id-ID', options));
 
-        const imgElement = document.getElementById('detailGambar');
-        imgElement.src = data.gambar_path ? data.gambar_path : "https://via.placeholder.com/400x300?text=No+Image";
+        const imgSrc = data.gambar_path ? `../uploads/${data.gambar_path}` : 'https://via.placeholder.com/400x300?text=No+Image';
+        $('#detailGambar').attr('src', imgSrc);
 
-        const tipeEl = document.getElementById('detailTipe');
+        let tipeBadge = '';
         if (data.tipe === 'agenda') {
-            tipeEl.innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">Agenda</span>`;
+            tipeBadge = '<span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">Agenda</span>';
         } else {
-            tipeEl.innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">Kegiatan</span>`;
+            tipeBadge = '<span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">Kegiatan</span>';
         }
+        $('#detailTipe').html(tipeBadge);
 
-        const featuredEl = document.getElementById('detailFeatured');
-        featuredEl.innerHTML = data.is_featured ? `<span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded"><i class="fas fa-star mr-1"></i>Featured Content</span>` : '';
-
-        showModal(modalDetail, modalDetailContent);
-    }
-
-    function closeModalDetail() {
-        hideModal(modalDetail, modalDetailContent);
-    }
-
-    // --- GENERIC MODAL ANIMATION ---
-    function showModal(modal, content) {
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
-        }, 10);
-    }
-
-    function hideModal(modal, content) {
-        modal.classList.add('opacity-0');
-        content.classList.remove('scale-100');
-        content.classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 300);
-    }
-
-    // Close on click outside
-    window.onclick = function(event) {
-        if (event.target == modalForm) closeModalForm();
-        if (event.target == modalDetail) closeModalDetail();
+        const featuredBadge = data.is_featured ? '<span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full border border-yellow-200"><i class="fas fa-star mr-1"></i>Featured</span>' : '';
+        $('#detailFeatured').html(featuredBadge);
     }
 </script>
 

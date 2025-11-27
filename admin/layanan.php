@@ -180,7 +180,7 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
                             <th class="px-6 py-4">Deskripsi</th>
                             <th class="px-6 py-4 w-32">Tipe</th>
                             <th class="px-6 py-4 w-32">Status</th>
-                            <th class="px-6 py-4 text-right w-24">Aksi</th>
+                            <th class="px-6 py-4 text-left w-24">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -206,12 +206,12 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
                                         <?= htmlspecialchars($row['tipe_layanan']) ?>
                                     </span>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 w-[10%]">
                                     <span class="inline-flex items-center gap-1 text-sm font-medium <?= $row['status'] == 'Aktif' ? 'text-green-600' : 'text-red-500' ?>">
                                         <i class="fas fa-<?= $row['status'] == 'Aktif' ? 'check' : 'times' ?>-circle"></i> <?= $row['status'] ?>
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                <td class="px-6 py-4 text-left whitespace-nowrap">
                                     <button data-toggle="modal" data-target="#modalDetail"' onclick='getData(<?= json_encode($row) ?>)' class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition mr-1" title="Lihat Detail">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -342,16 +342,16 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
             </button>
         </div>
         
-        <div class="p-6 pt-4">
-            <div class="flex flex-col md:flex-row gap-6">
+        <div class="p-5 pt-4">
+            <div class="flex flex-col gap-6">
                 
-                <div class="w-full md:w-1/2">
+                <div class="w-fit mx-auto">
                     <div class="rounded-lg overflow-hidden shadow-sm border border-gray-200 bg-gray-100 flex items-center justify-center min-h-[200px]">
-                        <img id="detail-preview-image" src="" alt="Detail Gambar" class="w-full h-auto object-cover max-h-64">
+                        <img id="detail-preview-image" src="" alt="Detail Gambar" class="w-full max-w-[350px] aspect-square object-cover">
                     </div>
                 </div>
 
-                <div class="w-full md:w-1/2 space-y-4">
+                <div class="w-full space-y-4">
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Nama Layanan</label>
                         <h4 id="detail-nama" class="text-xl font-bold text-gray-900 mt-1"></h4>
@@ -370,7 +370,7 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
 
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Deskripsi</label>
-                        <p id="detail-deskripsi" class="text-gray-600 text-sm mt-1 leading-relaxed"></p>
+                        <p id="detail-deskripsi" class="text-gray-600 text-sm mt-1 leading-relaxed break-words"></p>
                     </div>
                 </div>
             </div>

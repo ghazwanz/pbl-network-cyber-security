@@ -40,6 +40,10 @@ $current_user = getCurrentUser();
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+
     <!-- Custom Admin CSS -->
     <link rel="stylesheet" href="<?php echo ASSETS_URL; ?>/css/admin.css">
     
@@ -52,13 +56,16 @@ $current_user = getCurrentUser();
                         primary: '#3B82F6',
                         secondary: '#10B981',
                         danger: '#EF4444',
-                    }
+                    },
+                    fontFamily: {
+                        'inter': ['Plus Jakarta Sans', 'sans-serif'],
+                    },
                 }
             }
         }
     </script>
 </head>
-<body class="bg-gray-100 font-sans antialiased">
+<body class="bg-gray-100 font-inter antialiased">
     
     <div class="flex h-screen overflow-hidden">
         
