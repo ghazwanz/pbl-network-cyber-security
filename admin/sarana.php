@@ -10,6 +10,11 @@ $page_title = "Kelola Sarana & Prasarana";
 // Include admin header
 require_once __DIR__ . '/../includes/admin_header.php';
 
+$upload_dir = __DIR__ . '/../uploads/sarana/';
+if (!file_exists($upload_dir)) {
+    mkdir($upload_dir, 0755, true);
+}
+
 // Handle actions
 $action = $_GET['action'] ?? 'list';
 $id = $_GET['id'] ?? null;
@@ -34,15 +39,17 @@ if ($action === 'delete' && $id) {
     redirect(ADMIN_URL . '/sarana.php');
 }
 
-// Handle Form Submission (Add/Edit)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit'])) {
+// Handle Form Submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
+    $errors = [];
     $nama_sarana = sanitize($_POST['nama_sarana'] ?? '');
     $deskripsi = sanitize($_POST['deskripsi'] ?? '');
+    $id = $_POST['id'] ?? null;
     
     // Handle image upload
     $gambar_url = '';
     if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === UPLOAD_ERR_OK) {
-        $allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+        $allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
         $max_size = 2 * 1024 * 1024; // 2MB
         
         if (in_array($_FILES['gambar']['type'], $allowed_types) && $_FILES['gambar']['size'] <= $max_size) {
@@ -57,13 +64,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
             
             if (move_uploaded_file($_FILES['gambar']['tmp_name'], $upload_path)) {
                 $gambar_url = '/uploads/sarana/' . $file_name;
+                
+                // Delete old image if editing
+                if ($id) {
+                    $old_sarana = executeQuerySingle("SELECT gambar FROM sarana WHERE id = ?", [(int)$id]);
+                    if ($old_sarana && !empty($old_sarana['gambar'])) {
+                        $old_file = __DIR__ . '/..' . $old_sarana['gambar'];
+                        if (file_exists($old_file)) {
+                            unlink($old_file);
+                        }
+                    }
+                }
+            } else {
+                $errors[] = "Gagal upload gambar";
             }
         } else {
             $errors[] = "Format gambar tidak valid atau ukuran terlalu besar (max 2MB)";
         }
-    } elseif ($action === 'edit' && $edit_data) {
-        // Keep existing image if no new upload
-        $gambar_url = $edit_data['gambar'];
     }
 
     $spesifikasi = sanitize($_POST['spesifikasi'] ?? '');
@@ -71,61 +88,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
     $kondisi = sanitize($_POST['kondisi'] ?? 'Baik');
     $is_active = isset($_POST['is_active']) ? 1 : 0;
     
-    $errors = [];
-    
     // Validasi
     if (empty($nama_sarana)) $errors[] = "Nama sarana harus diisi";
     if ($jumlah < 1) $errors[] = "Jumlah minimal 1";
     if (!in_array($kondisi, ['Baik', 'Rusak Ringan', 'Rusak Berat'])) $errors[] = "Kondisi tidak valid";
     
-    // If no errors, save to database
+    // Save to Database
     if (empty($errors)) {
-        if ($action === 'add') {
-            $query = "INSERT INTO sarana (nama_sarana, gambar, deskripsi, spesifikasi, jumlah, kondisi, is_active) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?)";
-            $params = [$nama_sarana, $gambar_url, $deskripsi, $spesifikasi, $jumlah, $kondisi, 
-                    $is_active];
-            
-            $result = executeInsert($query, $params);
-            
-            if ($result) {
-                setFlashMessage('success', 'Sarana berhasil ditambahkan');
-                redirect(ADMIN_URL . '/sarana.php');
+        if ($id) {
+            // Update
+            if ($gambar_url) {
+                // Ada upload gambar baru
+                $query = "UPDATE sarana SET nama_sarana = ?, gambar = ?, deskripsi = ?, spesifikasi = ?, jumlah = ?, kondisi = ?, is_active = ? WHERE id = ?";
+                $params = [$nama_sarana, $gambar_url, $deskripsi, $spesifikasi, $jumlah, $kondisi, $is_active, (int)$id];
             } else {
-                $errors[] = "Gagal menyimpan data";
+                // Tidak upload gambar baru, keep yang lama
+                $query = "UPDATE sarana SET nama_sarana = ?, deskripsi = ?, spesifikasi = ?, jumlah = ?, kondisi = ?, is_active = ? WHERE id = ?";
+                $params = [$nama_sarana, $deskripsi, $spesifikasi, $jumlah, $kondisi, $is_active, (int)$id];
             }
-        } elseif ($action === 'edit' && $id) {
-            $query = "UPDATE sarana SET nama_sarana = ?, gambar = ?, deskripsi = ?, spesifikasi = ?, 
-                      jumlah = ?, kondisi = ?, is_active = ? WHERE id = ?";
-            $params = [$nama_sarana, $gambar_url, $deskripsi, $spesifikasi, $jumlah, $kondisi, 
-                    $is_active, $id];
-            
-            $result = executeNonQuery($query, $params);
-            
-            if ($result !== false) {
-                setFlashMessage('success', 'Sarana berhasil diupdate');
-                redirect(ADMIN_URL . '/sarana.php');
-            } else {
-                $errors[] = "Gagal update data";
-            }
+            $msg_success = "Sarana berhasil diperbarui";
+        } else {
+            // Insert - Gambar boleh kosong
+            $id_admin = getCurrentUser() ?? null; // Ambil ID user dari session
+            $query = "INSERT INTO sarana (nama_sarana, gambar, deskripsi, spesifikasi, jumlah, kondisi, is_active, id_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $params = [$nama_sarana, $gambar_url, $deskripsi, $spesifikasi, $jumlah, $kondisi, $is_active, $id_admin['id']];
+            $msg_success = "Sarana berhasil ditambahkan";
         }
-    }
-    
-    // Show errors
-    if (!empty($errors)) {
-        foreach ($errors as $error) {
-            setFlashMessage('error', $error);
-        }
-    }
-}
 
-// Get data for edit
-$edit_data = null;
-if ($action === 'edit' && $id) {
-    $edit_data = executeQuerySingle("SELECT * FROM sarana WHERE id = ?", [$id]);
-    if (!$edit_data) {
-        setFlashMessage('error', 'Data tidak ditemukan');
-        redirect(ADMIN_URL . '/sarana.php');
+        $result = executeNonQuery($query, $params);
+
+        if ($result !== false) {
+            setFlashMessage('success', $msg_success);
+            redirect(ADMIN_URL . '/sarana.php');
+            exit;
+        } else {
+            $errors[] = "Terjadi kesalahan database";
+        }
+    }
+    if (!empty($errors)) {
+        foreach ($errors as $error) setFlashMessage('error', $error);
     }
 }
 
@@ -163,7 +164,12 @@ if ($action === 'list') {
     $total_pages = ceil($total / $limit);
     
     // Get data
-    $query = "SELECT * FROM sarana WHERE " . $where_clause . " ORDER BY nama_sarana ASC LIMIT ? OFFSET ?";
+    $query = "SELECT s.*, u.nama_lengkap as created_by_name 
+              FROM sarana s 
+              LEFT JOIN users u ON s.id_admin = u.id 
+              WHERE " . $where_clause . " 
+              ORDER BY s.nama_sarana ASC 
+              LIMIT ? OFFSET ?";
     $params[] = $limit;
     $params[] = $offset;
     $sarana_list = executeQuery($query, $params);
@@ -181,9 +187,9 @@ if ($action === 'list') {
             <h2 class="text-2xl font-bold text-gray-800">Sarana & Prasarana</h2>
             <p class="text-gray-600 mt-1">Kelola inventaris sarana dan prasarana laboratorium</p>
         </div>
-        <a href="?action=add" class="btn btn-primary">
+        <button type="button" data-toggle="modal" data-target="#modalSarana" onclick="resetForm()" class="btn btn-primary">
             <i class="fas fa-plus mr-2"></i>Tambah Sarana
-        </a>
+        </button>
     </div>
     
     <!-- Filter & Search -->
@@ -263,6 +269,7 @@ if ($action === 'list') {
                         <th class="w-24 text-center">Jumlah</th>
                         <th class="w-32">Kondisi</th>
                         <th class="w-32 text-center">Status</th>
+                        <th class="w-40">Dibuat Oleh</th>
                         <th class="w-32 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -318,11 +325,43 @@ if ($action === 'list') {
                                 <?php echo $item['is_active'] ? 'Aktif' : 'Nonaktif'; ?>
                             </span>
                         </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
+                                    <?php 
+                                    if ($item['created_by_name']) {
+                                        $initials = '';
+                                        $words = explode(' ', $item['created_by_name']);
+                                        foreach ($words as $word) {
+                                            $initials .= strtoupper(substr($word, 0, 1));
+                                            if (strlen($initials) >= 2) break;
+                                        }
+                                        echo htmlspecialchars($initials);
+                                    } else {
+                                        echo '?';
+                                    }
+                                    ?>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">
+                                        <?php echo $item['created_by_name'] ? htmlspecialchars($item['created_by_name']) : 'Unknown'; ?>
+                                    </p>
+                                    <?php if (!empty($item['created_at'])): ?>
+                                    <p class="text-xs text-gray-500">
+                                        <?php 
+                                        $date = new DateTime($item['created_at']);
+                                        echo $date->format('d M Y'); 
+                                        ?>
+                                    </p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </td>
                         <td class="text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <a href="?action=edit&id=<?php echo $item['id']; ?>" class="text-blue-600 hover:text-blue-800" title="Edit">
+                                <button type="button" data-toggle="modal" data-target="#modalSarana" onclick='editData(<?= json_encode($item) ?>)' class="text-blue-600 hover:text-blue-800" title="Edit">
                                     <i class="fas fa-edit"></i>
-                                </a>
+                                </button>
                                 <a href="?action=delete&id=<?php echo $item['id']; ?>" 
                                    class="text-red-600 hover:text-red-800 btn-delete" 
                                    title="Hapus">
@@ -336,206 +375,188 @@ if ($action === 'list') {
             </table>
         </div>
         
-        <!-- Pagination -->
-        <?php if ($total_pages > 1): ?>
-        <div class="px-6 py-4 border-t">
-            <?php 
-            $base_url = '?action=list';
-            if ($filter_kondisi) $base_url .= '&filter_kondisi=' . urlencode($filter_kondisi);
-            if ($search) $base_url .= '&search=' . urlencode($search);
-            echo createPagination($page, $total_pages, $base_url); 
-            ?>
-        </div>
-        <?php endif; ?>
+    <!-- Pagination -->
+    <?php if ($total_pages > 1): ?>
+    <div class="px-6 py-4 border-t">
+        <?php 
+        $base_url = '?action=list';
+        if ($filter_kondisi) $base_url .= '&filter_kondisi=' . urlencode($filter_kondisi);
+        if ($search) $base_url .= '&search=' . urlencode($search);
+        echo createPagination($page, $total_pages, $base_url); 
+        ?>
+    </div>
+    <?php endif; ?>
         
-        <?php else: ?>
-        <div class="text-center py-12">
-            <i class="fas fa-box text-6xl text-gray-300 mb-4"></i>
-            <p class="text-gray-500 text-lg">Belum ada sarana</p>
-            <a href="?action=add" class="btn btn-primary mt-4">
-                <i class="fas fa-plus mr-2"></i>Tambah Sarana Pertama
-            </a>
-        </div>
-        <?php endif; ?>
+    <?php else: ?>
+    <div class="text-center py-12">
+        <i class="fas fa-box text-6xl text-gray-300 mb-4"></i>
+        <p class="text-gray-500 text-lg">Belum ada sarana</p>
+        <button type="button" data-toggle="modal" data-target="#modalSarana" onclick="resetForm()" class="btn btn-primary mt-4">
+            <i class="fas fa-plus mr-2"></i>Tambah Sarana Pertama
+        </button>
+    </div>
+    <?php endif; ?>
     </div>
     
 </div>
 
-<?php elseif (in_array($action, ['add', 'edit'])): ?>
+<!-- Modal Tambah/Edit Sarana -->
+    <div class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]" id="modalSarana" aria-hidden="true">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-3xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
+        
+        <!-- Modal Header -->
+        <div class="p-5 pb-3 flex justify-between items-center border-b border-slate-200 sticky top-0 bg-white z-10">
+            <h1 class="text-lg text-slate-800 font-semibold" id="modalTitle">
+                <i class="fas fa-box mr-2 text-blue-600"></i>Tambah Sarana
+            </h1>
+            <button type="button" data-dismiss="modal" class="inline-grid place-items-center text-slate-600 hover:bg-slate-200/30 rounded-md min-w-[34px] min-h-[34px] transition-all">
+                <svg width="1.5em" height="1.5em" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor" class="h-5 w-5">
+                    <path d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <form action="?action=save" method="POST" enctype="multipart/form-data">
+            <div class="p-6 pt-4">
+                <input type="hidden" name="id" id="inputId">
+                <input type="hidden" name="action" value="save">
 
-<!-- Form View -->
-<div class="max-w-4xl">
-    
-    <!-- Header -->
-    <div class="mb-6">
-        <a href="?action=list" class="text-blue-600 hover:text-blue-800 mb-2 inline-block">
-            <i class="fas fa-arrow-left mr-2"></i>Kembali ke List
-        </a>
-        <h2 class="text-2xl font-bold text-gray-800">
-            <?php echo $action === 'add' ? 'Tambah' : 'Edit'; ?> Sarana
-        </h2>
-    </div>
-    
-    <!-- Form -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <form method="POST" enctype="multipart/form-data" class="needs-validation">
-    
-                <!-- Nama Sarana -->
-                <div class="form-group">
-                <label class="form-label" for="nama_sarana">Nama Sarana <span class="text-red-500">*</span></label>
-                <input 
-                    type="text" 
-                    id="nama_sarana" 
-                    name="nama_sarana" 
-                    class="form-input" 
-                    value="<?php echo $edit_data ? htmlspecialchars($edit_data['nama_sarana']) : ''; ?>"
-                    required
-                    maxlength="100"
-                    placeholder="Contoh: Server Rack 42U"
-                >
-                </div>
-    
-                <!-- Gambar -->
-                <div class="form-group">
-                    <label class="form-label" for="gambar">Gambar Sarana</label>
-                    <?php if ($edit_data && !empty($edit_data['gambar'])): ?>
-                    <div class="mb-2">
-                        <?php
-                        // Buat full URL untuk gambar
-                        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-                        $host = $_SERVER['HTTP_HOST'];
-                        
-                        // Ambil base path dari URL saat ini
-                        $script_path = dirname($_SERVER['SCRIPT_NAME']); // Misal: /labkom/admin
-                        $base_path = dirname($script_path); // Misal: /labkom
-                        
-                        $image_url = $protocol . '://' . $host . $base_path . $edit_data['gambar'];
-                        ?>
-                        <img src="<?php echo htmlspecialchars($image_url); ?>" 
-                            alt="Preview" 
-                            class="w-32 h-32 object-cover rounded border"
-                            onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><rect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>No Image</text></svg>';">
+                <div class="space-y-4">
+                    <!-- Nama Sarana -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Nama Sarana <span class="text-red-500">*</span></label>
+                        <input type="text" name="nama_sarana" id="inputNama" required 
+                               class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                               placeholder="Contoh: Server Rack 42U" maxlength="100">
                     </div>
-                    <?php endif; ?>
-                    <input 
-                        type="file" 
-                        id="gambar" 
-                        name="gambar" 
-                        class="form-input" 
-                        accept="image/jpeg,image/png,image/jpg,image/gif"
-                        onchange="previewImage(this)"
-                    >
-                    <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF. Maksimal 2MB</p>
-                    <div id="preview-container" class="mt-2"></div>
-                </div>
-                
-                <!-- Deskripsi -->
-                <div class="form-group">
-                <label class="form-label" for="deskripsi">Deskripsi</label>
-                <textarea 
-                    id="deskripsi" 
-                    name="deskripsi" 
-                    class="form-input" 
-                    rows="3"
-                    maxlength="500"
-                    placeholder="Deskripsi singkat tentang sarana"
-                ><?php echo $edit_data ? htmlspecialchars($edit_data['deskripsi']) : ''; ?></textarea>
-            </div>
-            
-            <!-- Spesifikasi -->
-            <div class="form-group">
-                <label class="form-label" for="spesifikasi">Spesifikasi</label>
-                <textarea 
-                    id="spesifikasi" 
-                    name="spesifikasi" 
-                    class="form-input" 
-                    rows="3"
-                    maxlength="500"
-                    placeholder="Spesifikasi teknis sarana"
-                ><?php echo $edit_data ? htmlspecialchars($edit_data['spesifikasi']) : ''; ?></textarea>
-            </div>
-            
-            <!-- Jumlah & Kondisi -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label class="form-label" for="jumlah">Jumlah <span class="text-red-500">*</span></label>
-                    <input 
-                        type="number" 
-                        id="jumlah" 
-                        name="jumlah" 
-                        class="form-input" 
-                        value="<?php echo $edit_data ? $edit_data['jumlah'] : 1; ?>"
-                        required
-                        min="1"
-                        max="9999"
-                    >
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="kondisi">Kondisi <span class="text-red-500">*</span></label>
-                    <select id="kondisi" name="kondisi" class="form-input" required>
-                        <option value="Baik" <?php echo ($edit_data && $edit_data['kondisi'] === 'Baik') ? 'selected' : ''; ?>>Baik</option>
-                        <option value="Rusak Ringan" <?php echo ($edit_data && $edit_data['kondisi'] === 'Rusak Ringan') ? 'selected' : ''; ?>>Rusak Ringan</option>
-                        <option value="Rusak Berat" <?php echo ($edit_data && $edit_data['kondisi'] === 'Rusak Berat') ? 'selected' : ''; ?>>Rusak Berat</option>
-                    </select>
+
+                    <!-- Gambar -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Gambar Sarana</label>
+                        <input type="file" name="gambar" id="inputGambar" accept="image/*"
+                               class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                               onchange="previewImage(this)">
+                        <p class="text-xs text-slate-500 mt-2" id="fileHelpText">
+                            <i class="fas fa-info-circle mr-1"></i>Format: JPG, PNG, GIF. Maksimal 2MB.
+                        </p>
+                        <div class="mt-3">
+                            <img id="preview-image" src="" alt="Preview" class="w-32 h-32 object-cover rounded-lg border hidden">
+                        </div>
+                    </div>
+
+                    <!-- Deskripsi -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Deskripsi</label>
+                        <textarea name="deskripsi" id="inputDeskripsi" rows="3"
+                                  class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                                  placeholder="Deskripsi singkat tentang sarana" maxlength="500"></textarea>
+                    </div>
+
+                    <!-- Spesifikasi -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Spesifikasi</label>
+                        <textarea name="spesifikasi" id="inputSpesifikasi" rows="3"
+                                  class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                                  placeholder="Spesifikasi teknis sarana" maxlength="500"></textarea>
+                    </div>
+
+                    <!-- Jumlah & Kondisi -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Jumlah <span class="text-red-500">*</span></label>
+                            <input type="number" name="jumlah" id="inputJumlah" required min="1" max="9999" value="1"
+                                   class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Kondisi <span class="text-red-500">*</span></label>
+                            <select name="kondisi" id="inputKondisi" required
+                                    class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none">
+                                <option value="Baik">Baik</option>
+                                <option value="Rusak Ringan">Rusak Ringan</option>
+                                <option value="Rusak Berat">Rusak Berat</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Status Aktif -->
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_active" id="inputIsActive" checked
+                                   class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <span class="ml-2 text-sm text-gray-700">Aktif (tampilkan dalam sistem)</span>
+                        </label>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Status Aktif -->
-            <div class="form-group">
-                <label class="flex items-center">
-                    <input 
-                        type="checkbox" 
-                        name="is_active" 
-                        class="w-4 h-4 text-blue-600 mr-2"
-                        <?php echo (!$edit_data || $edit_data['is_active']) ? 'checked' : ''; ?>
-                    >
-                    <span class="text-gray-700">Aktif (tampilkan dalam sistem)</span>
-                </label>
-            </div>
-            
-            <!-- Buttons -->
-            <div class="flex items-center gap-4 pt-4">
-                <button type="submit" class="btn btn-primary">
+
+            <!-- Modal Footer -->
+            <div class="p-5 pt-3 flex justify-end gap-3 border-t border-slate-200 sticky bottom-0 bg-white">
+                <button type="button" data-dismiss="modal" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                    <i class="fas fa-times mr-2"></i>Batal
+                </button>
+                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium shadow-sm bg-blue-600 text-white hover:bg-blue-700 transition-all">
                     <i class="fas fa-save mr-2"></i>Simpan
                 </button>
-                <a href="?action=list" class="btn bg-gray-500 text-white hover:bg-gray-600">
-                    <i class="fas fa-times mr-2"></i>Batal
-                </a>
             </div>
-            
         </form>
     </div>
-    
 </div>
 
 <script>
+function resetForm() {
+    $('#inputId').val('');
+    $('#inputNama').val('');
+    $('#inputGambar').val('');
+    $('#inputDeskripsi').val('');
+    $('#inputSpesifikasi').val('');
+    $('#inputJumlah').val(1);
+    $('#inputKondisi').val('Baik');
+    $('#inputIsActive').prop('checked', true);
+    $('#modalTitle').html('<i class="fas fa-plus mr-2 text-blue-600"></i>Tambah Sarana');
+    $('#fileHelpText').html('<i class="fas fa-info-circle mr-1"></i>Format: JPG, PNG, GIF. Maksimal 2MB.');
+    $('#preview-image').attr('src', '').addClass('hidden');
+}
+
+function editData(data) {
+    $('#inputId').val(data.id);
+    $('#inputNama').val(data.nama_sarana);
+    $('#inputDeskripsi').val(data.deskripsi);
+    $('#inputSpesifikasi').val(data.spesifikasi);
+    $('#inputJumlah').val(data.jumlah);
+    $('#inputKondisi').val(data.kondisi);
+    $('#inputIsActive').prop('checked', data.is_active == 1);
+    $('#inputGambar').val('');
+    $('#modalTitle').html('<i class="fas fa-edit mr-2 text-blue-600"></i>Edit Sarana');
+    $('#fileHelpText').html('<i class="fas fa-info-circle mr-1"></i>Biarkan kosong jika tetap menggunakan gambar lama.');
+    
+    if (data.gambar) {
+        const protocol = window.location.protocol;
+        const host = window.location.host;
+        const pathArray = window.location.pathname.split('/');
+        const basePath = '/' + pathArray[1];
+        const imageUrl = protocol + '//' + host + basePath + data.gambar;
+        $('#preview-image').attr('src', imageUrl).removeClass('hidden');
+    } else {
+        $('#preview-image').attr('src', '').addClass('hidden');
+    }
+}
+
 function previewImage(input) {
-    const preview = document.getElementById('preview-container');
-    preview.innerHTML = '';
+    const preview = document.getElementById('preview-image');
     
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            preview.innerHTML = `
-                <img src="${e.target.result}" 
-                     class="w-32 h-32 object-cover rounded border" 
-                     alt="Preview">
-            `;
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
         };
         reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '';
+        preview.classList.add('hidden');
     }
-}
-function formatCurrency(input) {
-    // Remove all non-numeric characters
-    let value = input.value.replace(/\D/g, '');
-    
-    // Format with thousand separators
-    if (value) {
-        value = parseInt(value).toLocaleString('id-ID');
-    }
-    
-    input.value = value;
 }
 </script>
 
