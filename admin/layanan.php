@@ -104,12 +104,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
 
 // Get Data
 $search = $_GET['search'] ?? '';
+$filter_tipe = $_GET['filter'] ?? '';
+
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 10;
 $offset = ($page - 1) * $limit;
 
+$types_query = "SELECT DISTINCT tipe_layanan FROM layanan WHERE tipe_layanan IS NOT NULL AND tipe_layanan != '' ORDER BY tipe_layanan ASC";
+$existing_types = executeQuery($types_query);
+
 $where = [];
 $params = [];
+
+if ($filter_tipe) {
+    $where[] = "tipe_layanan = ?";
+    $params[] = $filter_tipe;
+}
 
 if ($search) {
     $where[] = "(nama_layanan ILIKE ? OR tipe_layanan ILIKE ?)";
@@ -144,10 +154,6 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
             </div>
             
             <div class="flex flex-col sm:flex-row gap-3">
-                <form action="" method="GET" class="flex">
-                    <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Cari layanan..." class="border rounded-l px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button type="submit" class="bg-gray-200 px-4 py-2 rounded-r hover:bg-gray-300"><i class="fas fa-search"></i></button>
-                </form>
                 <button type="button" data-toggle="modal" data-target="#modalLayanan" onclick="resetForm()" class="inline-flex items-center justify-center border select-none font-sans font-medium text-center transition-all duration-300 ease-in text-sm rounded-md py-2.5 px-5 shadow-sm hover:shadow-md bg-blue-600 border-blue-600 text-white hover:bg-blue-700 gap-2">
                     <i class="fas fa-plus"></i> Tambah Layanan
                 </button>
@@ -155,7 +161,52 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
             </div>
         </div>
 
-        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <form method="GET" class="flex flex-col md:flex-row gap-4">
+            
+            <div class="flex-1">
+                <input 
+                    type="text" 
+                    name="search"
+                    value="<?php echo htmlspecialchars($search); ?>"
+                    placeholder="Cari nama layanan atau deskripsi..."
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                >  
+            </div>
+
+            <select name="filter" class="w-full md:w-48 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none" onchange="this.form.submit()">
+                
+                <option value="">Semua Tipe</option>
+
+                <option value="Jasa" <?php echo $filter_tipe === 'Jasa' ? 'selected' : ''; ?>>Jasa</option>
+
+                <?php if (!empty($existing_types)): ?>
+                    <?php foreach ($existing_types as $type): ?>
+                        <?php 
+                            if ($type['tipe_layanan'] === 'Jasa') continue; 
+                        ?>
+                        <option value="<?= htmlspecialchars($type['tipe_layanan']) ?>" 
+                            <?= $filter_tipe === $type['tipe_layanan'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($type['tipe_layanan']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+
+            </select>
+
+            <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                <i class="fas fa-search mr-2"></i> Cari
+            </button>
+
+            <?php if ($search || $filter_tipe): ?>
+            <a href="?action=list" class="inline-flex items-center justify-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                <i class="fas fa-times mr-2"></i> Reset
+            </a>
+            <?php endif; ?>
+        </form>
+    </div>
+
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
             <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Total Layanan</p>
             <p class="text-2xl font-bold text-gray-800"><?php echo $count_layanan; ?></p>
@@ -170,7 +221,9 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
         </div>
     </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        
+        <?php if(!empty($layanan_list)): ?>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -184,72 +237,91 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        <?php if(!empty($layanan_list)): ?>
-                            <?php foreach($layanan_list as $row): ?>
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">
-                                    <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 border">
-                                        <img src="<?= !empty($row['gambar_path']) ? UPLOAD_URL . htmlspecialchars($row['gambar_path']) : 'https://via.placeholder.com/150?text=No+Img' ?>" 
-                                             alt="Img" class="w-full h-full object-cover">
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 font-semibold text-gray-800 text-sm">
-                                    <?= htmlspecialchars($row['nama_layanan']) ?>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <p class="text-sm text-gray-600 line-clamp-2 max-w-sm">
-                                        <?= htmlspecialchars($row['deskripsi']) ?>
-                                    </p>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        <?= htmlspecialchars($row['tipe_layanan']) ?>
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 w-[10%]">
-                                    <span class="inline-flex items-center gap-1 text-sm font-medium <?= $row['status'] == 'Aktif' ? 'text-green-600' : 'text-red-500' ?>">
-                                        <i class="fas fa-<?= $row['status'] == 'Aktif' ? 'check' : 'times' ?>-circle"></i> <?= $row['status'] ?>
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-left whitespace-nowrap">
-                                    <button data-toggle="modal" data-target="#modalDetail"' onclick='getData(<?= json_encode($row) ?>)' class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition mr-1" title="Lihat Detail">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button data-toggle="modal" data-target="#modalLayanan" onclick='editData(<?= json_encode($row) ?>)' class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition mr-1" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <a href="?action=delete&id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus layanan ini?')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Hapus">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" class="px-6 py-8 text-center text-gray-500">
-                                    Belum ada data layanan.
-                                </td>
-                            </tr>
-                        <?php endif; ?>
+                        <?php foreach($layanan_list as $row): ?>
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4">
+                                <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 border">
+                                    <img src="<?= !empty($row['gambar_path']) ? UPLOAD_URL . htmlspecialchars($row['gambar_path']) : 'https://via.placeholder.com/150?text=No+Img' ?>" 
+                                            alt="Img" class="w-full h-full object-cover">
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 font-semibold text-gray-800 text-sm">
+                                <?= htmlspecialchars($row['nama_layanan']) ?>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-600 line-clamp-2 max-w-sm">
+                                    <?= htmlspecialchars($row['deskripsi']) ?>
+                                </p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <?= htmlspecialchars($row['tipe_layanan']) ?>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 w-[10%]">
+                                <span class="inline-flex items-center gap-1 text-sm font-medium <?= $row['status'] == 'Aktif' ? 'text-green-600' : 'text-red-500' ?>">
+                                    <i class="fas fa-<?= $row['status'] == 'Aktif' ? 'check' : 'times' ?>-circle"></i> <?= $row['status'] ?>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-left whitespace-nowrap">
+                                <button data-toggle="modal" data-target="#modalDetail" onclick='getData(<?= json_encode($row) ?>)' class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition mr-1" title="Lihat Detail">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button data-toggle="modal" data-target="#modalLayanan" onclick='editData(<?= json_encode($row) ?>)' class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition mr-1" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <a href="?action=delete&id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus layanan ini?')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Hapus">
+                                    <i class="fas fa-trash-alt"></i>    
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
-        </div>
 
-            <?php if($total_pages > 1): ?>
-            <div class="px-6 py-4 border-t flex justify-between items-center">
-                <span class="text-sm text-gray-600">Halaman <?= $page ?> dari <?= $total_pages ?></span>
-                <div class="flex gap-2">
-                    <?php if($page > 1): ?>
-                        <a href="?page=<?= $page - 1 ?>&search=<?= $search ?>" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">Prev</a>
-                    <?php endif; ?>
-                    <?php if($page < $total_pages): ?>
-                        <a href="?page=<?= $page + 1 ?>&search=<?= $search ?>" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">Next</a>
-                    <?php endif; ?>
+            <?php if ($total_pages > 1): ?>
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div class="text-muted small">
+                    Menampilkan <?php echo $offset + 1; ?></span> - <?php echo min($offset + $limit, $total_records); ?>
+                    dari <?php echo $total_records; ?> data
                 </div>
+                
+                <nav class="flex gap-2">
+                    <?php
+                        $url = 'layanan.php?';
+                        
+                        if ($filter_tipe) $url .= 'filter=' . urlencode($filter_tipe) . '&';
+                        if ($search) $url .= 'search=' . urlencode($search) . '&';
+                        
+                        echo createPagination($page, $total_pages, $url);
+                    ?>
+                </nav>
             </div>
             <?php endif; ?>
-        </div>
+
+        <?php else: ?>
+            
+            <?php 
+                $empty_message = 'Belum ada data layanan.'; // Default
+                
+                if ($search) {
+                    $empty_message = 'Tidak ditemukan layanan untuk "' . htmlspecialchars($search) . '"';
+                } elseif ($filter_tipe) {
+                    $empty_message = 'Tidak ada layanan dengan tipe "' . htmlspecialchars($filter_tipe) . '"';
+                }
+            ?>
+
+            <div class="text-center py-12 px-4">
+                <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500 text-lg">
+                    <?php echo $empty_message; ?>
+                </p>
+            </div>
+
+        <?php endif; ?>
+
+    </div>
 
 <!-- Modal -->
 <div class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]" id="modalLayanan" aria-hidden="true">

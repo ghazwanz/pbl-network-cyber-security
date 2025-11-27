@@ -79,13 +79,14 @@ $params = [];
 
 // Filter SQL disesuaikan dengan ENUM baru
 if ($filter_status && in_array($filter_status, ['belum terjawab', 'terjawab'])) {
-    $where[] = "status = ?";
+    $where[] = "k.status = ?";
     $params[] = $filter_status;
 }
 
 if ($search) {
-    $where[] = "(nama ILIKE ? OR email ILIKE ? OR subjek ILIKE ? OR pesan ILIKE ?)";
+    $where[] = "(k.nama ILIKE ? OR k.email ILIKE ? OR k.subjek ILIKE ? OR k.pesan ILIKE ? OR u.nama_lengkap ILIKE ?)";
     $search_param = '%' . $search . '%';
+    $params[] = $search_param;
     $params[] = $search_param;
     $params[] = $search_param;
     $params[] = $search_param;
@@ -95,12 +96,18 @@ if ($search) {
 $where_clause = count($where) > 0 ? 'WHERE ' . implode(' AND ', $where) : '';
 
 // Get total count
-$count_query = "SELECT COUNT(*) FROM konsultatif " . $where_clause;
+$count_query = "SELECT COUNT(*) 
+                FROM konsultatif k 
+                LEFT JOIN users u ON k.id_admin = u.id " . $where_clause;
 $total_records = countRows($count_query, $params);
 $total_pages = ceil($total_records / $limit);
 
 // Get data
-$query = "SELECT * FROM konsultatif " . $where_clause . " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+$query = "SELECT k.*, u.nama_lengkap AS nama_admin 
+          FROM konsultatif k 
+          LEFT JOIN users u ON k.id_admin = u.id " . $where_clause . " 
+          ORDER BY k.created_at DESC LIMIT ? OFFSET ?";
+
 $params[] = $limit;
 $params[] = $offset;
 $konsultatif_list = executeQuery($query, $params);
@@ -116,8 +123,8 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
     
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800"></i>Konsultatif</h2>
-            <p class="text-gray-600 mt-1">Kelola pesan konsultatif dari pengunjung</p>
+            <h2 class="text-lg font-semibold text-blue-900"><i class="fa-solid fa-comments mr-2"></i>Konsultatif</h2>
+            <p class="text-sm text-gray-600">Kelola pesan konsultatif dari pengunjung</p>
         </div>
     </div>
     
@@ -153,20 +160,20 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
             </form>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Total Pesan</p>
-            <h3 class="text-2xl font-bold text-blue-600"><?php echo $total_konsultatif; ?></h3>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Total Pertanyaan</p>
+            <h3 class="text-2xl font-bold text-gray-800"><?php echo $total_konsultatif; ?></h3>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Belum Terjawab</p>
-            <h3 class="text-2xl font-bold text-yellow-500"><?php echo $count_belum; ?></h3>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Belum Terjawab</p>
+            <h3 class="text-2xl font-bold text-orange-600"><?php echo $count_belum; ?></h3>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Terjawab</p>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Terjawab</p>
             <h3 class="text-2xl font-bold text-green-600"><?php echo $count_terjawab; ?></h3>
         </div>
 
@@ -183,16 +190,20 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
                             <th class="w-[30%]">Pertanyaan</th>
                             <th class="w-[5%]">Tanggal</th>
                             <th class="">Jawaban</th>
+                            <th class="w-[8%]">Admin</th>
                             <th class="w-[5%]">Status</th>
-                            <th class="w-[5%]">Aksi</th>
+                            <th class="w-[7%]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($konsultatif_list as $index => $item): ?>
                         
                         <?php 
+                            // MODIFIKASI: Pastikan data nama dan email juga ada untuk modal detail
                             $json_data = htmlspecialchars(json_encode([
                                 "id" => $item["id"],
+                                "nama" => $item["nama"] ?? 'Anonim', 
+                                "email" => $item["email"] ?? '-', 
                                 "pertanyaan" => $item["pertanyaan"],
                                 "status" => $item["status"],
                                 "jawaban" => $item["jawaban"] ?? "",
@@ -200,8 +211,8 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
                             ]), ENT_QUOTES, 'UTF-8');
                         ?>
                         
-                        <tr class="cursor-pointer hover:bg-gray-50 transition-colors"
-                            onclick='openDetailModal(<?php echo $json_data; ?>)'> <td class = "text-center"><?php echo $offset + $index + 1; ?></td>
+                        <tr> 
+                            <td class = "text-center"><?php echo $offset + $index + 1; ?></td>
                             
                             <td>
                                 <div class="line-clamp-2 text-black-500 text-base">
@@ -217,6 +228,12 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
                                     <?php echo htmlspecialchars($item['jawaban'] ?? '-'); ?>
                                 </div>
                             </td>
+
+                            <td>
+                                <div class="line-clamp-2 text-black-500 text-base">
+                                    <?php echo htmlspecialchars($item['nama_admin'] ?? '-'); ?>
+                                </div>
+                            </td>
                             
                             <td class="whitespace-nowrap">
                                 <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold <?php echo ($item['status'] == 'terjawab') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
@@ -228,13 +245,20 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
                                 <div class="flex items-center gap-3">
                                     
                                     <button type="button" 
-                                        onclick='openJawabModal(<?php echo $json_data; ?>); event.stopPropagation();' 
+                                        onclick='openDetailModal(<?php echo $json_data; ?>)'
+                                        class="text-gray-600 hover:text-gray-800 transition-colors"
+                                        title="Lihat Detail">
+                                        <i class="fas fa-eye text-base text-green-500"></i>
+                                    </button>
+                                    
+                                    <button type="button" 
+                                        onclick='openJawabModal(<?php echo $json_data; ?>)' 
                                         class="text-blue-600 hover:text-blue-800 transition-colors"
                                         title="Jawab Konsultasi">
-                                        <i class="fas fa-edit text-base"></i>
+                                        <i class="fas fa-edit text-base "></i>
                                     </button>
 
-                                    <form method="POST" onsubmit="event.stopPropagation(); return confirm('Yakin ingin menghapus data ini?');" class="inline">
+                                    <form method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" class="inline">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<?php echo $item['id']; ?>">
                                         
@@ -281,15 +305,13 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
                     $empty_message = 'Belum ada pertanyaan yang dijawab.';
                 } elseif ($filter_status === 'belum terjawab') {
                     // Sesuai permintaan:
-                    $empty_message = 'Semua pertanyaan sudah terjawab.'; 
+                    $empty_message = 'Tidak ada pertanyaan.'; 
                 }
             
             ?>
             
             <div class="text-center py-12">
-                
                 <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
-                
                 <p class="text-gray-500 text-lg">
                     <?php 
                         echo $empty_message; 
@@ -328,25 +350,6 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
                     <input type="hidden" name="id" id="konsultatifId">
 
                     <div class="px-4 py-5 sm:p-6 space-y-4">
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pengirim</label>
-                            <input type="text" id="namaPengirim" readonly
-                                   class="block w-full rounded-md border-gray-300 bg-gray-50 text-gray-500 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2.5 cursor-not-allowed">
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Email Pengirim</label>
-                                <div class="relative rounded-md shadow-sm">
-                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <i class="fas fa-envelope text-gray-400 sm:text-sm"></i>
-                                    </div>
-                                    <input type="text" id="emailPengirim" readonly
-                                        class="block w-full rounded-md border-gray-300 bg-gray-50 text-gray-500 pl-10 focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2.5 cursor-not-allowed">
-                                </div>
-                            </div>
-                        </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Pertanyaan</label>
@@ -402,10 +405,6 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pengirim</label>
-                            <p id="detailNama" class="text-gray-800 font-semibold"></p>
-                        </div>
-                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal & Waktu</label>
                             <p id="detailTanggal" class="text-gray-800 font-semibold"></p>
                         </div>
@@ -438,10 +437,10 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
 
 <script>
     const modalJawab = document.getElementById('modalKonsultatif');
-    const modalDetail = document.getElementById('modalDetail'); // MODIFIKASI: Dapatkan modal detail
+    const modalDetail = document.getElementById('modalDetail'); 
     const form = document.getElementById('formKonsultatif');
 
-    // Fungsi membuka modal JAWAB (MODAL LAMA)
+    // Fungsi membuka modal JAWAB
     function openJawabModal(data) {
         // 1. Reset form agar bersih
         form.reset();
@@ -450,8 +449,6 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
         document.getElementById('konsultatifId').value = data.id;
 
         // 3. Isi data Readonly (Info Pengirim & Pertanyaan)
-        document.getElementById('namaPengirim').value = data.nama || 'Tanpa Nama';
-        document.getElementById('emailPengirim').value = data.email || '-';
         document.getElementById('pertanyaan').value = data.pertanyaan || '';
 
         // Isi jawaban jika sudah pernah dijawab sebelumnya (jawaban)
@@ -464,7 +461,6 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
     // FUNGSI BARU: Membuka modal DETAIL
     function openDetailModal(data) {
         // 1. Isi konten modal Detail
-        document.getElementById('detailNama').textContent = data.nama || 'Anonim';
         document.getElementById('detailTanggal').textContent = data.created_at || '-';
         document.getElementById('detailPertanyaan').textContent = data.pertanyaan || 'Tidak ada pertanyaan.';
         document.getElementById('detailJawaban').textContent = data.jawaban || 'Belum ada jawaban.';
@@ -473,7 +469,7 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
         modalDetail.classList.remove('hidden');
     }
 
-    // Fungsi menutup modal (MODIFIKASI: Menerima ID modal)
+    // Fungsi menutup modal (Menerima ID modal)
     function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');
     }
