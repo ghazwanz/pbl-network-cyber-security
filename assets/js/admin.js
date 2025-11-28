@@ -30,6 +30,7 @@ $(document).ready(function() {
             };
             
             reader.readAsDataURL(file);
+            $('#preview-image').attr('src', '').removeClass('hidden');
         }
     });
     

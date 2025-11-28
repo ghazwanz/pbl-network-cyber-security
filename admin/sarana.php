@@ -10,11 +10,6 @@ $page_title = "Kelola Sarana & Prasarana";
 // Include admin header
 require_once __DIR__ . '/../includes/admin_header.php';
 
-$upload_dir = __DIR__ . '/../uploads/sarana/';
-if (!file_exists($upload_dir)) {
-    mkdir($upload_dir, 0755, true);
-}
-
 // Handle actions
 $action = $_GET['action'] ?? 'list';
 $id = $_GET['id'] ?? null;
@@ -24,6 +19,11 @@ if ($action === 'delete' && $id) {
     $sarana = executeQuerySingle("SELECT * FROM sarana WHERE id = ?", [$id]);
     
     if ($sarana) {
+        // Delete image file using helper function
+        if (!empty($sarana['gambar'])) {
+            deleteFile($sarana['gambar']);
+        }
+        
         // Delete from database
         $result = executeNonQuery("DELETE FROM sarana WHERE id = ?", [$id]);
         
@@ -46,40 +46,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
     $deskripsi = sanitize($_POST['deskripsi'] ?? '');
     $id = $_POST['id'] ?? null;
     
-    // Handle image upload
+    // Handle image upload using helper function
     $gambar_url = '';
     if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === UPLOAD_ERR_OK) {
-        $allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
-        $max_size = 2 * 1024 * 1024; // 2MB
+        $upload_result = uploadImage($_FILES['gambar'], 'sarana', 'sarana');
         
-        if (in_array($_FILES['gambar']['type'], $allowed_types) && $_FILES['gambar']['size'] <= $max_size) {
-            $upload_dir = __DIR__ . '/../uploads/sarana/';
-            if (!file_exists($upload_dir)) {
-                mkdir($upload_dir, 0755, true);
-            }
+        if ($upload_result['success']) {
+            $gambar_url = '/sarana/' . $upload_result['filename'];
             
-            $file_extension = pathinfo($_FILES['gambar']['name'], PATHINFO_EXTENSION);
-            $file_name = uniqid('sarana_') . '.' . $file_extension;
-            $upload_path = $upload_dir . $file_name;
-            
-            if (move_uploaded_file($_FILES['gambar']['tmp_name'], $upload_path)) {
-                $gambar_url = '/uploads/sarana/' . $file_name;
-                
-                // Delete old image if editing
-                if ($id) {
-                    $old_sarana = executeQuerySingle("SELECT gambar FROM sarana WHERE id = ?", [(int)$id]);
-                    if ($old_sarana && !empty($old_sarana['gambar'])) {
-                        $old_file = __DIR__ . '/..' . $old_sarana['gambar'];
-                        if (file_exists($old_file)) {
-                            unlink($old_file);
-                        }
-                    }
+            // Delete old image if editing using helper function
+            if ($id) {
+                $old_sarana = executeQuerySingle("SELECT gambar FROM sarana WHERE id = ?", [(int)$id]);
+                if ($old_sarana && !empty($old_sarana['gambar'])) {
+                    deleteFile($old_sarana['gambar']);
                 }
-            } else {
-                $errors[] = "Gagal upload gambar";
             }
         } else {
-            $errors[] = "Format gambar tidak valid atau ukuran terlalu besar (max 2MB)";
+            $errors[] = $upload_result['message'];
         }
     }
 
@@ -263,7 +246,7 @@ if ($action === 'list') {
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>Nama Sarana</th>
+                        <th class="w-64">Nama Sarana</th>
                         <th class="w-32 text-center">Gambar</th>
                         <th class="w-64">Spesifikasi</th>
                         <th class="w-24 text-center">Jumlah</th>
@@ -285,14 +268,9 @@ if ($action === 'list') {
                        <td class="text-center">
                             <?php if (!empty($item['gambar'])): ?>
                                 <?php
-                                // Buat full URL untuk gambar
-                                $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-                                $host = $_SERVER['HTTP_HOST'];
-                                $script_path = dirname($_SERVER['SCRIPT_NAME']); // /labkom/admin
-                                $base_path = dirname($script_path); // /labkom
-                                $image_url = $protocol . '://' . $host . $base_path . $item['gambar'];
+                                $image_url = $item['gambar'];
                                 ?>
-                                <img src="<?php echo htmlspecialchars($image_url); ?>" 
+                                <img src="<?php echo UPLOAD_URL . htmlspecialchars($image_url); ?>" 
                                     alt="<?php echo htmlspecialchars($item['nama_sarana']); ?>" 
                                     class="w-16 h-16 object-cover rounded mx-auto"
                                     onerror="this.parentElement.innerHTML='<div class=\'w-16 h-16 bg-gray-200 rounded mx-auto flex items-center justify-center\'><i class=\'fas fa-image text-gray-400\'></i></div>';">
@@ -434,9 +412,8 @@ if ($action === 'list') {
                     <!-- Gambar -->
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-2">Gambar Sarana</label>
-                        <input type="file" name="gambar" id="inputGambar" accept="image/*"
-                               class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-                               onchange="previewImage(this)">
+                        <input type="file" name="gambar" id="inputGambar" data-preview="#preview-image" accept="image/*"
+                               class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
                         <p class="text-xs text-slate-500 mt-2" id="fileHelpText">
                             <i class="fas fa-info-circle mr-1"></i>Format: JPG, PNG, GIF. Maksimal 2MB.
                         </p>
@@ -532,34 +509,13 @@ function editData(data) {
     $('#fileHelpText').html('<i class="fas fa-info-circle mr-1"></i>Biarkan kosong jika tetap menggunakan gambar lama.');
     
     if (data.gambar) {
-        const protocol = window.location.protocol;
-        const host = window.location.host;
-        const pathArray = window.location.pathname.split('/');
-        const basePath = '/' + pathArray[1];
-        const imageUrl = protocol + '//' + host + basePath + data.gambar;
-        $('#preview-image').attr('src', imageUrl).removeClass('hidden');
+        const imageUrl = data.gambar;
+        $('#preview-image').attr('src', `../uploads/${imageUrl}`).removeClass('hidden');
     } else {
         $('#preview-image').attr('src', '').addClass('hidden');
     }
 }
-
-function previewImage(input) {
-    const preview = document.getElementById('preview-image');
-    
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.classList.remove('hidden');
-        };
-        reader.readAsDataURL(input.files[0]);
-    } else {
-        preview.src = '';
-        preview.classList.add('hidden');
-    }
-}
 </script>
-
 <?php endif; ?>
 
 <?php

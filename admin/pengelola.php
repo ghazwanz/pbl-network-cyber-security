@@ -25,12 +25,9 @@ if ($action === 'delete' && $id) {
         if ($arsip_count > 0) {
             setFlashMessage('error', 'Gagal: Pengelola ini memiliki arsip terkait. Hapus relasi arsip terlebih dahulu.');
         } else {
-            // Delete photo file
+            // Delete photo file using helper function
             if ($pengelola['foto_path']) {
-                $file_path_abs = $_SERVER['DOCUMENT_ROOT'] . $pengelola['foto_path'];
-                if (file_exists($file_path_abs)) {
-                    unlink($file_path_abs);
-                }
+                deleteFile($pengelola['foto_path']);
             }
 
             // Delete from database
@@ -90,8 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_action'])) {
             $errors[] = "NIP/NIDN sudah terdaftar pada pengelola lain";
     }
 
-    // Handle Photo Upload
-    $foto_path = $_POST['foto_lama'] ?? '';
+    // Handle Photo Upload using helper function
+    $foto_path = '';
 
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
         $upload_result = uploadImage($_FILES['foto'], 'pengelola', 'pengelola');
@@ -99,13 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_action'])) {
         if ($upload_result['success']) {
             $foto_path = '/pengelola/' . $upload_result['filename'];
 
-            // Hapus foto lama jika mode edit
+            // Hapus foto lama jika mode edit menggunakan helper function
             if ($form_action === 'edit' && $id_edit) {
                 $old_data = executeQuerySingle("SELECT foto_path FROM pengelola WHERE id = ?", [$id_edit]);
                 if ($old_data && $old_data['foto_path']) {
-                    $old_file_abs = $_SERVER['DOCUMENT_ROOT'] . $old_data['foto_path'];
-                    if (file_exists($old_file_abs))
-                        unlink($old_file_abs);
+                    deleteFile($old_data['foto_path']);
                 }
             }
         } else {
@@ -133,22 +128,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_action'])) {
             ];
             $msg_success = "Pengelola berhasil ditambahkan";
         } elseif ($form_action === 'edit' && $id_edit) {
-            $query = "UPDATE pengelola SET nama_lengkap = ?, nip_nidn = ?, jabatan = ?, 
-                      pendidikan_terakhir = ?, bidang_keahlian = ?, email = ?, no_telepon = ?, 
-                      foto_path = ?, urutan_tampil = ?, is_active = ? WHERE id = ?";
-            $params = [
-                $nama_lengkap,
-                $nip_nidn,
-                $jabatan,
-                $pendidikan_terakhir,
-                $bidang_keahlian,
-                $email,
-                $no_telepon,
-                $foto_path,
-                $urutan_tampil,
-                $is_active,
-                $id_edit
-            ];
+            // Jika ada upload foto baru
+            if ($foto_path) {
+                $query = "UPDATE pengelola SET nama_lengkap = ?, nip_nidn = ?, jabatan = ?, 
+                          pendidikan_terakhir = ?, bidang_keahlian = ?, email = ?, no_telepon = ?, 
+                          foto_path = ?, urutan_tampil = ?, is_active = ? WHERE id = ?";
+                $params = [
+                    $nama_lengkap,
+                    $nip_nidn,
+                    $jabatan,
+                    $pendidikan_terakhir,
+                    $bidang_keahlian,
+                    $email,
+                    $no_telepon,
+                    $foto_path,
+                    $urutan_tampil,
+                    $is_active,
+                    $id_edit
+                ];
+            } else {
+                // Tidak ada upload foto baru, keep yang lama
+                $query = "UPDATE pengelola SET nama_lengkap = ?, nip_nidn = ?, jabatan = ?, 
+                          pendidikan_terakhir = ?, bidang_keahlian = ?, email = ?, no_telepon = ?, 
+                          urutan_tampil = ?, is_active = ? WHERE id = ?";
+                $params = [
+                    $nama_lengkap,
+                    $nip_nidn,
+                    $jabatan,
+                    $pendidikan_terakhir,
+                    $bidang_keahlian,
+                    $email,
+                    $no_telepon,
+                    $urutan_tampil,
+                    $is_active,
+                    $id_edit
+                ];
+            }
             $msg_success = "Pengelola berhasil diperbarui";
         }
 
@@ -209,7 +224,7 @@ $jabatan_list = executeQuery("SELECT DISTINCT jabatan FROM pengelola WHERE jabat
             <h2 class="text-2xl font-bold text-gray-800">Pengelola Laboratorium</h2>
             <p class="text-gray-600 mt-1">Kelola data tim pengelola laboratorium</p>
         </div>
-        <button onclick="openModalAdd()"
+        <button type="button" data-toggle="modal" data-target="#modalForm" onclick="resetForm()"
             class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow transition flex items-center gap-2">
             <i class="fas fa-plus"></i>Tambah Pengelola
         </button>
@@ -335,12 +350,12 @@ $jabatan_list = executeQuery("SELECT DISTINCT jabatan FROM pengelola WHERE jabat
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <button onclick='viewDetail(<?php echo json_encode($item); ?>)'
+                                        <button data-toggle="modal" data-target="#modalDetail" onclick='viewDetail(<?php echo json_encode($item); ?>)'
                                             class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition"
                                             title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button onclick='openModalEdit(<?php echo json_encode($item); ?>)'
+                                        <button data-toggle="modal" data-target="#modalForm" onclick='editData(<?php echo json_encode($item); ?>)'
                                             class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -360,28 +375,31 @@ $jabatan_list = executeQuery("SELECT DISTINCT jabatan FROM pengelola WHERE jabat
             <div class="text-center py-12">
                 <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
                 <p class="text-gray-500 text-lg">Belum ada data pengelola</p>
-                <button onclick="openModalAdd()" class="text-blue-600 hover:underline mt-2">Tambah Pengelola
+                <button type="button" data-toggle="modal" data-target="#modalForm" onclick="resetForm()" class="text-blue-600 hover:underline mt-2">Tambah Pengelola
                     Pertama</button>
             </div>
         <?php endif; ?>
     </div>
 </div>
 
-<div id="modalForm"
-    class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl transform scale-95 transition-transform duration-300 overflow-hidden"
-        id="modalFormContent">
+<div id="modalForm" aria-hidden="true"
+    class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-3xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
 
-        <div class="flex justify-between items-center p-5 border-b bg-gray-50">
-            <h3 id="modalFormTitle" class="text-lg font-bold text-gray-800">Tambah Pengelola</h3>
-            <button onclick="closeModalForm()" class="text-gray-400 hover:text-red-500 text-xl transition"><i
-                    class="fas fa-times"></i></button>
+        <div class="p-5 pb-3 flex justify-between items-center border-b border-slate-200 sticky top-0 bg-white z-10">
+            <h1 id="modalFormTitle" class="text-lg text-slate-800 font-semibold">
+                <i class="fas fa-user-plus mr-2 text-blue-600"></i>Tambah Pengelola
+            </h1>
+            <button type="button" data-dismiss="modal" class="inline-grid place-items-center text-slate-600 hover:bg-slate-200/30 rounded-md min-w-[34px] min-h-[34px] transition-all">
+                <svg width="1.5em" height="1.5em" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor" class="h-5 w-5">
+                    <path d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
         </div>
 
-        <form method="POST" enctype="multipart/form-data" class="p-6">
+        <form method="POST" enctype="multipart/form-data" class="p-6 pt-4">
             <input type="hidden" name="form_action" id="formAction" value="add">
             <input type="hidden" name="id" id="formId">
-            <input type="hidden" name="foto_lama" id="formFotoLama">
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-4">
@@ -462,34 +480,35 @@ $jabatan_list = executeQuery("SELECT DISTINCT jabatan FROM pengelola WHERE jabat
             </div>
 
             <div class="mt-4 pt-4 border-t">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Foto Profil</label>
-                <div class="flex items-center gap-4">
-                    <img id="formPreviewImg" src="" class="w-16 h-16 rounded-full object-cover border hidden">
-                    <input type="file" name="foto" id="formFoto"
-                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                        accept="image/*" onchange="previewImage(this)">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Foto Profil</label>
+                <input type="file" name="foto" id="formFoto" data-preview="#preview-image" accept="image/*"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                <p id="fotoHelp" class="text-xs text-slate-500 mt-2">
+                    <i class="fas fa-info-circle mr-1"></i>Format: JPG, PNG, GIF, WEBP. Maksimal 2MB.
+                </p>
+                <div class="mt-3">
+                    <img id="preview-image" src="" alt="Preview" class="w-32 h-32 object-cover rounded-lg border hidden">
                 </div>
-                <p id="fotoHelp" class="text-xs text-gray-500 mt-1">Upload foto baru (JPG, PNG). Maks 2MB.</p>
             </div>
 
-            <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t bg-gray-50 -mx-6 -mb-6 p-4">
-                <button type="button" onclick="closeModalForm()"
-                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Batal</button>
-                <button type="submit"
-                    class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow transition">Simpan
-                    Data</button>
+            <div class="p-5 pt-3 flex justify-end gap-3 border-t border-slate-200 sticky bottom-0 bg-white mt-6 -mx-6 -mb-6">
+                <button type="button" data-dismiss="modal" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                    <i class="fas fa-times mr-2"></i>Batal
+                </button>
+                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium shadow-sm bg-blue-600 text-white hover:bg-blue-700 transition-all">
+                    <i class="fas fa-save mr-2"></i>Simpan
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-<div id="modalDetail"
-    class="fixed inset-0 bg-black bg-opacity-50 z-[70] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg transform scale-95 transition-transform duration-300 overflow-hidden"
-        id="modalDetailContent">
+<div id="modalDetail" aria-hidden="true"
+    class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-lg scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
 
         <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-center relative">
-            <button onclick="closeModalDetail()"
+            <button type="button" data-dismiss="modal"
                 class="absolute top-4 right-4 text-white/70 hover:text-white text-2xl transition"><i
                     class="fas fa-times"></i></button>
 
@@ -541,147 +560,81 @@ $jabatan_list = executeQuery("SELECT DISTINCT jabatan FROM pengelola WHERE jabat
             </div>
         </div>
 
-        <div class="bg-gray-50 p-4 text-center">
-            <button onclick="closeModalDetail()"
-                class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium w-full">Tutup</button>
+        <div class="p-5 pt-3 flex justify-end gap-3 border-t border-slate-200 sticky bottom-0 bg-white">
+            <button type="button" data-dismiss="modal" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all w-full">
+                <i class="fas fa-times mr-2"></i>Tutup
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- VARIABLES ---
-    const modalForm = document.getElementById('modalForm');
-    const modalFormContent = document.getElementById('modalFormContent');
-    const modalDetail = document.getElementById('modalDetail');
-    const modalDetailContent = document.getElementById('modalDetailContent');
-
-    // --- FORM MODAL LOGIC ---
-    function openModalAdd() {
-        document.getElementById('modalFormTitle').innerText = 'Tambah Pengelola';
-        document.getElementById('formAction').value = 'add';
-        document.getElementById('formId').value = '';
-        document.getElementById('formFotoLama').value = '';
-
-        // Reset Inputs
-        document.getElementById('formNama').value = '';
-        document.getElementById('formNip').value = '';
-        document.getElementById('formJabatan').value = '';
-        document.getElementById('formPendidikan').value = '';
-        document.getElementById('formKeahlian').value = '';
-        document.getElementById('formEmail').value = '';
-        document.getElementById('formTelp').value = '';
-        document.getElementById('formUrutan').value = '99';
-        document.getElementById('formActive').checked = true;
-
-        // Reset Foto
-        document.getElementById('formFoto').value = '';
-        document.getElementById('fotoHelp').innerText = 'Upload foto baru (JPG, PNG). Maks 2MB.';
-        document.getElementById('formPreviewImg').src = '';
-        document.getElementById('formPreviewImg').classList.add('hidden');
-
-        showModal(modalForm, modalFormContent);
+    // Reset Form untuk Tambah
+    function resetForm() {
+        $('#formAction').val('add');
+        $('#formId').val('');
+        $('#formNama').val('');
+        $('#formNip').val('');
+        $('#formJabatan').val('');
+        $('#formPendidikan').val('');
+        $('#formKeahlian').val('');
+        $('#formEmail').val('');
+        $('#formTelp').val('');
+        $('#formUrutan').val('99');
+        $('#formActive').prop('checked', true);
+        $('#formFoto').val('');
+        $('#modalFormTitle').html('<i class="fas fa-user-plus mr-2 text-blue-600"></i>Tambah Pengelola');
+        $('#fotoHelp').html('<i class="fas fa-info-circle mr-1"></i>Format: JPG, PNG, GIF, WEBP. Maksimal 2MB.');
+        $('#preview-image').attr('src', '').addClass('hidden');
     }
 
-    function openModalEdit(data) {
-        document.getElementById('modalFormTitle').innerText = 'Edit Pengelola';
-        document.getElementById('formAction').value = 'edit';
-        document.getElementById('formId').value = data.id;
-        document.getElementById('formFotoLama').value = data.foto_path;
-
-        // Fill Inputs
-        document.getElementById('formNama').value = data.nama_lengkap;
-        document.getElementById('formNip').value = data.nip_nidn;
-        document.getElementById('formJabatan').value = data.jabatan;
-        document.getElementById('formPendidikan').value = data.pendidikan_terakhir || '';
-        document.getElementById('formKeahlian').value = data.bidang_keahlian || '';
-        document.getElementById('formEmail').value = data.email;
-        document.getElementById('formTelp').value = data.no_telepon || '';
-        document.getElementById('formUrutan').value = data.urutan_tampil;
-        document.getElementById('formActive').checked = (data.is_active == 1);
-
-        // Handle Foto
-        document.getElementById('formFoto').value = '';
-        document.getElementById('fotoHelp').innerText = 'Biarkan kosong jika tidak ingin mengganti foto.';
-
+    // Edit Data
+    function editData(data) {
+        $('#formAction').val('edit');
+        $('#formId').val(data.id);
+        $('#formNama').val(data.nama_lengkap);
+        $('#formNip').val(data.nip_nidn);
+        $('#formJabatan').val(data.jabatan);
+        $('#formPendidikan').val(data.pendidikan_terakhir || '');
+        $('#formKeahlian').val(data.bidang_keahlian || '');
+        $('#formEmail').val(data.email);
+        $('#formTelp').val(data.no_telepon || '');
+        $('#formUrutan').val(data.urutan_tampil);
+        $('#formActive').prop('checked', data.is_active == 1);
+        $('#formFoto').val('');
+        $('#modalFormTitle').html('<i class="fas fa-edit mr-2 text-blue-600"></i>Edit Pengelola');
+        $('#fotoHelp').html('<i class="fas fa-info-circle mr-1"></i>Biarkan kosong jika tetap menggunakan foto lama.');
+        
         if (data.foto_path) {
-            document.getElementById('formPreviewImg').src = "<?php echo UPLOAD_URL; ?>" + data.foto_path;
-            document.getElementById('formPreviewImg').classList.remove('hidden');
+            $('#preview-image').attr('src', `<?php echo UPLOAD_URL; ?>${data.foto_path}`).removeClass('hidden');
         } else {
-            document.getElementById('formPreviewImg').classList.add('hidden');
-        }
-
-        showModal(modalForm, modalFormContent);
-    }
-
-    function closeModalForm() {
-        hideModal(modalForm, modalFormContent);
-    }
-
-    function previewImage(input) {
-        const preview = document.getElementById('formPreviewImg');
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-                preview.classList.remove('hidden');
-            }
-            reader.readAsDataURL(input.files[0]);
+            $('#preview-image').attr('src', '').addClass('hidden');
         }
     }
 
-    // --- DETAIL MODAL LOGIC ---
+    // View Detail
     function viewDetail(data) {
-        document.getElementById('detailNama').innerText = data.nama_lengkap;
-        document.getElementById('detailNip').innerText = "NIP/NIDN: " + data.nip_nidn;
-        document.getElementById('detailJabatan').innerText = data.jabatan;
-        document.getElementById('detailPendidikan').innerText = data.pendidikan_terakhir || '-';
-        document.getElementById('detailKeahlian').innerText = data.bidang_keahlian || '-';
-        document.getElementById('detailEmail').innerText = data.email;
-        document.getElementById('detailTelp').innerText = data.no_telepon || '-';
+        $('#detailNama').text(data.nama_lengkap);
+        $('#detailNip').text('NIP/NIDN: ' + data.nip_nidn);
+        $('#detailJabatan').text(data.jabatan);
+        $('#detailPendidikan').text(data.pendidikan_terakhir || '-');
+        $('#detailKeahlian').text(data.bidang_keahlian || '-');
+        $('#detailEmail').text(data.email);
+        $('#detailTelp').text(data.no_telepon || '-');
 
-        const imgEl = document.getElementById('detailFoto');
-        imgEl.src = data.foto_path ? "<?php echo UPLOAD_URL; ?>" + data.foto_path : "<?php echo ASSETS_URL; ?>/img/no-image.png";
+        const imgSrc = data.foto_path ? '<?php echo UPLOAD_URL; ?>' + data.foto_path : '<?php echo ASSETS_URL; ?>/img/no-image.png';
+        $('#detailFoto').attr('src', imgSrc);
 
-        const statusBadge = document.getElementById('detailStatusBadge');
+        const $statusBadge = $('#detailStatusBadge');
         if (data.is_active == 1) {
-            statusBadge.className = "absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-white bg-green-500";
-            statusBadge.title = "Aktif";
+            $statusBadge.attr('class', 'absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-white bg-green-500');
+            $statusBadge.attr('title', 'Aktif');
         } else {
-            statusBadge.className = "absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-white bg-red-500";
-            statusBadge.title = "Nonaktif";
+            $statusBadge.attr('class', 'absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-white bg-red-500');
+            $statusBadge.attr('title', 'Nonaktif');
         }
-
-        showModal(modalDetail, modalDetailContent);
     }
 
-    function closeModalDetail() {
-        hideModal(modalDetail, modalDetailContent);
-    }
-
-    // --- GENERIC ANIMATION ---
-    function showModal(modal, content) {
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
-        }, 10);
-    }
-
-    function hideModal(modal, content) {
-        modal.classList.add('opacity-0');
-        content.classList.remove('scale-100');
-        content.classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 300);
-    }
-
-    window.onclick = function (event) {
-        if (event.target == modalForm) closeModalForm();
-        if (event.target == modalDetail) closeModalDetail();
-    }
 </script>
 
 <?php require_once __DIR__ . '/../includes/admin_footer.php'; ?>
-?>
