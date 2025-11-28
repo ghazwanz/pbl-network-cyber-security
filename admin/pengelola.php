@@ -256,26 +256,26 @@ if ($action === 'list') {
     
     <!-- Stats -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Total Pengelola</p>
-            <p class="text-2xl font-bold text-blue-600">
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Total Pengelola</p>
+            <p class="text-2xl font-bold text-gray-800">
                 <?php echo countRows("SELECT COUNT(*) FROM pengelola WHERE is_active = true"); ?>
             </p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Kepala Lab</p>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Kepala Lab</p>
             <p class="text-2xl font-bold text-purple-600">
                 <?php echo countRows("SELECT COUNT(*) FROM pengelola WHERE jabatan ILIKE '%kepala%' AND is_active = true"); ?>
             </p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Teknisi</p>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Teknisi</p>
             <p class="text-2xl font-bold text-green-600">
                 <?php echo countRows("SELECT COUNT(*) FROM pengelola WHERE jabatan ILIKE '%teknisi%' AND is_active = true"); ?>
             </p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Peneliti</p>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Peneliti</p>
             <p class="text-2xl font-bold text-orange-600">
                 <?php echo countRows("SELECT COUNT(*) FROM pengelola WHERE jabatan ILIKE '%peneliti%' AND is_active = true"); ?>
             </p>

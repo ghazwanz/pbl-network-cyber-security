@@ -303,26 +303,26 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
     
     <!-- Stats -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Total Arsip</p>
-            <p class="text-2xl font-bold text-blue-600">
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Total Arsip</p>
+            <p class="text-2xl font-bold text-gray-800">
                 <?php echo countRows("SELECT COUNT(*) FROM arsip WHERE is_active = true"); ?>
             </p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Penelitian</p>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Penelitian</p>
             <p class="text-2xl font-bold text-green-600">
                 <?php echo countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'penelitian' AND is_active = true"); ?>
             </p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Pengabdian</p>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Pengabdian</p>
             <p class="text-2xl font-bold text-orange-600">
                 <?php echo countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'pengabdian' AND is_active = true"); ?>
             </p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Total Download</p>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Total Download</p>
             <p class="text-2xl font-bold text-purple-600">
                 <?php 
                 $total_downloads = executeQuerySingle("SELECT SUM(jumlah_download) as total FROM arsip");

@@ -230,26 +230,26 @@ if ($action === 'list') {
     
     <!-- Stats -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Total Item</p>
-            <p class="text-2xl font-bold text-blue-600">
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Total Item</p>
+            <p class="text-2xl font-bold text-gray-800">
                 <?php echo countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true"); ?>
             </p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Kondisi Baik</p>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Kondisi Baik</p>
             <p class="text-2xl font-bold text-green-600">
                 <?php echo countRows("SELECT COUNT(*) FROM sarana WHERE kondisi = 'Baik' AND is_active = true"); ?>
             </p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Rusak Ringan</p>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Rusak Ringan</p>
             <p class="text-2xl font-bold text-yellow-600">
                 <?php echo countRows("SELECT COUNT(*) FROM sarana WHERE kondisi = 'Rusak Ringan' AND is_active = true"); ?>
             </p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-500 text-sm mb-1">Rusak Berat</p>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Rusak Berat</p>
             <p class="text-2xl font-bold text-red-600">
                 <?php echo countRows("SELECT COUNT(*) FROM sarana WHERE kondisi = 'Rusak Berat' AND is_active = true"); ?>
             </p>
