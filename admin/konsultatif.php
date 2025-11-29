@@ -31,23 +31,19 @@ if ($action === 'delete' && $id) {
     redirect(ADMIN_URL . '/konsultatif.php');
 }
 
-// Handle Form Submission (Update Jawaban & Auto Status)
+// Handle Form Submission 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'update_status') {
     $errors = [];
     
-    // 1. Ambil jawaban admin
+    $current_admin = getCurrentUser(); 
+    $id_admin = $current_admin['id'] ?? null;
     $jawaban = trim($_POST['jawaban'] ?? '');   
-    
-    // 2. Tentukan status OTOMATIS
-    // Jika jawaban ada isinya -> 'terjawab'. Jika kosong -> 'belum terjawab'.
     $status = !empty($jawaban) ? 'terjawab' : 'belum terjawab';
-    
-    // (Validasi status dihapus karena kita yang tentukan sendiri secara otomatis)
-    
+        
     if (empty($errors)) {
         $result = executeNonQuery(
-            "UPDATE konsultatif SET status = ?, jawaban = ?, updated_at = NOW() WHERE id = ?",
-            [$status, $jawaban, (int)$id]
+            "UPDATE konsultatif SET status = ?, jawaban = ?, id_admin = ?, updated_at = NOW() WHERE id = ?",
+            [$status, $jawaban, $id_admin, (int)$id]
         );
         
         if ($result !== false) {
@@ -58,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'update_status') {
         }
     }
     
-    // Show errors
     if (!empty($errors)) {
         foreach ($errors as $error) {
             setFlashMessage('error', $error);
