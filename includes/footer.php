@@ -1,6 +1,11 @@
 </div>
 <!-- End Main Content Wrapper -->
 
+<!-- Scroll to Top Button -->
+<button id="scrollToTop" class="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full shadow-2xl hover:scale-110 transition-all duration-300 opacity-0 pointer-events-none z-50">
+    <i class="fas fa-arrow-up text-xl"></i>
+</button>
+
 <!-- Footer -->
 <footer class="bg-[#1B2D62] text-white">
     <div class="px-4">

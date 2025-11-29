@@ -110,4 +110,4 @@ require_once __DIR__ . '/functions.php';
     </header>
 
     <!-- Main Content Wrapper (margin for fixed navbar) -->
-    <div class="pt-16 overflow-clip">
+    <div class="overflow-clip">

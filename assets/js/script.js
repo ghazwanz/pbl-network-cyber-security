@@ -142,4 +142,26 @@ $(document).ready(function() {
     $("#mobile-menu-button").on("click", ()=>{
         $("#mobile-menu").toggleClass("hidden");
     })
+
+    // Scroll to Top functionality
+    $(window).on('scroll', function() {
+        const $scrollToTop = $('#scrollToTop');
+        if ($(window).scrollTop() > 300) {
+            $scrollToTop.css({
+                'opacity': '1',
+                'pointer-events': 'auto'
+            });
+        } else {
+            $scrollToTop.css({
+                'opacity': '0',
+                'pointer-events': 'none'
+            });
+        }
+    });
+
+    $('#scrollToTop').on('click', function() {
+        $('html, body').animate({
+            scrollTop: 0
+        }, 300);
+    });
 });
