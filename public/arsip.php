@@ -156,12 +156,12 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
             </div>
             
             <!-- Heading -->
-            <h1 class="text-5xl md:text-6xl font-medium text-[#1B2D62] mb-6 font-inter leading-tight" data-aos="fade-up" data-aos-delay="100">
+            <h1 class="text-5xl md:text-6xl font-medium text-[#1B2D62] mb-6 leading-tight" data-aos="fade-up" data-aos-delay="100">
                 Arsip Penelitian & Pengabdian
             </h1>
             
             <!-- Subtitle -->
-            <p class="text-xl md:text-2xl text-gray-600 leading-relaxed mb-10 font-inter" data-aos="fade-up" data-aos-delay="200">
+            <p class="text-xl md:text-2xl text-gray-600 leading-relaxed mb-10" data-aos="fade-up" data-aos-delay="200">
                 Repositori resmi publikasi ilmiah dan laporan pengabdian<br class="hidden md:block">
                 Laboratorium Network & Cyber Security
             </p>
@@ -210,7 +210,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                 <div class="flex flex-col md:flex-row gap-4">
                     <!-- Search Box -->
                     <div class="flex-1">
-                        <label class="block text-gray-900 font-medium mb-3 text-2xl font-inter">Cari Dokumen</label>
+                        <label class="block text-gray-900 font-medium mb-3 text-2xl">Cari Dokumen</label>
                         <div class="relative">
                             <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
                             <input 
@@ -218,19 +218,19 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                                 name="search" 
                                 value="<?php echo htmlspecialchars($search); ?>"
                                 placeholder="Cari berdasarkan judul, deskripsi, atau kata kunci..." 
-                                class="w-full pl-14 pr-4 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all font-inter"
+                                class="w-full pl-14 pr-4 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all"
                             >
                         </div>
                     </div>
                     
                     <!-- Category Filter -->
                     <div class="md:w-72">
-                        <label class="block text-gray-900 font-medium mb-3 text-2xl font-inter">Kategori</label>
+                        <label class="block text-gray-900 font-medium mb-3 text-2xl">Kategori</label>
                         <div class="relative">
                             <select 
                                 name="filter" 
                                 onchange="this.form.submit()"
-                                class="w-full px-5 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 appearance-none bg-white cursor-pointer transition-all font-inter font-medium text-gray-700"
+                                class="w-full px-5 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 appearance-none bg-white cursor-pointer transition-all font-medium text-gray-700"
                             >
                                 <option value="">Semua Kategori</option>
                                 <option value="penelitian" <?php echo $filter_kategori === 'penelitian' ? 'selected' : ''; ?>>📚 Penelitian</option>
@@ -243,7 +243,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                     <!-- Search Button (Desktop) -->
                     <div class="hidden md:flex items-end">
                         <button type="submit" class="px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 whitespace-nowrap">
-                            <i class="fas fa-search mr-2"></i>Cari
+                            <i class="fas fa-search text-lg mr-2"></i>Cari
                         </button>
                     </div>
                 </div>
@@ -362,7 +362,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                 </div>
                 
                 <!-- Title -->
-                <h3 class="text-xl font-bold text-[#1B2D62] mb-3 line-clamp-2 group-hover:text-[#2C4AA4] transition-colors duration-300 font-inter">
+                <h3 class="text-xl font-bold text-[#1B2D62] mb-3 line-clamp-2 group-hover:text-[#2C4AA4] transition-colors duration-300">
                     <?php echo htmlspecialchars($item['judul']); ?>
                 </h3>
                 
@@ -384,7 +384,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                 </div>
                 
                 <!-- Abstract/Description -->
-                <p class="text-sm text-gray-600 mb-5 leading-relaxed line-clamp-3 flex-grow font-inter">
+                <p class="text-sm text-gray-600 mb-5 leading-relaxed line-clamp-3 flex-grow">
                     <?php echo htmlspecialchars($item['abstrak'] ?: 'Dokumen penelitian dan pengabdian masyarakat dari Laboratorium Network & Cyber Security.'); ?>
                 </p>
                 
@@ -495,7 +495,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                 <i class="fas fa-search text-orange-400 text-6xl"></i>
             </div>
             
-            <h3 class="text-3xl font-bold text-[#1B2D62] mb-4 font-inter">
+            <h3 class="text-3xl font-bold text-[#1B2D62] mb-4">
                 <?php if ($search): ?>
                 Hasil Pencarian Tidak Ditemukan
                 <?php elseif ($filter_kategori): ?>
@@ -505,7 +505,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                 <?php endif; ?>
             </h3>
             
-            <p class="text-lg text-gray-600 mb-8 leading-relaxed font-inter">
+            <p class="text-lg text-gray-600 mb-8 leading-relaxed">
                 <?php if ($search): ?>
                 Tidak ada hasil untuk pencarian "<strong class="text-orange-600"><?php echo htmlspecialchars($search); ?></strong>".<br>
                 Coba gunakan kata kunci yang berbeda atau lihat semua arsip.
@@ -535,6 +535,39 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
         <?php endif; ?>
         
     </div>
+</section>
+<!-- Contact CTA Section -->
+<section class="px-4 pb-20">
+    <div data-aos="fade-up" class="sm:py-20 py-16 bg-gradient-to-r from-[#1B2D62] to-[#2C4AA4] mx-auto rounded-2xl max-w-7xl">
+        <div class="mx-auto sm:px-12 px-6">
+                <div class="max-w-4xl mx-auto text-center">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-full text-white font-semibold mb-6">
+                        <i class="fas fa-envelope text-orange-400"></i>
+                        <span class="text-sm">HUBUNGI KAMI</span>
+                    </div>
+                    
+                    <h2 class="text-4xl md:text-5xl font-medium text-white mb-6 font-inter">
+                        Butuh Bantuan Lebih Lanjut?
+                    </h2>
+                    
+                    <p class="text-xl text-white/80 mb-10 font-inter leading-relaxed">
+                        Jika Anda memiliki pertanyaan atau membutuhkan informasi lebih lanjut<br class="hidden md:block">
+                        tentang layanan kami, jangan ragu untuk menghubungi tim kami.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="./kontak.php" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-8 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                            <i class="fas fa-paper-plane"></i>
+                            Hubungi Kami
+                        </a>
+                        <a href="./arsip.php" class="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-all duration-300">
+                            <i class="fas fa-book"></i>
+                            Lihat Arsip
+                        </a>
+                    </div>
+                </div>
+            </div>
+    </div>    
 </section>
 
 <!-- Modal Detail Arsip -->
@@ -572,7 +605,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                                 <i class="fas fa-star mr-1"></i>Featured
                             </span>
                         </div>
-                        <h2 id="detail-judul" class="text-2xl font-bold text-[#1B2D62] font-inter leading-tight"></h2>
+                        <h2 id="detail-judul" class="text-2xl font-bold text-[#1B2D62] leading-tight"></h2>
                     </div>
                 </div>
 

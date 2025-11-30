@@ -97,7 +97,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
         <i class="fas fa-shield-alt text-orange-500 text-sm lg:text-base"></i>
     </div>
     
-    <div class="container mx-auto px-4 relative z-[5]">
+    <div class="mx-auto px-4 relative z-[5]">
         <div class="max-w-5xl mx-auto text-center">
             <!-- Badge -->
             <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-medium mb-6 shadow-lg" data-aos="fade-up">
@@ -106,12 +106,12 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
             </div>
             
             <!-- Heading -->
-            <h1 class="text-5xl md:text-6xl font-medium text-[#1B2D62] mb-6 font-inter leading-tight" data-aos="fade-up" data-aos-delay="100">
+            <h1 class="text-5xl md:text-6xl font-medium text-[#1B2D62] mb-6 leading-tight" data-aos="fade-up" data-aos-delay="100">
                 Galeri Kegiatan
             </h1>
             
             <!-- Subtitle -->
-            <p class="text-xl md:text-2xl text-gray-600 leading-relaxed mb-10 font-inter" data-aos="fade-up" data-aos-delay="200">
+            <p class="text-xl md:text-2xl text-gray-600 leading-relaxed mb-10" data-aos="fade-up" data-aos-delay="200">
                 Dokumentasi kegiatan dan aktivitas<br class="hidden md:block">
                 Laboratorium Network & Cyber Security
             </p>
@@ -160,7 +160,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                 <div class="flex flex-col md:flex-row gap-4">
                     <!-- Search Box -->
                     <div class="flex-1">
-                        <label class="block text-gray-900 font-medium mb-3 text-2xl font-inter">Cari Kegiatan</label>
+                        <label class="block text-gray-900 font-medium mb-3 text-2xl">Cari Kegiatan</label>
                         <div class="relative">
                             <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
                             <input 
@@ -168,19 +168,19 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                                 name="search" 
                                 value="<?php echo htmlspecialchars($search); ?>"
                                 placeholder="Cari berdasarkan judul atau deskripsi..." 
-                                class="w-full pl-14 pr-4 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all font-inter"
+                                class="w-full pl-14 pr-4 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all"
                             >
                         </div>
                     </div>
                     
                     <!-- Category Filter -->
                     <div class="md:w-72">
-                        <label class="block text-gray-900 font-medium mb-3 text-2xl font-inter">Kategori</label>
+                        <label class="block text-gray-900 font-medium mb-3 text-2xl">Kategori</label>
                         <div class="relative">
                             <select 
                                 name="filter" 
                                 onchange="this.form.submit()"
-                                class="w-full px-5 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 appearance-none bg-white cursor-pointer transition-all font-inter font-medium text-gray-700"
+                                class="w-full px-5 py-4 text-base border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 appearance-none bg-white cursor-pointer transition-all font-medium text-gray-700"
                             >
                                 <option value="">Semua Kategori</option>
                                 <option value="agenda" <?php echo $filter_kategori === 'agenda' ? 'selected' : ''; ?>>📅 Agenda</option>
@@ -319,7 +319,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                 <!-- Card Content -->
                 <div class="p-6">
                     <!-- Title -->
-                    <h3 class="text-xl font-medium text-[#1B2D62] mb-3 group-hover:text-[#2C4AA4] transition-colors duration-300 font-inter line-clamp-2">
+                    <h3 class="text-xl font-medium text-[#1B2D62] mb-3 group-hover:text-[#2C4AA4] transition-colors duration-300 line-clamp-2">
                         <?php echo htmlspecialchars($item['judul']); ?>
                     </h3>
                     
@@ -332,7 +332,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                     <?php endif; ?>
                     
                     <!-- Description -->
-                    <p class="text-sm text-gray-600 leading-relaxed line-clamp-3 font-inter">
+                    <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
                         <?php echo htmlspecialchars($item['deskripsi'] ?: 'Dokumentasi kegiatan Laboratorium Network & Cyber Security.'); ?>
                     </p>
                     
@@ -446,7 +446,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                 <i class="fas fa-images text-orange-400 text-6xl"></i>
             </div>
             
-            <h3 class="text-3xl font-medium text-[#1B2D62] mb-4 font-inter">
+            <h3 class="text-3xl font-medium text-[#1B2D62] mb-4">
                 <?php if ($search): ?>
                 Hasil Pencarian Tidak Ditemukan
                 <?php elseif ($filter_kategori): ?>
@@ -456,7 +456,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                 <?php endif; ?>
             </h3>
             
-            <p class="text-lg text-gray-600 mb-8 leading-relaxed font-inter">
+            <p class="text-lg text-gray-600 mb-8 leading-relaxed">
                 <?php if ($search): ?>
                 Tidak ada hasil untuk pencarian "<strong class="text-orange-600"><?php echo htmlspecialchars($search); ?></strong>".<br>
                 Coba gunakan kata kunci yang berbeda atau lihat semua galeri.
@@ -486,6 +486,39 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
         <?php endif; ?>
         
     </div>
+</section>
+<!-- Contact CTA Section -->
+<section class="px-4 pb-20">
+    <div data-aos="fade-up" class="sm:py-20 py-16 bg-gradient-to-r from-[#1B2D62] to-[#2C4AA4] mx-auto rounded-2xl max-w-7xl">
+        <div class="mx-auto sm:px-12 px-6">
+                <div class="max-w-4xl mx-auto text-center">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-full text-white font-semibold mb-6">
+                        <i class="fas fa-envelope text-orange-400"></i>
+                        <span class="text-sm">HUBUNGI KAMI</span>
+                    </div>
+                    
+                    <h2 class="text-4xl md:text-5xl font-medium text-white mb-6 font-inter">
+                        Butuh Bantuan Lebih Lanjut?
+                    </h2>
+                    
+                    <p class="text-xl text-white/80 mb-10 font-inter leading-relaxed">
+                        Jika Anda memiliki pertanyaan atau membutuhkan informasi lebih lanjut<br class="hidden md:block">
+                        tentang layanan kami, jangan ragu untuk menghubungi tim kami.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="./kontak.php" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-8 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                            <i class="fas fa-paper-plane"></i>
+                            Hubungi Kami
+                        </a>
+                        <a href="./arsip.php" class="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-all duration-300">
+                            <i class="fas fa-book"></i>
+                            Lihat Arsip
+                        </a>
+                    </div>
+                </div>
+            </div>
+    </div>    
 </section>
 
 <!-- Modal Detail Galeri -->
@@ -524,7 +557,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                     <!-- Title -->
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Judul Kegiatan</label>
-                        <h4 id="detail-judul" class="text-2xl font-semibold text-[#1B2D62] mt-1 font-inter"></h4>
+                        <h4 id="detail-judul" class="text-2xl font-semibold text-[#1B2D62] mt-1"></h4>
                     </div>
 
                     <!-- Info Grid -->
