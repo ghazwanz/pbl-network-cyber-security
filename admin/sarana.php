@@ -337,6 +337,9 @@ if ($action === 'list') {
                         </td>
                         <td class="text-center">
                             <div class="flex items-center justify-center gap-2">
+                                <button type="button" data-toggle="modal" data-target="#modalDetail" onclick='viewDetail(<?= json_encode($item) ?>)' class="text-green-600 hover:text-green-800" title="Lihat Detail">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                                 <button type="button" data-toggle="modal" data-target="#modalSarana" onclick='editData(<?= json_encode($item) ?>)' class="text-blue-600 hover:text-blue-800" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -481,6 +484,92 @@ if ($action === 'list') {
     </div>
 </div>
 
+<!-- Modal Detail Sarana -->
+<div id="modalDetail" aria-hidden="true" class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
+        
+        <!-- Modal Header -->
+        <div class="p-5 pb-3 flex justify-between items-center border-b border-slate-200 sticky top-0 bg-white z-10">
+            <h1 class="text-lg text-slate-800 font-semibold">
+                <i class="fas fa-box mr-2 text-green-600"></i>Detail Sarana
+            </h1>
+            <button type="button" data-dismiss="modal" class="inline-grid place-items-center text-slate-600 hover:bg-slate-200/30 rounded-md min-w-[34px] min-h-[34px] transition-all">
+                <svg width="1.5em" height="1.5em" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor" class="h-5 w-5">
+                    <path d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="p-6">
+            <div class="flex flex-col gap-6">
+                
+                <!-- Gambar Sarana -->
+                <div class="w-fit mx-auto">
+                    <div class="rounded-lg overflow-hidden shadow-md border border-gray-200 bg-gray-100 flex items-center justify-center min-h-[250px]">
+                        <img id="detail-gambar" src="" alt="Gambar Sarana" class="w-full max-w-[400px] object-contain">
+                    </div>
+                </div>
+
+                <!-- Informasi Detail -->
+                <div class="space-y-4">
+                    <!-- Nama Sarana -->
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Nama Sarana</label>
+                        <h4 id="detail-nama" class="text-xl font-bold text-gray-900 mt-1"></h4>
+                    </div>
+
+                    <!-- Deskripsi -->
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Deskripsi</label>
+                        <p id="detail-deskripsi" class="text-gray-600 text-sm mt-1 leading-relaxed"></p>
+                    </div>
+
+                    <!-- Grid Info -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Jumlah</label>
+                            <div id="detail-jumlah" class="mt-1 text-lg font-bold text-blue-600"></div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Kondisi</label>
+                            <div id="detail-kondisi" class="mt-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- Spesifikasi -->
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Spesifikasi</label>
+                        <p id="detail-spesifikasi" class="text-gray-600 text-sm mt-1 leading-relaxed"></p>
+                    </div>
+
+                    <!-- Status & Dibuat Oleh -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Status</label>
+                            <div id="detail-status" class="mt-1"></div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Dibuat Oleh</label>
+                            <div class="mt-1">
+                                <p id="detail-created-by" class="text-sm font-medium text-gray-800"></p>
+                                <p id="detail-created-at" class="text-xs text-gray-500"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-5 pt-3 flex justify-end gap-3 border-t border-slate-200 sticky bottom-0 bg-white">
+            <button type="button" data-dismiss="modal" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                <i class="fas fa-times mr-2"></i>Tutup
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 function resetForm() {
     $('#inputId').val('');
@@ -513,6 +602,56 @@ function editData(data) {
         $('#preview-image').attr('src', `../uploads/${imageUrl}`).removeClass('hidden');
     } else {
         $('#preview-image').attr('src', '').addClass('hidden');
+    }
+}
+
+function viewDetail(data) {
+    // Set nama sarana
+    $('#detail-nama').text(data.nama_sarana);
+    
+    // Set deskripsi
+    $('#detail-deskripsi').text(data.deskripsi || 'Tidak ada deskripsi');
+    
+    // Set spesifikasi
+    $('#detail-spesifikasi').text(data.spesifikasi || 'Tidak ada spesifikasi');
+    
+    // Set jumlah
+    $('#detail-jumlah').text(data.jumlah + ' Unit');
+    
+    // Set kondisi dengan badge warna
+    let kondisiBadge = '';
+    if (data.kondisi === 'Baik') {
+        kondisiBadge = '<span class="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">Baik</span>';
+    } else if (data.kondisi === 'Rusak Ringan') {
+        kondisiBadge = '<span class="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">Rusak Ringan</span>';
+    } else {
+        kondisiBadge = '<span class="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">Rusak Berat</span>';
+    }
+    $('#detail-kondisi').html(kondisiBadge);
+    
+    // Set status
+    const statusBadge = data.is_active 
+        ? '<span class="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">Aktif</span>'
+        : '<span class="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">Nonaktif</span>';
+    $('#detail-status').html(statusBadge);
+    
+    // Set gambar
+    if (data.gambar) {
+        $('#detail-gambar').attr('src', `<?php echo UPLOAD_URL; ?>${data.gambar}`);
+    } else {
+        $('#detail-gambar').attr('src', 'https://via.placeholder.com/400x300?text=No+Image');
+    }
+    
+    // Set dibuat oleh
+    $('#detail-created-by').text(data.created_by_name || 'Unknown');
+    
+    // Set tanggal dibuat
+    if (data.created_at) {
+        const date = new Date(data.created_at);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        $('#detail-created-at').text(date.toLocaleDateString('id-ID', options));
+    } else {
+        $('#detail-created-at').text('-');
     }
 }
 </script>
