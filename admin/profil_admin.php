@@ -58,7 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             if ($result !== false) {
                 setFlashMessage('success', 'Profil berhasil diperbarui');
-                redirect(ADMIN_URL . '/profilAdmin.php');
+                $_SESSION["admin_data"] = [
+                    'id' => $current_user['id'],
+                    'username' => $username,
+                    'nama_lengkap' => $nama_lengkap,
+                    'email' => $email,
+                    'role' => $current_user['role']
+                ];
+                redirect(ADMIN_URL . '/profil_admin.php');
                 exit;
             } else {
                 $errors[] = "Gagal memperbarui profil";
@@ -94,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             if ($result !== false) {
                 setFlashMessage('success', 'Password berhasil diubah');
-                redirect(ADMIN_URL . '/profilAdmin.php');
+                redirect(ADMIN_URL . '/profil_admin.php');
                 exit;
             } else {
                 $errors[] = "Gagal mengubah password";
