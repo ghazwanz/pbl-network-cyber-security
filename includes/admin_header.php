@@ -147,15 +147,25 @@ $current_user = getCurrentUser();
             
             <!-- User Info -->
             <div class="p-4 bg-gray-900">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                        <i class="fas fa-user"></i>
+                <a href="<?php echo ADMIN_URL; ?>/profil_admin.php" class="flex items-center hover:bg-gray-800 rounded-lg p-2 -m-2 transition-all group">
+                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                        <?php
+                        // Generate initials from nama_lengkap
+                        $initials = '';
+                        $words = explode(' ', $current_user['nama_lengkap']);
+                        foreach ($words as $word) {
+                            $initials .= strtoupper(substr($word, 0, 1));
+                            if (strlen($initials) >= 2) break;
+                        }
+                        echo htmlspecialchars($initials);
+                        ?>
                     </div>
-                    <div class="ml-3">
+                    <div class="ml-3 flex-1">
                         <p class="text-sm font-semibold"><?php echo htmlspecialchars($current_user['nama_lengkap']); ?></p>
                         <p class="text-xs text-gray-400"><?php echo htmlspecialchars($current_user['role']); ?></p>
                     </div>
-                </div>
+                    <i class="fas fa-chevron-right text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </a>
             </div>
         </aside>
         

@@ -245,7 +245,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800">Arsip Penelitian & Pengabdian</h2>
+            <h2 class="text-lg font-semibold text-blue-900"><i class="fas fa-file-pdf mr-2"></i>Arsip Penelitian & Pengabdian</h2>
             <p class="text-gray-600 mt-1">Kelola dokumen penelitian dan pengabdian masyarakat</p>
         </div>
         <button type="button" id="openAddArsipModal" class="btn btn-primary">

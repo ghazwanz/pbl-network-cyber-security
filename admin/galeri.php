@@ -151,7 +151,7 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
     
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800">Galeri & Agenda</h2>
+            <h2 class="text-lg font-semibold text-blue-900"><i class="fas fa-images mr-2"></i>Galeri & Agenda</h2>
             <p class="text-gray-600 mt-1">Kelola foto kegiatan dan agenda laboratorium</p>
         </div>
         <button type="button" data-toggle="modal" data-target="#modalForm" onclick="openModalAdd()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow transition flex items-center gap-2">
