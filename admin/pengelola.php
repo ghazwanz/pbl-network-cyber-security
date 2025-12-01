@@ -221,7 +221,7 @@ $jabatan_list = executeQuery("SELECT DISTINCT jabatan FROM pengelola WHERE jabat
 
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800">Pengelola Laboratorium</h2>
+            <h2 class="text-lg font-semibold text-blue-900"><i class="fas fa-users mr-2"></i>Pengelola Laboratorium</h2>
             <p class="text-gray-600 mt-1">Kelola data tim pengelola laboratorium</p>
         </div>
         <button type="button" data-toggle="modal" data-target="#modalForm" onclick="resetForm()"
