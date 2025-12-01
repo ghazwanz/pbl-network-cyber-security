@@ -30,7 +30,7 @@
 
         <div class=" mx-auto max-w-3xl flex flex-col items-center relative text-center">
             
-            <div class="inline-flex items-center space-x-2 bg-white border border-gray-200 rounded-full px-5 py-2.5 text-orange-500 font-bold text-sm mb-6 shadow-sm" data-aos="fade-up">
+            <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg" data-aos="fade-up">
                 <img src="../assets/icons/zap1.svg">
                 <span>INOVASI TEKNOLOGI KEAMANAN</span>
             </div>
@@ -71,8 +71,8 @@
             
             <div class="lg:col-span-2 flex flex-col justify-center mb-16 lg:mb-0" data-aos="fade-up">
                 
-                <div class="inline-flex self-start items-center space-x-2 bg-[#1B2D62] text-white font-bold text-xs rounded-full px-4 py-1.5 mb-6">
-                    <img src="../assets/icons/award2.svg" alt="" srcset="">
+                <div class="inline-flex self-start items-center space-x-2 bg-white border border-orange-200 rounded-full px-5 py-2.5 text-orange-500 font-bold text-sm mb-6 shadow-lg">
+                    <img src="../assets/icons/award1.svg" alt="" srcset="">
                     <span>INOVASI KARYA</span>
                 </div>
 
@@ -105,17 +105,27 @@
                     ?>
 
                     <?php if (!empty($layananList)): ?>
-                        <?php foreach ($layananList as $index => $item): ?>
-                            <div class="bg-white border border-gray-200 rounded-xl p-8 shadow-lg transition duration-300 hover:shadow-xl hover:-translate-y-1"
+                        <?php 
+                        // Mapping ikon agar sama dengan layanan.php
+                        $icons = ['fa-clock', 'fa-headset', 'fa-shield-alt', 'fa-laptop-code', 'fa-network-wired', 'fa-cogs'];
+                        
+                        foreach ($layananList as $index => $item): 
+                            // Pilih icon berdasarkan index (looping)
+                            $icon = $icons[$index % count($icons)];
+                        ?>
+                            <div class="bg-gray-50 rounded-2xl p-6 hover:bg-white hover:shadow-xl transition-all duration-300 group"
                                  data-aos="fade-up" 
                                  data-aos-delay="<?php echo ($index * 100); ?>">
-                                <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-lg mb-6">
-                                    <img src="../uploads<?= htmlspecialchars($item['gambar_path']) ?>" >
+                                
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-blue-500 transition-colors duration-300">
+                                    <i class="fas <?php echo $icon; ?> text-blue-600 text-lg group-hover:text-white transition-colors duration-300"></i>
                                 </div>
-                                <h3 class="text-xl font-inter font-medium text-gray-900 mb-2">
+
+                                <h3 class="text-lg font-medium text-[#1B2D62] mb-3">
                                     <?= htmlspecialchars($item['nama_layanan']) ?>
                                 </h3>
-                                <p class="text-gray-500">
+
+                                <p class="text-sm text-gray-500 leading-relaxed">
                                     <?= htmlspecialchars($item['deskripsi']) ?>
                                 </p>
                             </div>
@@ -128,13 +138,13 @@
             </div>
 
         </div>
-    </section>  
+    </section>
 
     <section class="py-24 sm:py-32">
         <div class="container mx-auto max-w-7xl px-4">
             
             <div class="max-w-3xl mx-auto text-center mb-16" data-aos="fade-up">
-                <div class="inline-flex items-center space-x-2 bg-white border border-gray-200 rounded-full px-5 py-2.5 text-orange-500 font-bold text-sm mb-6">
+                <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg">
                     <img src="../assets/icons/award1.svg" alt="" srcset="">
                     <span>INOVASI KARYA</span>
                 </div>
@@ -278,7 +288,7 @@
         <div class="container mx-auto max-w-4xl px-4">
             
             <div class="text-center mb-16" data-aos="fade-up">
-                <div class="inline-flex items-center space-x-2 bg-white border border-gray-200 rounded-full px-5 py-2.5 text-orange-500 font-bold text-sm mb-6 shadow-sm">
+                <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg">
                     <img src="../assets/icons/activity1.svg">
                     <span>SERING DITANYAKAN</span>
                 </div>
@@ -357,7 +367,7 @@
             
             <div class="max-w-3xl mx-auto text-center mb-16" data-aos="fade-up">
                 
-                <div class="inline-flex items-center space-x-2 bg-white border border-gray-200 rounded-full px-5 py-2.5 text-orange-500 font-bold text-sm mb-6">
+                <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg">
                     <img src="../assets/icons/activity1.svg">
                     <span>AKTIVITAS KAMI</span>
                 </div>
