@@ -66,7 +66,7 @@
         </div>
     </section>
 
-    <section class="bg-white py-24 sm:py-32 border-t-4 border-b-4 ">
+    <section class="bg-white py-24 sm:py-32 ">
         <div class="container mx-auto max-w-7xl px-4 grid grid-cols-1 lg:grid-cols-5 lg:gap-16">
             
             <div class="lg:col-span-2 flex flex-col justify-center mb-16 lg:mb-0" data-aos="fade-up">
