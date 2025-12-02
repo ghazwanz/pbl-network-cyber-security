@@ -28,42 +28,43 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
 ?>
 
 <!-- Hero Section -->
-<section class="relative lg:py-44 py-32 bg-gradient-to-br from-[#F8FCFF] via-white to-blue-50 overflow-hidden">
-    <!-- Decorative Blur Elements -->
-    <div class="absolute top-0 left-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse"></div>
-    <div class="absolute bottom-0 right-0 w-96 h-96 bg-orange-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse" style="animation-delay: 1s;"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 2s;"></div>
-
-    <!-- Geometric Floating Shapes - Left Side (Different from Arsip) -->
-    <div class="absolute left-4 md:left-8 lg:left-16 top-20 md:top-28 w-16 h-16 md:w-20 md:h-20 border-4 border-orange-300 rounded-full opacity-40 animate-spin" style="animation-duration: 20s;"></div>
-
-    <div class="absolute left-12 md:left-28 lg:left-44 top-40 md:top-52 w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-400 to-blue-600 rotate-45 shadow-lg opacity-70 animate-pulse" style="animation-duration: 3s;"></div>
-
-    <div class="absolute left-6 md:left-20 lg:left-36 bottom-28 md:bottom-36 w-14 h-14 md:w-18 md:h-18 border-4 border-dashed border-blue-300 rounded-2xl opacity-50 animate-spin" style="animation-duration: 15s; animation-direction: reverse;"></div>
-
-    <div class="hidden md:block absolute left-2 lg:left-10 bottom-52 lg:bottom-60 w-6 h-6 lg:w-8 lg:h-8 bg-orange-400 rounded-full opacity-60 animate-ping" style="animation-duration: 2s;"></div>
-
-    <div class="absolute left-16 md:left-36 lg:left-56 top-64 md:top-72 w-3 h-3 md:w-4 md:h-4 bg-green-500 rounded-full opacity-80 animate-bounce" style="animation-duration: 2.5s;"></div>
-
-    <!-- Geometric Floating Shapes - Right Side (Different from Arsip) -->
-    <div class="absolute right-4 md:right-12 lg:right-24 top-24 md:top-32 w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl rotate-12 shadow-xl opacity-60 animate-bounce" style="animation-duration: 4s;"></div>
-
-    <div class="absolute right-16 md:right-32 lg:right-48 top-44 md:top-56 w-20 h-20 md:w-24 md:h-24 border-4 border-purple-300 rounded-full opacity-30 animate-spin" style="animation-duration: 25s;"></div>
-
-    <div class="absolute right-8 md:right-20 lg:right-36 bottom-32 md:bottom-40 w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-green-400 to-teal-500 rounded-2xl -rotate-12 shadow-lg opacity-70 animate-pulse" style="animation-duration: 3.5s;"></div>
-
-    <div class="hidden md:block absolute right-2 lg:right-8 bottom-56 lg:bottom-64 w-5 h-5 lg:w-6 lg:h-6 bg-blue-500 rounded-full opacity-50 animate-ping" style="animation-duration: 3s;"></div>
-
-    <div class="absolute right-24 md:right-44 lg:right-64 top-72 md:top-80 w-6 h-6 md:w-8 md:h-8 border-2 border-orange-400 rotate-45 opacity-60 animate-spin" style="animation-duration: 8s;"></div>
-
-    <!-- Decorative Lines -->
-    <div class="hidden lg:block absolute left-0 top-1/3 w-32 h-1 bg-gradient-to-r from-transparent via-orange-300 to-transparent opacity-50"></div>
-    <div class="hidden lg:block absolute right-0 bottom-1/3 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent opacity-50"></div>
+<section class="relative lg:py-44 py-32 bg-gradient-to-br from-[#F8FCFF] via-white to-blue-50">
+    <div class="relative max-w-7xl mx-auto">
+        <div class="absolute top-0 left-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-orange-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 2s;"></div>
+    
+        <!-- Geometric Floating Shapes - Left Side (Different from Arsip) -->
+        <div class="absolute left-4 md:left-8 lg:left-16 top-20 md:top-28 w-16 h-16 md:w-20 md:h-20 border-4 border-orange-300 rounded-full opacity-40 animate-spin" style="animation-duration: 20s;"></div>
+    
+        <div class="absolute left-12 md:left-28 lg:left-44 top-40 md:top-52 w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-400 to-blue-600 rotate-45 shadow-lg opacity-70 animate-pulse" style="animation-duration: 3s;"></div>
+    
+        <div class="absolute left-6 md:left-20 lg:left-36 bottom-28 md:bottom-36 w-14 h-14 md:w-18 md:h-18 border-4 border-dashed border-blue-300 rounded-2xl opacity-50 animate-spin" style="animation-duration: 15s; animation-direction: reverse;"></div>
+    
+        <div class="hidden md:block absolute left-2 lg:left-10 bottom-52 lg:bottom-60 w-6 h-6 lg:w-8 lg:h-8 bg-orange-400 rounded-full opacity-60 animate-ping" style="animation-duration: 2s;"></div>
+    
+        <div class="absolute left-16 md:left-36 lg:left-56 top-64 md:top-72 w-3 h-3 md:w-4 md:h-4 bg-green-500 rounded-full opacity-80 animate-bounce" style="animation-duration: 2.5s;"></div>
+    
+        <!-- Geometric Floating Shapes - Right Side (Different from Arsip) -->
+        <div class="absolute right-4 md:right-12 lg:right-24 top-24 md:top-32 w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl rotate-12 shadow-xl opacity-60 animate-bounce" style="animation-duration: 4s;"></div>
+    
+        <div class="absolute right-16 md:right-32 lg:right-48 top-44 md:top-56 w-20 h-20 md:w-24 md:h-24 border-4 border-purple-300 rounded-full opacity-30 animate-spin" style="animation-duration: 25s;"></div>
+    
+        <div class="absolute right-8 md:right-20 lg:right-36 bottom-32 md:bottom-40 w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-green-400 to-teal-500 rounded-2xl -rotate-12 shadow-lg opacity-70 animate-pulse" style="animation-duration: 3.5s;"></div>
+    
+        <div class="hidden md:block absolute right-2 lg:right-8 bottom-56 lg:bottom-64 w-5 h-5 lg:w-6 lg:h-6 bg-blue-500 rounded-full opacity-50 animate-ping" style="animation-duration: 3s;"></div>
+    
+        <div class="absolute right-24 md:right-44 lg:right-64 top-72 md:top-80 w-6 h-6 md:w-8 md:h-8 border border-orange-400 rotate-45 opacity-60 animate-spin" style="animation-duration: 8s;"></div>
+    
+        <!-- Decorative Lines -->
+        <div class="hidden lg:block absolute left-0 top-1/3 w-32 h-1 bg-gradient-to-r from-transparent via-orange-300 to-transparent opacity-50"></div>
+        <div class="hidden lg:block absolute right-0 bottom-1/3 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent opacity-50"></div>
+    </div>
 
     <div class="container mx-auto px-4 relative z-[5]">
         <div class="max-w-5xl mx-auto text-center">
             <!-- Badge -->
-            <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg" data-aos="fade-up">
+            <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg" data-aos="fade-up">
                 <i class="fas fa-concierge-bell text-orange-500"></i>
                 <span class="text-sm tracking-wide">LAYANAN LABORATORIUM</span>
             </div>
@@ -116,7 +117,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
 
             <!-- Section Header -->
             <div class="text-center mb-16" data-aos="fade-up">
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-semibold mb-4">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-orange-200 rounded-full text-orange-600 font-semibold mb-4">
                     <i class="fas fa-star text-orange-500"></i>
                     <span class="text-sm">APA YANG KAMI TAWARKAN</span>
                 </div>
@@ -137,7 +138,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                     foreach ($layanan_list as $index => $layanan): 
                     $icon = $icons[$index % count($icons)];
                     ?>
-                        <div class="bg-gray-50 rounded-2xl p-6 hover:bg-white hover:shadow-xl transition-all duration-300 group"
+                        <div class="bg-gray-100 rounded-2xl p-6 hover:bg-white hover:shadow-xl transition-all duration-300 group"
                             data-aos="fade-up"
                             data-aos-delay="<?php echo ($index * 100); ?>">
 
@@ -180,7 +181,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
 
             <!-- Section Header -->
             <div class="text-center mb-16" data-aos="fade-up">
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-semibold mb-4">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-orange-200 rounded-full text-orange-600 font-semibold mb-4">
                     <i class="fas fa-server text-orange-500"></i>
                     <span class="text-sm">FASILITAS LABORATORIUM</span>
                 </div>
@@ -196,7 +197,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                 <!-- Sarana Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <?php foreach ($sarana_list as $index => $sarana): ?>
-                        <div class="group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-green-500 hover:shadow-2xl transition-all duration-300"
+                        <div class="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-green-500 hover:shadow-2xl transition-all duration-300"
                             data-aos="fade-up"
                             data-aos-delay="<?php echo ($index * 100); ?>">
 
@@ -253,7 +254,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                 </div>
             <?php else: ?>
                 <!-- Empty State -->
-                <div class="text-center py-16 bg-white rounded-2xl border-2 border-gray-200" data-aos="fade-up">
+                <div class="text-center py-16 bg-white rounded-2xl border border-gray-200" data-aos="fade-up">
                     <div class="w-24 h-24 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-server text-orange-400 text-4xl"></i>
                     </div>
@@ -273,7 +274,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
 
             <!-- Section Header -->
             <div class="text-center mb-16" data-aos="fade-up">
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-semibold mb-4">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-orange-200 rounded-full text-orange-600 font-semibold mb-4">
                     <i class="fas fa-question-circle text-orange-500"></i>
                     <span class="text-sm">SERING DITANYAKAN</span>
                 </div>
@@ -287,7 +288,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
 
             <?php if ($konsultatif_list && count($konsultatif_list) > 0): ?>
                 <!-- FAQ Accordion - Material Tailwind Style -->
-                <div class="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="100" data-accordion-container data-accordion-mode="exclusive">
+                <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="100" data-accordion-container data-accordion-mode="exclusive">
                     <?php foreach ($konsultatif_list as $index => $faq): ?>
                         <div
                             class="flex items-center justify-between w-full px-6 py-5 text-left cursor-pointer hover:bg-orange-50/20 transition-colors duration-300 <?php echo $index > 0 ? 'border-t border-gray-200' : ''; ?>"
@@ -318,7 +319,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                 </div>
             <?php else: ?>
                 <!-- Empty State -->
-                <div class="text-center py-16 bg-white rounded-2xl border-2 border-gray-200" data-aos="fade-up">
+                <div class="text-center py-16 bg-white rounded-2xl border border-gray-200" data-aos="fade-up">
                     <div class="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-comments text-blue-400 text-4xl"></i>
                     </div>
@@ -344,7 +345,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                         <i class="fas fa-envelope"></i>
                         <span>Hubungi Kami</span>
                     </a>
-                    <a href="mailto:labncs@mail.com" class="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition-all duration-300">
+                    <a href="mailto:labncs@mail.com" class="inline-flex items-center justify-center gap-2 bg-transparent border border-white text-white font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition-all duration-300">
                         <i class="fas fa-paper-plane"></i>
                         <span>Email Langsung</span>
                     </a>
@@ -379,7 +380,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                             <i class="fas fa-paper-plane"></i>
                             Hubungi Kami
                         </a>
-                        <a href="./arsip.php" class="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-all duration-300">
+                        <a href="./arsip.php" class="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-all duration-300">
                             <i class="fas fa-book"></i>
                             Lihat Arsip
                         </a>

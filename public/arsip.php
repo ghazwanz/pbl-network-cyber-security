@@ -84,11 +84,10 @@ $arsip_list = executeQuery($query, $params);
 
 // Get authors for each arsip from arsip_pengelola relation
 foreach ($arsip_list as &$arsip_item) {
-    $authors_query = "SELECT p.nama_lengkap, p.jabatan, p.bidang_keahlian, ap.peran, ap.urutan_penulis 
+    $authors_query = "SELECT p.nama_lengkap, p.jabatan, p.bidang_keahlian 
                       FROM arsip_pengelola ap 
                       JOIN pengelola p ON ap.pengelola_id = p.id 
-                      WHERE ap.arsip_id = ? 
-                      ORDER BY ap.urutan_penulis ASC";
+                      WHERE ap.arsip_id = ? ";
     $authors = executeQuery($authors_query, [$arsip_item['id']]);
     $arsip_item['penulis_list'] = $authors;
     
@@ -113,41 +112,44 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
     <div class="absolute top-0 right-0 w-96 h-96 bg-orange-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse"></div>
     <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse" style="animation-delay: 1s;"></div>
     
-    <!-- Floating Widget Icons - Left Side -->
-    <div class="absolute left-4 md:left-10 lg:left-20 top-24 md:top-32 w-10 h-10 md:w-14 md:h-14 bg-white rounded-2xl shadow-xl flex items-center justify-center animate-bounce opacity-80" style="animation-duration: 3s;">
-        <i class="fas fa-file-pdf text-orange-500 text-lg md:text-xl"></i>
+    <!-- Floating Widget Icons Container -->
+    <div class="absolute inset-0 max-w-7xl mx-auto">
+        <!-- Floating Widget Icons - Left Side -->
+        <div class="absolute left-4 md:left-10 lg:left-20 top-24 md:top-32 w-10 h-10 md:w-14 md:h-14 bg-white rounded-2xl shadow-xl flex items-center justify-center animate-bounce opacity-80" style="animation-duration: 3s;">
+            <i class="fas fa-file-pdf text-orange-500 text-lg md:text-xl"></i>
+        </div>
+        
+        <div class="absolute left-8 md:left-24 lg:left-40 top-48 md:top-56 w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-xl flex items-center justify-center animate-bounce opacity-90" style="animation-duration: 4s;">
+            <i class="fas fa-flask text-white text-xl md:text-2xl"></i>
+        </div>
+        
+        <div class="absolute left-2 md:left-16 lg:left-32 bottom-32 md:bottom-40 w-9 h-9 md:w-12 md:h-12 bg-white rounded-xl shadow-lg flex items-center justify-center animate-bounce opacity-70" style="animation-duration: 3.5s;">
+            <i class="fas fa-book text-[#1B2D62] text-sm md:text-lg"></i>
+        </div>
+        
+        <div class="hidden md:flex absolute left-6 lg:left-12 bottom-56 lg:bottom-64 w-10 h-10 lg:w-14 lg:h-14 bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl shadow-xl items-center justify-center animate-bounce opacity-80" style="animation-duration: 4.5s;">
+            <i class="fas fa-graduation-cap text-white text-lg lg:text-xl"></i>
+        </div>
+        
+        <!-- Floating Widget Icons - Right Side -->
+        <div class="absolute right-4 md:right-10 lg:right-20 top-28 md:top-36 w-11 h-11 md:w-14 md:h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-xl flex items-center justify-center animate-bounce opacity-85" style="animation-duration: 3.5s;">
+            <i class="fas fa-hands-helping text-white text-lg md:text-xl"></i>
+        </div>
+        
+        <div class="absolute right-8 md:right-20 lg:right-36 top-52 md:top-60 w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl shadow-lg flex items-center justify-center animate-bounce opacity-75" style="animation-duration: 4s;">
+            <i class="fas fa-search text-blue-500 text-base md:text-lg"></i>
+        </div>
+        
+        <div class="absolute right-3 md:right-14 lg:right-28 bottom-36 md:bottom-44 w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center animate-bounce opacity-80" style="animation-duration: 3s;">
+            <i class="fas fa-file-alt text-white text-xl md:text-2xl"></i>
+        </div>
+        
+        <div class="hidden md:flex absolute right-6 lg:right-10 bottom-60 lg:bottom-72 w-9 h-9 lg:w-11 lg:h-11 bg-white rounded-lg shadow-lg items-center justify-center animate-bounce opacity-70" style="animation-duration: 4.2s;">
+            <i class="fas fa-download text-orange-500 text-sm lg:text-base"></i>
+        </div>
     </div>
     
-    <div class="absolute left-8 md:left-24 lg:left-40 top-48 md:top-56 w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-xl flex items-center justify-center animate-bounce opacity-90" style="animation-duration: 4s;">
-        <i class="fas fa-flask text-white text-xl md:text-2xl"></i>
-    </div>
-    
-    <div class="absolute left-2 md:left-16 lg:left-32 bottom-32 md:bottom-40 w-9 h-9 md:w-12 md:h-12 bg-white rounded-xl shadow-lg flex items-center justify-center animate-bounce opacity-70" style="animation-duration: 3.5s;">
-        <i class="fas fa-book text-[#1B2D62] text-sm md:text-lg"></i>
-    </div>
-    
-    <div class="hidden md:flex absolute left-6 lg:left-12 bottom-56 lg:bottom-64 w-10 h-10 lg:w-14 lg:h-14 bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl shadow-xl items-center justify-center animate-bounce opacity-80" style="animation-duration: 4.5s;">
-        <i class="fas fa-graduation-cap text-white text-lg lg:text-xl"></i>
-    </div>
-    
-    <!-- Floating Widget Icons - Right Side -->
-    <div class="absolute right-4 md:right-10 lg:right-20 top-28 md:top-36 w-11 h-11 md:w-14 md:h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-xl flex items-center justify-center animate-bounce opacity-85" style="animation-duration: 3.5s;">
-        <i class="fas fa-hands-helping text-white text-lg md:text-xl"></i>
-    </div>
-    
-    <div class="absolute right-8 md:right-20 lg:right-36 top-52 md:top-60 w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl shadow-lg flex items-center justify-center animate-bounce opacity-75" style="animation-duration: 4s;">
-        <i class="fas fa-search text-blue-500 text-base md:text-lg"></i>
-    </div>
-    
-    <div class="absolute right-3 md:right-14 lg:right-28 bottom-36 md:bottom-44 w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center animate-bounce opacity-80" style="animation-duration: 3s;">
-        <i class="fas fa-file-alt text-white text-xl md:text-2xl"></i>
-    </div>
-    
-    <div class="hidden md:flex absolute right-6 lg:right-10 bottom-60 lg:bottom-72 w-9 h-9 lg:w-11 lg:h-11 bg-white rounded-lg shadow-lg items-center justify-center animate-bounce opacity-70" style="animation-duration: 4.2s;">
-        <i class="fas fa-download text-orange-500 text-sm lg:text-base"></i>
-    </div>
-    
-    <div class="container mx-auto px-4 relative z-[5]">
+    <div class="mx-auto px-4 relative z-[5]">
         <div class="max-w-5xl mx-auto text-center">
             <!-- Badge -->
             <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg" data-aos="fade-up">
@@ -330,7 +332,6 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                         return [
                             'nama' => htmlspecialchars($p['nama_lengkap']),
                             'jabatan' => htmlspecialchars($p['jabatan'] ?? ''),
-                            'peran' => htmlspecialchars($p['peran'] ?? '')
                         ];
                     }, $item['penulis_list'] ?? [])
                 ];
@@ -729,7 +730,6 @@ function showArsipDetail(data) {
     let authorsHtml = '';
     if (data.penulis_list && data.penulis_list.length > 0) {
         data.penulis_list.forEach(function(author, index) {
-            const peranBadge = author.peran ? `<span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">${author.peran}</span>` : '';
             authorsHtml += `
                 <div class="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
                     <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
@@ -739,7 +739,6 @@ function showArsipDetail(data) {
                         <div class="font-semibold text-gray-800">${author.nama}</div>
                         ${author.jabatan ? `<div class="text-xs text-gray-500">${author.jabatan}</div>` : ''}
                     </div>
-                    ${peranBadge}
                 </div>
             `;
         });
