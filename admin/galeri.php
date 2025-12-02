@@ -230,7 +230,7 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
         </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <?php if ($galeri_list && count($galeri_list) > 0): ?>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -290,7 +290,7 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
                                         <?php endif; ?>
                                     </div>
                                 </td>
-                                <td>
+                                <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
                                         <div
                                             class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">

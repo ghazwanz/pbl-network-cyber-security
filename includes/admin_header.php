@@ -65,7 +65,7 @@ $current_user = getCurrentUser();
         }
     </script>
 </head>
-<body class="bg-gray-100 font-inter antialiased">
+<body class="bg-gray-50 font-inter antialiased">
     
     <div class="flex h-screen overflow-hidden">
         

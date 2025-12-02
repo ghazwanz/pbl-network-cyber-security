@@ -34,19 +34,47 @@ $(document).ready(function() {
         }
     });
     
-    // PDF file info
-    $('input[type="file"][accept*="pdf"]').on('change', function() {
+    // PDF file info and preview
+    $('input[type="file"][accept*="pdf"], input[type="file"][accept=".pdf"]').on('change', function() {
         const file = this.files[0];
-        const info = $(this).data('info');
+        const inputId = $(this).attr('id');
         
-        if (file && info) {
+        if (file) {
             const sizeKB = (file.size / 1024).toFixed(2);
-            $(info).html(`
-                <div class="text-sm text-gray-600 mt-2">
-                    <i class="fas fa-file-pdf text-red-500 mr-2"></i>
-                    ${file.name} (${sizeKB} KB)
-                </div>
-            `);
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+            const sizeDisplay = file.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+            
+            // Check if it's the arsip form
+            if (inputId === 'formFilePdf') {
+                $('#pdfFileName').text(file.name);
+                $('#pdfFileSize').text(`(${sizeDisplay})`);
+                $('#pdfPreviewContainer').removeClass('hidden');
+                // Hide current PDF container when new file selected
+                $('#currentPdfContainer').addClass('hidden');
+            } else {
+                // Generic PDF info display using data-info attribute
+                const info = $(this).data('info');
+                if (info) {
+                    $(info).html(`
+                        <div class="text-sm text-gray-600 mt-2">
+                            <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                            ${file.name} (${sizeDisplay})
+                        </div>
+                    `);
+                }
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Ukuran file melebihi 5MB', 'error');
+                $(this).val('');
+                $('#pdfPreviewContainer').addClass('hidden');
+            }
+        } else {
+            // If no file selected, hide preview
+            if (inputId === 'formFilePdf') {
+                $('#pdfPreviewContainer').addClass('hidden');
+            }
         }
     });
     
@@ -165,7 +193,7 @@ $(document).ready(function() {
         const color = colors[type] || colors['info'];
         
         const toast = $(`
-            <div class="fixed top-20 right-4 ${color} text-white px-6 py-3 rounded-lg shadow-lg z-50 toast flex items-center gap-2">
+            <div class="fixed top-20 right-4 ${color} text-white px-6 py-3 rounded-lg shadow-lg z-[99999] toast flex items-center gap-2">
                 <i class="fas ${icon}"></i>
                 <span>${message}</span>
             </div>
@@ -199,6 +227,29 @@ $(document).ready(function() {
         document.execCommand('copy');
         temp.remove();
         showToast('Berhasil disalin ke clipboard', 'success');
+    };
+    
+    // PDF Preview Helper Function
+    window.showPdfPreview = function(inputElement, previewContainer, fileNameElement, fileSizeElement) {
+        const file = inputElement.files[0];
+        if (file) {
+            const sizeKB = (file.size / 1024).toFixed(2);
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+            const sizeDisplay = file.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+            
+            $(fileNameElement).text(file.name);
+            $(fileSizeElement).text(`(${sizeDisplay})`);
+            $(previewContainer).removeClass('hidden');
+            
+            return true;
+        }
+        return false;
+    };
+    
+    // Reset PDF Preview
+    window.resetPdfPreview = function(inputElement, previewContainer) {
+        $(inputElement).val('');
+        $(previewContainer).addClass('hidden');
     };
     
 });

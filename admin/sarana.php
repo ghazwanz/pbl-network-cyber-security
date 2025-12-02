@@ -240,32 +240,32 @@ if ($action === 'list') {
     </div>
     
     <!-- Table -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <?php if ($sarana_list && count($sarana_list) > 0): ?>
         <div class="overflow-x-auto">
-            <table class="admin-table">
+            <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr>
-                        <th class="w-64">Nama Sarana</th>
-                        <th class="w-32 text-center">Gambar</th>
-                        <th class="w-64">Spesifikasi</th>
-                        <th class="w-24 text-center">Jumlah</th>
-                        <th class="w-32">Kondisi</th>
-                        <th class="w-32 text-center">Status</th>
-                        <th class="w-40">Dibuat Oleh</th>
-                        <th class="w-32 text-center">Aksi</th>
+                    <tr class="bg-gray-50 text-gray-600 text-xs uppercase font-bold border-b border-gray-200">
+                        <th class="px-6 py-4 w-64">Nama Sarana</th>
+                        <th class="px-6 py-4 w-32 text-center">Gambar</th>
+                        <th class="px-6 py-4 w-64">Spesifikasi</th>
+                        <th class="px-6 py-4 w-24 text-center">Jumlah</th>
+                        <th class="px-6 py-4 w-32">Kondisi</th>
+                        <th class="px-6 py-4 w-32 text-center">Status</th>
+                        <th class="px-6 py-4 w-40">Dibuat Oleh</th>
+                        <th class="px-6 py-4 w-32 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-100">
                     <?php foreach ($sarana_list as $item): ?>
-                    <tr>
-                        <td>
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4">
                             <p class="font-semibold text-gray-800"><?php echo htmlspecialchars($item['nama_sarana']); ?></p>
                             <?php if ($item['deskripsi']): ?>
                             <p class="text-sm text-gray-500 mt-1 line-clamp-2"><?php echo htmlspecialchars($item['deskripsi']); ?></p>
                             <?php endif; ?>
                         </td>
-                       <td class="text-center">
+                       <td class="px-6 py-4 text-center">
                             <?php if (!empty($item['gambar'])): ?>
                                 <?php
                                 $image_url = $item['gambar'];
@@ -280,16 +280,16 @@ if ($action === 'list') {
                                 </div>
                             <?php endif; ?>
                         </td>
-                        <td class="text-sm text-gray-600">
+                        <td class="px-6 py-4 text-sm text-gray-600">
                             <?php echo $item['spesifikasi'] ? htmlspecialchars($item['spesifikasi']) : '-'; ?>
                         </td>
-                        <td class="text-center">
+                        <td class="px-6 py-4 text-center">
                             <span class="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-semibold">
                                 <?php echo $item['jumlah']; ?>
                             </span>
                         </td>
-                        <td>
-                            <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold 
+                        <td class="px-6 py-4">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold 
                                 <?php 
                                 if ($item['kondisi'] === 'Baik') echo 'bg-green-100 text-green-800';
                                 elseif ($item['kondisi'] === 'Rusak Ringan') echo 'bg-yellow-100 text-yellow-800';
@@ -298,12 +298,12 @@ if ($action === 'list') {
                                 <?php echo htmlspecialchars($item['kondisi']); ?>
                             </span>
                         </td>
-                        <td class="text-center">
-                            <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold <?php echo $item['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                        <td class="px-6 py-4 text-center">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold <?php echo $item['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
                                 <?php echo $item['is_active'] ? 'Aktif' : 'Nonaktif'; ?>
                             </span>
                         </td>
-                        <td>
+                        <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
                                     <?php 
@@ -335,7 +335,7 @@ if ($action === 'list') {
                                 </div>
                             </div>
                         </td>
-                        <td class="text-center">
+                        <td class="px-6 py-4 text-center">
                             <div class="flex items-center justify-center gap-2">
                                 <button type="button" data-toggle="modal" data-target="#modalDetail" onclick='viewDetail(<?= json_encode($item) ?>)' class="text-green-600 hover:text-green-800" title="Lihat Detail">
                                     <i class="fas fa-eye"></i>

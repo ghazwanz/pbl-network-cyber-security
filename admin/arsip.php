@@ -309,23 +309,23 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
     </div>
     
     <!-- Table -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <?php if ($arsip_list && count($arsip_list) > 0): ?>
         <div class="overflow-x-auto">
-            <table class="admin-table">
+            <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr>
-                        <th>Judul & Penulis</th>
-                        <th class="w-32">Kategori</th>
-                        <th class="w-24 text-center">Tahun</th>
-                        <th class="w-40">Penerbit</th>
-                        <th class="w-24 text-center">Download</th>
-                        <th class="w-24 text-center">Status</th>
-                        <th class="w-40">Dibuat Oleh</th>
-                        <th class="w-32 text-center">Aksi</th>
+                    <tr class="bg-gray-50 text-gray-600 text-xs uppercase font-bold border-b border-gray-200">
+                        <th class="px-6 py-4">Judul & Penulis</th>
+                        <th class="px-6 py-4 w-32">Kategori</th>
+                        <th class="px-6 py-4 w-24 text-center">Tahun</th>
+                        <th class="px-6 py-4 w-40">Penerbit</th>
+                        <th class="px-6 py-4 w-24 text-center">Download</th>
+                        <th class="px-6 py-4 w-24 text-center">Status</th>
+                        <th class="px-6 py-4 w-40">Dibuat Oleh</th>
+                        <th class="px-6 py-4 w-32 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-100">
                     <?php foreach ($arsip_list as $item): ?>
                     <?php
                     // Get authors
@@ -338,11 +338,11 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                         [$item['id']]
                     );
                     ?>
-                    <tr>
-                        <td>
-                            <p class="font-semibold text-gray-800"><?php echo htmlspecialchars($item['judul']); ?></p>
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4">
+                            <p class="font-semibold text-gray-800 text-sm"><?php echo htmlspecialchars($item['judul']); ?></p>
                             <?php if ($authors): ?>
-                            <p class="text-sm text-blue-600 mt-1">
+                            <p class="text-sm text-blue-600 mt-1 line-clamp-2">
                                 <i class="fas fa-user mr-1"></i>
                                 <?php 
                                 $author_names = array_map(function($a) { return $a['nama_lengkap']; }, $authors);
@@ -351,7 +351,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                             </p>
                             <?php endif; ?>
                             <?php if ($item['keywords']): ?>
-                            <p class="text-xs text-gray-500 mt-1">
+                            <p class="text-xs text-gray-500 mt-1 line-clamp-2">
                                 <i class="fas fa-tags mr-1"></i><?php echo htmlspecialchars($item['keywords']); ?>
                             </p>
                             <?php endif; ?>
@@ -361,29 +361,29 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                             </span>
                             <?php endif; ?>
                         </td>
-                        <td>
-                            <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold <?php echo $item['kategori'] === 'penelitian' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'; ?>">
+                        <td class="px-6 py-4">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold <?php echo $item['kategori'] === 'penelitian' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'; ?>">
                                 <?php echo ucfirst($item['kategori']); ?>
                             </span>
                         </td>
-                        <td class="text-center font-semibold text-gray-700">
+                        <td class="px-6 py-4 text-center font-semibold text-gray-700">
                             <?php echo $item['tahun_publikasi']; ?>
                         </td>
-                        <td class="text-sm text-gray-600">
+                        <td class="px-6 py-4 text-sm text-gray-600">
                             <?php echo htmlspecialchars($item['penerbit'] ?: '-'); ?>
                         </td>
-                        <td class="text-center">
+                        <td class="px-6 py-4 text-center">
                             <span class="inline-flex items-center gap-1 text-purple-600 font-semibold">
                                 <i class="fas fa-download"></i>
                                 <?php echo number_format($item['jumlah_download']); ?>
                             </span>
                         </td>
-                        <td class="text-center">
-                            <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold <?php echo $item['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                        <td class="px-6 py-4 text-center">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold <?php echo $item['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
                                 <?php echo $item['is_active'] ? 'Aktif' : 'Nonaktif'; ?>
                             </span>
                         </td>
-                        <td>
+                        <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
                                     <?php 
@@ -415,7 +415,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                                 </div>
                             </div>
                         </td>
-                        <td class="text-center">
+                        <td class="px-6 py-4 text-center">
                             <div class="flex items-center justify-center gap-2">
                                 <button type="button" data-toggle="modal" data-target="#modalDetailArsip" 
                                    onclick='viewDetailArsip(<?php echo json_encode($item); ?>, <?php echo json_encode($author_names ?? []); ?>)'

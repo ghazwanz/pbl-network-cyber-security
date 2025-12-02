@@ -265,35 +265,6 @@ $agenda_mendatang = executeQuery("SELECT * FROM galeri WHERE tipe = 'agenda' AND
     </div>
     <?php endif; ?>
     
-    <!-- Quick Actions -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-bold text-gray-800 mb-4">
-            <i class="fas fa-bolt text-yellow-600 mr-2"></i>Quick Actions
-        </h3>
-        
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <a href="galeri.php?action=add" class="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
-                <i class="fas fa-plus-circle text-3xl text-blue-600 mb-2"></i>
-                <span class="text-sm font-semibold text-gray-700">Tambah Galeri</span>
-            </a>
-            
-            <a href="pengelola.php?action=add" class="flex flex-col items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
-                <i class="fas fa-user-plus text-3xl text-green-600 mb-2"></i>
-                <span class="text-sm font-semibold text-gray-700">Tambah Pengelola</span>
-            </a>
-            
-            <a href="arsip.php?action=add" class="flex flex-col items-center justify-center p-4 bg-red-50 rounded-lg hover:bg-red-100 transition">
-                <i class="fas fa-file-upload text-3xl text-red-600 mb-2"></i>
-                <span class="text-sm font-semibold text-gray-700">Upload Arsip</span>
-            </a>
-            
-            <a href="<?php echo SITE_URL; ?>/index.php" target="_blank" class="flex flex-col items-center justify-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
-                <i class="fas fa-external-link-alt text-3xl text-purple-600 mb-2"></i>
-                <span class="text-sm font-semibold text-gray-700">Lihat Website</span>
-            </a>
-        </div>
-    </div>
-    
 </div>
 
 <?php

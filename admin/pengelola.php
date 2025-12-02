@@ -283,31 +283,31 @@ if ($action === 'list') {
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <?php if ($pengelola_list && count($pengelola_list) > 0): ?>
                 <div class="overflow-x-auto">
-                    <table class="admin-table">
+                    <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr>
-                                <th class="w-20 text-center">Foto</th>
-                                <th class="w-64">Nama & NIP/NIDN</th>
-                                <th class="w-48">Jabatan</th>
-                                <th class="w-48">Kontak</th>
-                                <th class="w-24 text-center">Status</th>
-                                <th class="w-40">Dibuat Oleh</th>
-                                <th class="w-32 text-center">Aksi</th>
+                            <tr class="bg-gray-50 text-gray-600 text-xs uppercase font-bold border-b border-gray-200">
+                                <th class="px-6 py-4 w-20 text-center">Foto</th>
+                                <th class="px-6 py-4 w-64">Nama & NIP/NIDN</th>
+                                <th class="px-6 py-4 w-48">Jabatan</th>
+                                <th class="px-6 py-4 w-48">Kontak</th>
+                                <th class="px-6 py-4 w-24 text-center">Status</th>
+                                <th class="px-6 py-4 w-40">Dibuat Oleh</th>
+                                <th class="px-6 py-4 w-32 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-gray-100">
                             <?php foreach ($pengelola_list as $item): ?>
-                                <tr>
-                                    <td class="text-center">
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 text-center">
                                         <img src="<?php echo UPLOAD_URL . htmlspecialchars($item['foto_path']); ?>"
                                             alt="<?php echo htmlspecialchars($item['nama_lengkap']); ?>"
                                             class="w-12 h-12 object-cover rounded-full border border-gray-200 mx-auto"
                                             onerror="this.src='<?php echo ASSETS_URL; ?>/img/no-image.png'">
                                     </td>
-                                    <td>
+                                    <td class="px-6 py-4">
                                         <p class="font-bold text-gray-800 text-sm">
                                             <?php echo htmlspecialchars($item['nama_lengkap']); ?>
                                         </p>
@@ -320,12 +320,12 @@ if ($action === 'list') {
                                             </p>
                                         <?php endif; ?>
                                     </td>
-                                    <td>
+                                    <td class="px-6 py-4">
                                         <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
                                             <?php echo htmlspecialchars($item['jabatan']); ?>
                                         </span>
                                     </td>
-                                    <td class="text-sm text-gray-600">
+                                    <td class="px-6 py-4 text-sm text-gray-600">
                                         <div class="flex flex-col gap-1">
                                             <span class="flex items-center text-xs"><i class="fas fa-envelope text-blue-500 w-4"></i>
                                                 <?php echo htmlspecialchars($item['email']); ?></span>
@@ -335,12 +335,12 @@ if ($action === 'list') {
                                             <?php endif; ?>
                                         </div>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="px-6 py-4 text-center">
                                         <span class="inline-block px-2 py-1 rounded text-xs font-medium <?php echo $item['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
                                             <?php echo $item['is_active'] ? 'Aktif' : 'Nonaktif'; ?>
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="px-6 py-4">
                                         <div class="flex items-center gap-2">
                                             <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
                                                 <?php
@@ -369,7 +369,7 @@ if ($action === 'list') {
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="px-6 py-4 text-center">
                                         <div class="flex items-center justify-center gap-2">
                                             <button type="button" data-toggle="modal" data-target="#modalDetail"
                                                 onclick='viewDetail(<?= json_encode($item) ?>)'

@@ -248,7 +248,7 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan");
                                 <th class="px-6 py-4 w-24">Gambar</th>
                                 <th class="px-6 py-4 w-48">Judul Layanan</th> 
                                 <th class="px-6 py-4">Deskripsi</th>
-                                <th class="w-40">Dibuat Oleh</th>
+                                <th class="px-6 py-4 w-40">Dibuat Oleh</th>
                                 <th class="px-6 py-4 w-32">Tipe</th>
                                 <th class="px-6 py-4 w-32">Status</th>
                                 <th class="px-6 py-4 text-left w-32">Aksi</th>
@@ -272,7 +272,7 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan");
                                         <?= htmlspecialchars($row['deskripsi']) ?>
                                     </p>
                                 </td>
-                            <td>
+                            <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
                                     <?php 
