@@ -1,91 +1,117 @@
 <?php
 /**
  * Public Profile Page
- * File: public/profile.php
- * Design Reference: Modern & Professional with Navy Blue Theme
+ * File: public/profil.php
+ * Updated: Hero Section match Index.php style
  */
 
-$page_title = "Profil - Laboratorium NCS";
 require_once __DIR__ . '/../includes/header.php';
 
-// 1. Ambil Data Profil Lab (Visi, Misi, Sejarah/Deskripsi)
-$profil = executeQuerySingle("SELECT * FROM profil_lab LIMIT 1");
+// 1. Inisialisasi Koneksi Database
+$pdo = getDBConnection();
 
-// Default value jika data kosong (untuk mencegah error)
+// 2. Ambil Data Profil Lab
+try {
+    $stmt = $pdo->prepare("SELECT * FROM profil_lab LIMIT 1");
+    $stmt->execute();
+    $profil = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $profil = false;
+}
+
+// Default value jika data kosong
 if (!$profil) {
     $profil = [
         'visi' => 'Visi belum diatur.',
-        'misi' => 'Misi belum diatur.',
+        'misi' => '[]',
         'sejarah' => 'Deskripsi profil belum diatur.'
     ];
 }
 
-// 2. Ambil Data Pengelola Lab (Diurutkan berdasarkan urutan_tampil)
-// Pastikan kolom 'foto_path', 'nama_lengkap', 'jabatan', 'pendidikan_terakhir' sudah terisi di DB
-$pengelola_list = executeQuery("SELECT * FROM pengelola WHERE is_active = true ORDER BY urutan_tampil ASC");
+// 3. Ambil Data Pengelola Lab
+try {
+    $stmt_pengelola = $pdo->prepare("SELECT * FROM pengelola WHERE is_active = true ORDER BY urutan_tampil ASC");
+    $stmt_pengelola->execute();
+    $pengelola_list = $stmt_pengelola->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $pengelola_list = [];
+}
 
-// Helper function untuk memformat Misi (jika disimpan sebagai teks panjang dengan enter)
-function formatMisiToList($misiText) {
-    $lines = explode("\n", $misiText); // Pecah berdasarkan baris baru
+// Helper function untuk memformat Misi
+function formatMisiToList($misiData) {
+    $listItems = [];
+    $decoded = json_decode($misiData, true);
+
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+        $listItems = $decoded;
+    } else {
+        $lines = explode("\n", $misiData);
+        $listItems = array_filter(array_map('trim', $lines));
+    }
+
     $html = '';
-    foreach ($lines as $index => $line) {
-        $line = trim($line);
-        if (!empty($line)) {
-            // Hapus angka di depan jika ada (misal "1. Mengembangkan...") agar rapi di list
-            $line = preg_replace('/^\d+[\.\)]\s*/', '', $line); 
-            
+    foreach ($listItems as $index => $item) {
+        if (!empty($item)) {
+            $cleanItem = preg_replace('/^\d+[\.\)]\s*/', '', $item);
             $num = $index + 1;
             $html .= '<li class="flex items-start gap-4">
                         <div class="mt-1.5 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                             <span class="text-blue-600 font-bold text-sm">' . $num . '</span>
                         </div>
-                        <p class="text-lg text-gray-600 leading-relaxed">' . htmlspecialchars($line) . '</p>
+                        <p class="text-lg text-gray-600 leading-relaxed">' . htmlspecialchars($cleanItem) . '</p>
                       </li>';
         }
     }
+    
+    if (empty($html)) {
+        return '<li class="text-gray-500 italic">Belum ada data misi.</li>';
+    }
+
     return $html;
 }
 ?>
 
 <main class="overflow-hidden">
 
-    <section class="relative pt-32 pb-20 lg:pt-44 lg:pb-32 bg-gradient-to-br from-[#F8FCFF] via-white to-blue-50">
-        <div class="absolute top-0 left-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse"></div>
-        <div class="absolute bottom-0 right-0 w-96 h-96 bg-orange-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse" style="animation-delay: 1s;"></div>
-        
-        <div class="absolute left-10 top-40 w-16 h-16 border-4 border-orange-300 rounded-full opacity-40 animate-spin" style="animation-duration: 20s;"></div>
-        <div class="absolute right-10 bottom-40 w-10 h-10 bg-blue-400 rotate-45 opacity-30 animate-bounce"></div>
+    <section class="relative lg:py-44 py-32 bg-gradient-to-br from-[#F8FCFF] via-white px-4 to-orange-50 overflow-hidden">  
 
-        <div class="container mx-auto max-w-7xl px-4 relative z-10">
+        <div class="relative max-w-7xl mx-auto pointer-events-none">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-orange-100 rounded-2xl mix-blend-multiply filter blur-2xl opacity-30 animate-pulse"></div>
+            <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse" style="animation-delay: 1s;"></div>
+        </div>
+         
+        <div class="container mx-auto max-w-7xl px-4 relative ">
             
-            <div class="text-center max-w-4xl mx-auto mb-16" data-aos="fade-up">
-                <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg">
-                    <i class="fas fa-university text-orange-500"></i>
-                    <span class="text-sm tracking-wide">PROFIL KAMI</span>
+            <div class="mx-auto max-w-4xl flex flex-col items-center text-center mb-16">
+                
+                <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg" data-aos="fade-up">
+                    <i class="fas fa-university"></i>
+                    <span>PROFIL KAMI</span>
                 </div>
 
-                <h1 class="text-5xl md:text-6xl font-medium text-[#1B2D62] mb-6 leading-tight">
+                <h1 class="text-5xl md:text-6xl font-medium text-[#1B2D62] leading-tight mb-6" data-aos="fade-up" data-aos-delay="100">
                     Tentang Laboratorium
                 </h1>
-                
-                <p class="text-xl text-gray-600 leading-relaxed">
+
+                <div class="text-lg text-gray-600 leading-relaxed max-w-3xl" data-aos="fade-up" data-aos-delay="200">
                     <?= nl2br(htmlspecialchars($profil['sejarah'] ?? '')) ?>
-                </p>
+                </div>
+
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8" data-aos="fade-up" data-aos-delay="200">
-                <div class="relative h-[400px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl group">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8" data-aos="fade-up" data-aos-delay="300">
+                <div class="relative h-[400px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl group border-4 border-white">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
                     <img src="../assets/img/room1.png" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" alt="Lab Room 1">
                 </div>
 
                 <div class="flex flex-col gap-6 lg:gap-8">
-                    <div class="relative h-[250px] lg:h-[288px] rounded-3xl overflow-hidden shadow-xl group">
+                    <div class="relative h-[250px] lg:h-[288px] rounded-3xl overflow-hidden shadow-xl group border-4 border-white">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
                         <img src="../assets/img/room2.png" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" alt="Lab Room 2">
                     </div>
 
-                    <div class="relative h-[250px] lg:h-[288px] rounded-3xl overflow-hidden shadow-xl group">
+                    <div class="relative h-[250px] lg:h-[288px] rounded-3xl overflow-hidden shadow-xl group border-4 border-white">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
                         <img src="../assets/img/room3.png" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" alt="Lab Room 3">
                     </div>
@@ -95,7 +121,7 @@ function formatMisiToList($misiText) {
         </div>
     </section>
 
-    <section class="py-20 bg-white relative">
+    <section class="py-20 bg-white relative border-t border-gray-100">
         <div class="container mx-auto max-w-7xl px-4">
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-20 items-start" data-aos="fade-right">
@@ -113,8 +139,8 @@ function formatMisiToList($misiText) {
                 </div>
 
                 <div class="bg-blue-50 p-8 rounded-2xl border-l-4 border-orange-500">
-                    <p class="text-lg text-gray-700 leading-relaxed">
-                        "<?= htmlspecialchars($profil['visi']) ?>"
+                    <p class="text-lg text-gray-700 leading-relaxed italic">
+                        "<?= htmlspecialchars($profil['visi'] ?? '') ?>"
                     </p>
                 </div>
             </div>
@@ -137,7 +163,7 @@ function formatMisiToList($misiText) {
 
                 <div>
                     <ul class="space-y-6">
-                        <?= formatMisiToList($profil['misi']) ?>
+                        <?= formatMisiToList($profil['misi'] ?? '') ?>
                     </ul>
                 </div>
             </div>
@@ -145,7 +171,7 @@ function formatMisiToList($misiText) {
         </div>
     </section>
 
-<section class="py-24 px-4">
+    <section class="py-24 px-4 bg-[#F8FCFF]">
         <div class="mx-auto max-w-7xl">
             
             <div class="text-center max-w-3xl mx-auto mb-16" data-aos="fade-up">
@@ -166,7 +192,7 @@ function formatMisiToList($misiText) {
                 
                 <?php if ($pengelola_list && count($pengelola_list) > 0): ?>
                     <?php foreach ($pengelola_list as $index => $p): 
-                        // Cek foto
+                        // Setup path foto
                         $imgSrc = !empty($p['foto_path']) && file_exists("../uploads" . $p['foto_path']) 
                                   ? UPLOAD_URL . $p['foto_path'] 
                                   : ASSETS_URL . '/img/no-image.png'; 
@@ -176,35 +202,34 @@ function formatMisiToList($misiText) {
                          data-aos="fade-up" 
                          data-aos-delay="<?= ($index * 100) ?>">
                         
-                        <div class="aspect-[4/4] w-full overflow-hidden rounded-2xl bg-gray-200 mb-5 relative shadow-md">
-                            <img src="<?= htmlspecialchars($imgSrc) ?>" 
-                                 alt="<?= htmlspecialchars($p['nama_lengkap']) ?>"
-                                 class="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105 filter grayscale-[10%] group-hover:grayscale-0">
-                            
-                            <div class="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        </div>
+                        <a href="detail_pengelola.php?id=<?= $p['id'] ?>" class="block cursor-pointer">
+                            <div class="aspect-[4/4] w-full overflow-hidden rounded-2xl bg-gray-200 mb-5 relative shadow-md">
+                                <img src="<?= htmlspecialchars($imgSrc) ?>" 
+                                     alt="<?= htmlspecialchars($p['nama_lengkap']) ?>"
+                                     class="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105 filter grayscale-[10%] group-hover:grayscale-0">
+                                
+                                <div class="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+                                    <span class="text-white text-sm font-semibold tracking-wider">LIHAT PROFIL <i class="fas fa-arrow-right ml-1"></i></span>
+                                </div>
+                            </div>
+                        </a>
                         
-                        <div class="flex justify-between items-start px-1">
-                            <div>
+                        <div class="px-1">
+                            <a href="detail_pengelola.php?id=<?= $p['id'] ?>" class="hover:underline decoration-blue-900">
                                 <h3 class="text-xl font-bold text-[#1B2D62] leading-tight mb-1">
                                     <?= htmlspecialchars($p['nama_lengkap']) ?>
                                 </h3>
-                                
-                                <p class="text-gray-500 text-sm font-medium uppercase tracking-wide">
-                                    <?= htmlspecialchars($p['jabatan']) ?>
-                                </p>
-                            </div>
-
-                            <a href="#" class="text-gray-300 hover:text-[#0077b5] transition-colors duration-300 transform hover:scale-110">
-                                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                </svg>
                             </a>
+                            
+                            <p class="text-gray-500 text-sm font-medium uppercase tracking-wide">
+                                <?= htmlspecialchars($p['jabatan']) ?>
+                            </p>
                         </div>
                     </div>
 
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <div class="col-span-3 text-center py-10 w-full">
+                    <div class="col-span-3 text-center py-10 w-full bg-white rounded-xl border border-dashed border-gray-300">
                         <p class="text-gray-500 italic">Belum ada data pengelola.</p>
                     </div>
                 <?php endif; ?>
