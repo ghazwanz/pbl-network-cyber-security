@@ -1,5 +1,4 @@
 <?php
-
 $page_title = "Layanan";
 require_once __DIR__ . '/../includes/admin_header.php';
 
@@ -7,19 +6,21 @@ require_once __DIR__ . '/../includes/admin_header.php';
 $action = $_GET['action'] ?? ($_POST['action'] ?? 'list');
 $id = $_GET['id'] ?? ($_POST['id'] ?? null);
 
-// Handle Delete
+// --- 1. HANDLE DELETE ---
 if ($action === 'delete' && $id) {
-    // Pastikan fungsi executeQuerySingle ada di sistem Anda
+    // Mengambil data untuk mendapatkan path gambar
     $layanan = executeQuerySingle("SELECT * FROM layanan WHERE id = ?", [(int)$id]);
     
     if ($layanan) {
-        // Delete image file
-        if ($layanan['gambar_path']) {
-            deleteFile($layanan['gambar_path']);
+        // Hapus file fisik jika ada
+        if (!empty($layanan['gambar_path'])) {
+            $file_path_abs = $_SERVER['DOCUMENT_ROOT'] . $layanan['gambar_path'];
+            if (file_exists($file_path_abs)) {
+                unlink($file_path_abs);
+            }
         }
 
-        
-        // Delete from database
+        // Hapus dari database
         $result = executeNonQuery("DELETE FROM layanan WHERE id = ?", [(int)$id]);
         
         if ($result) {
@@ -35,9 +36,11 @@ if ($action === 'delete' && $id) {
     exit;
 }
 
-// Handle Form Submission
+// --- 2. HANDLE FORM SUBMISSION (SAVE) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
     $errors = [];
+    
+    // Sanitasi Input
     $nama_layanan = sanitize($_POST['nama_layanan'] ?? '');
     $deskripsi = sanitize($_POST['deskripsi'] ?? '');
     $tipe_layanan = sanitize($_POST['tipe_layanan'] ?? '');
@@ -47,19 +50,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
     if (empty($nama_layanan)) $errors[] = "Nama layanan wajib diisi";
     
     // Handle image upload
-    $gambar_path = '';
+    $gambar_path = $_POST['gambar_lama'] ?? ''; // Default ke gambar lama jika edit
     
     if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === UPLOAD_ERR_OK) {
+        // Pastikan parameter ke-2 dan ke-3 sesuai dengan struktur folder Anda
         $upload_result = uploadImage($_FILES['gambar'], 'layanan', 'layanan');
         
         if ($upload_result['success']) {
             $gambar_path = '/layanan/' . $upload_result['filename'];
             
-            // Delete old image if editing
+            // Hapus gambar lama jika sedang edit dan upload baru berhasil
             if ($id) {
                 $old_layanan = executeQuerySingle("SELECT gambar_path FROM layanan WHERE id = ?", [(int)$id]);
-                if ($old_layanan && $old_layanan['gambar_path']) {
-                    deleteFile($old_layanan['gambar_path']);
+                if ($old_layanan && !empty($old_layanan['gambar_path'])) {
+                    $old_file_abs = $_SERVER['DOCUMENT_ROOT'] . $old_layanan['gambar_path'];
+                    if (file_exists($old_file_abs)) {
+                        unlink($old_file_abs);
+                    }
                 }
             }
         } else {
@@ -70,19 +77,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
     // Save to Database
     if (empty($errors)) {
         if ($id) {
-            // Update
-            if ($gambar_path) {
-                $query = "UPDATE layanan SET nama_layanan = ?, deskripsi = ?, tipe_layanan = ?, status = ?, gambar_path = ?, updated_at = NOW() WHERE id = ?";
-                $params = [$nama_layanan, $deskripsi, $tipe_layanan, $status, $gambar_path, (int)$id];
-            } else {
-                $query = "UPDATE layanan SET nama_layanan = ?, deskripsi = ?, tipe_layanan = ?, status = ?, updated_at = NOW() WHERE id = ?";
-                $params = [$nama_layanan, $deskripsi, $tipe_layanan, $status, (int)$id];
-            }
+            // UPDATE
+            // Catatan: updated_at tidak perlu di-set manual karena sudah ada Trigger di database
+            $query = "UPDATE layanan SET nama_layanan = ?, deskripsi = ?, tipe_layanan = ?, status = ?, gambar_path = ? WHERE id = ?";
+            $params = [$nama_layanan, $deskripsi, $tipe_layanan, $status, $gambar_path, (int)$id];
+            
             $msg_success = "Layanan berhasil diperbarui";
         } else {
-            // Insert
-            $query = "INSERT INTO layanan (nama_layanan, deskripsi, tipe_layanan, status, gambar_path) VALUES (?, ?, ?, ?, ?)";
-            $params = [$nama_layanan, $deskripsi, $tipe_layanan, $status, $gambar_path];
+            // INSERT
+            // Ambil ID Admin yang sedang login
+            $admin = getCurrentUser(); 
+            $id_admin = $admin['id'] ?? null;
+
+            $query = "INSERT INTO layanan (nama_layanan, deskripsi, tipe_layanan, status, gambar_path, id_admin) VALUES (?, ?, ?, ?, ?, ?)";
+            $params = [$nama_layanan, $deskripsi, $tipe_layanan, $status, $gambar_path, $id_admin];
+            
             $msg_success = "Layanan berhasil ditambahkan";
         }
 
@@ -102,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
     }
 }
 
-// Get Data
+// --- 3. GET DATA & FILTER ---
 $search = $_GET['search'] ?? '';
 $filter_tipe = $_GET['filter'] ?? '';
 
@@ -110,9 +119,11 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 10;
 $offset = ($page - 1) * $limit;
 
+// Ambil list tipe layanan yang unik dari database untuk dropdown filter
 $types_query = "SELECT DISTINCT tipe_layanan FROM layanan WHERE tipe_layanan IS NOT NULL AND tipe_layanan != '' ORDER BY tipe_layanan ASC";
 $existing_types = executeQuery($types_query);
 
+// Build Query
 $where = [];
 $params = [];
 
@@ -129,201 +140,240 @@ if ($search) {
 }
 
 $where_clause = count($where) > 0 ? 'WHERE ' . implode(' AND ', $where) : '';
+
+// Hitung Total Data (Pagination)
 $count_query = "SELECT COUNT(*) FROM layanan " . $where_clause;
 $total_records = countRows($count_query, $params); 
 $total_pages = ceil($total_records / $limit);
 
-$query = "SELECT * FROM layanan " . $where_clause . " ORDER BY id DESC LIMIT ? OFFSET ?";
+// Query Utama
+$query = "SELECT l.*, u.nama_lengkap as created_by_name 
+          FROM layanan l 
+          LEFT JOIN users u ON l.id_admin = u.id 
+          " . $where_clause . " 
+          ORDER BY l.nama_layanan ASC 
+          LIMIT ? OFFSET ?";
 $params[] = $limit;
 $params[] = $offset;
 $layanan_list = executeQuery($query, $params);
 
-// Hitung Statistik
+// Hitung Statistik Dashboard
 $count_aktif = countRows("SELECT COUNT(*) FROM layanan WHERE status = 'Aktif'");
 $count_nonaktif = countRows("SELECT COUNT(*) FROM layanan WHERE status = 'Non-Aktif'");
-$count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
+$count_layanan = countRows("SELECT COUNT(*) FROM layanan");
 
 ?>
 
 <div class="flex flex-col overflow-hidden">
     <div class="flex-1 flex flex-col overflow-hidden">
+        
         <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <h2 class="text-lg font-semibold text-blue-900"><i class="fa-solid fa-headset mr-2"></i>Daftar Layanan</h2>
-                <p class="text-sm text-gray-600">Kelola data layanan.</p>
+                <p class="text-sm text-gray-600">Kelola data layanan laboratorium.</p>
             </div>
             
             <div class="flex flex-col sm:flex-row gap-3">
                 <button type="button" data-toggle="modal" data-target="#modalLayanan" onclick="resetForm()" class="inline-flex items-center justify-center border select-none font-sans font-medium text-center transition-all duration-300 ease-in text-sm rounded-md py-2.5 px-5 shadow-sm hover:shadow-md bg-blue-600 border-blue-600 text-white hover:bg-blue-700 gap-2">
                     <i class="fas fa-plus"></i> Tambah Layanan
                 </button>
-                </div>
             </div>
         </div>
 
-    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-        <form method="GET" class="flex flex-col md:flex-row gap-4">
-            
-            <div class="flex-1">
-                <input 
-                    type="text" 
-                    name="search"
-                    value="<?php echo htmlspecialchars($search); ?>"
-                    placeholder="Cari nama layanan atau deskripsi..."
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
-                >  
-            </div>
-
-            <select name="filter" class="w-full md:w-48 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none" onchange="this.form.submit()">
+        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+            <form method="GET" class="flex flex-col md:flex-row gap-4">
                 
-                <option value="">Semua Tipe</option>
+                <div class="flex-1">
+                    <input 
+                        type="text" 
+                        name="search"
+                        value="<?php echo htmlspecialchars($search); ?>"
+                        placeholder="Cari nama layanan atau deskripsi..."
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                    >  
+                </div>
 
-                <option value="Jasa" <?php echo $filter_tipe === 'Jasa' ? 'selected' : ''; ?>>Jasa</option>
+                <select name="filter" class="w-full md:w-48 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none" onchange="this.form.submit()">
+                    <option value="">Semua Tipe</option>
+                    
+                    <?php 
+                    $hasJasa = false;
+                    if (!empty($existing_types)) {
+                        foreach ($existing_types as $type) {
+                            $selected = ($filter_tipe === $type['tipe_layanan']) ? 'selected' : '';
+                            echo '<option value="'.htmlspecialchars($type['tipe_layanan']).'" '.$selected.'>'.htmlspecialchars($type['tipe_layanan']).'</option>';
+                            if ($type['tipe_layanan'] === 'Jasa') $hasJasa = true;
+                        }
+                    }
+                    if (!$hasJasa) {
+                        echo '<option value="Jasa" '.($filter_tipe === 'Jasa' ? 'selected' : '').'>Jasa</option>';
+                    }
+                    ?>
+                </select>
 
-                <?php if (!empty($existing_types)): ?>
-                    <?php foreach ($existing_types as $type): ?>
-                        <?php 
-                            if ($type['tipe_layanan'] === 'Jasa') continue; 
+                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-search mr-2"></i> Cari
+                </button>
+
+                <?php if ($search || $filter_tipe): ?>
+                <a href="?action=list" class="inline-flex items-center justify-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                    <i class="fas fa-times mr-2"></i> Reset
+                </a>
+                <?php endif; ?>
+            </form>
+        </div>
+
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+                <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Total Layanan</p>
+                <p class="text-2xl font-bold text-gray-800"><?php echo $count_layanan; ?></p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+                <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Status Aktif</p>
+                <p class="text-2xl font-bold text-green-600"><?php echo $count_aktif; ?></p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
+                <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Status Non-Aktif</p>
+                <p class="text-2xl font-bold text-orange-600"><?php echo $count_nonaktif; ?></p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            
+            <?php if(!empty($layanan_list)): ?>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-600 text-xs uppercase font-bold border-b border-gray-200">
+                                <th class="px-6 py-4 w-24">Gambar</th>
+                                <th class="px-6 py-4 w-48">Judul Layanan</th> 
+                                <th class="px-6 py-4">Deskripsi</th>
+                                <th class="w-40">Dibuat Oleh</th>
+                                <th class="px-6 py-4 w-32">Tipe</th>
+                                <th class="px-6 py-4 w-32">Status</th>
+                                <th class="px-6 py-4 text-left w-32">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <?php foreach($layanan_list as $row): ?>
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-4">
+                                    <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 border">
+                                        <img src="<?= !empty($row['gambar_path']) ? UPLOAD_URL . htmlspecialchars($row['gambar_path']) : 'https://via.placeholder.com/150?text=No+Img' ?>" 
+                                             alt="Img" class="w-full h-full object-cover">
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-gray-800 text-sm">
+                                    <?= htmlspecialchars($row['nama_layanan']) ?>
+                                    <div class="text-xs text-gray-400 font-normal mt-1">By: <?= htmlspecialchars($row['created_by_name'] ?? 'System') ?></div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-600 line-clamp-2 max-w-sm">
+                                        <?= htmlspecialchars($row['deskripsi']) ?>
+                                    </p>
+                                </td>
+                            <td>
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
+                                    <?php 
+                                    if ($row['created_by_name']) {
+                                        $initials = '';
+                                        $words = explode(' ', $row['created_by_name']);
+                                        foreach ($words as $word) {
+                                            $initials .= strtoupper(substr($word, 0, 1));
+                                            if (strlen($initials) >= 2) break;
+                                        }
+                                        echo htmlspecialchars($initials);
+                                    } else {
+                                        echo '?';
+                                    }
+                                    ?>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">
+                                        <?php echo $row['created_by_name'] ? htmlspecialchars($row['created_by_name']) : 'Unknown'; ?>
+                                    </p>
+                                    <?php if (!empty($row['created_at'])): ?>
+                                    <p class="text-xs text-gray-500">
+                                        <?php 
+                                        $date = new DateTime($row['created_at']);
+                                        echo $date->format('d M Y'); 
+                                        ?>
+                                    </p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <?= htmlspecialchars($row['tipe_layanan']) ?>
+                                    </span>
+                                </td>
+                                <td class="px-6 whitespace-nowrap">
+                                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold <?php echo ($row['status'] == 'Aktif') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                                         <?= htmlspecialchars($row['status']) ?>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-left whitespace-nowrap">
+                                    <div class="flex items-center gap-2">
+                                        <button data-toggle="modal" data-target="#modalDetail" onclick='getData(<?= json_encode($row) ?>)' class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition" title="Lihat Detail">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button data-toggle="modal" data-target="#modalLayanan" onclick='editData(<?= json_encode($row) ?>)' class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <a href="?action=delete&id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus layanan ini?')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Hapus">
+                                            <i class="fas fa-trash-alt"></i>    
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <?php if ($total_pages > 1): ?>
+                <div class="d-flex justify-content-between align-items-center p-4 border-t border-gray-200">
+                    <div class="text-gray-500 text-sm">
+                        Menampilkan <?php echo $offset + 1; ?> - <?php echo min($offset + $limit, $total_records); ?>
+                        dari <?php echo $total_records; ?> data
+                    </div>
+                    <nav class="flex gap-2">
+                        <?php
+                            $url = 'layanan.php?';
+                            if ($filter_tipe) $url .= 'filter=' . urlencode($filter_tipe) . '&';
+                            if ($search) $url .= 'search=' . urlencode($search) . '&';
+                            echo createPagination($page, $total_pages, $url);
                         ?>
-                        <option value="<?= htmlspecialchars($type['tipe_layanan']) ?>" 
-                            <?= $filter_tipe === $type['tipe_layanan'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($type['tipe_layanan']) ?>
-                        </option>
-                    <?php endforeach; ?>
+                    </nav>
+                </div>
                 <?php endif; ?>
 
-            </select>
+            <?php else: ?>
+                
+                <?php 
+                    $empty_message = 'Belum ada data layanan.';
+                    if ($search) {
+                        $empty_message = 'Tidak ditemukan layanan untuk "' . htmlspecialchars($search) . '"';
+                    } elseif ($filter_tipe) {
+                        $empty_message = 'Tidak ada layanan dengan tipe "' . htmlspecialchars($filter_tipe) . '"';
+                    }
+                ?>
 
-            <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                <i class="fas fa-search mr-2"></i> Cari
-            </button>
-
-            <?php if ($search || $filter_tipe): ?>
-            <a href="?action=list" class="inline-flex items-center justify-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
-                <i class="fas fa-times mr-2"></i> Reset
-            </a>
-            <?php endif; ?>
-        </form>
-    </div>
-
-    <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
-            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Total Layanan</p>
-            <p class="text-2xl font-bold text-gray-800"><?php echo $count_layanan; ?></p>
-        </div>
-        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
-            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Status Aktif</p>
-            <p class="text-2xl font-bold text-green-600"><?php echo $count_aktif; ?></p>
-        </div>
-        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
-            <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Status Non-Aktif</p>
-            <p class="text-2xl font-bold text-orange-600"><?php echo $count_nonaktif; ?></p>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        
-        <?php if(!empty($layanan_list)): ?>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-50 text-gray-600 text-xs uppercase font-bold border-b border-gray-200">
-                            <th class="px-6 py-4 w-24">Gambar</th>
-                            <th class="px-6 py-4 w-48">Judul Layanan</th> 
-                            <th class="px-6 py-4">Deskripsi</th>
-                            <th class="px-6 py-4 w-32">Tipe</th>
-                            <th class="px-6 py-4 w-32">Status</th>
-                            <th class="px-6 py-4 text-left w-24">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        <?php foreach($layanan_list as $row): ?>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4">
-                                <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 border">
-                                    <img src="<?= !empty($row['gambar_path']) ? UPLOAD_URL . htmlspecialchars($row['gambar_path']) : 'https://via.placeholder.com/150?text=No+Img' ?>" 
-                                            alt="Img" class="w-full h-full object-cover">
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 font-semibold text-gray-800 text-sm">
-                                <?= htmlspecialchars($row['nama_layanan']) ?>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-sm text-gray-600 line-clamp-2 max-w-sm">
-                                    <?= htmlspecialchars($row['deskripsi']) ?>
-                                </p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    <?= htmlspecialchars($row['tipe_layanan']) ?>
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 w-[10%]">
-                                <span class="inline-flex items-center gap-1 text-sm font-medium <?= $row['status'] == 'Aktif' ? 'text-green-600' : 'text-red-500' ?>">
-                                    <i class="fas fa-<?= $row['status'] == 'Aktif' ? 'check' : 'times' ?>-circle"></i> <?= $row['status'] ?>
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-left whitespace-nowrap">
-                                <button data-toggle="modal" data-target="#modalDetail" onclick='getData(<?= json_encode($row) ?>)' class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition mr-1" title="Lihat Detail">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button data-toggle="modal" data-target="#modalLayanan" onclick='editData(<?= json_encode($row) ?>)' class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition mr-1" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <a href="?action=delete&id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus layanan ini?')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Hapus">
-                                    <i class="fas fa-trash-alt"></i>    
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <?php if ($total_pages > 1): ?>
-            <div class="d-flex justify-content-between align-items-center mt-4">
-                <div class="text-muted small">
-                    Menampilkan <?php echo $offset + 1; ?></span> - <?php echo min($offset + $limit, $total_records); ?>
-                    dari <?php echo $total_records; ?> data
+                <div class="text-center py-12 px-4">
+                    <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-lg">
+                        <?php echo $empty_message; ?>
+                    </p>
                 </div>
-                
-                <nav class="flex gap-2">
-                    <?php
-                        $url = 'layanan.php?';
-                        
-                        if ($filter_tipe) $url .= 'filter=' . urlencode($filter_tipe) . '&';
-                        if ($search) $url .= 'search=' . urlencode($search) . '&';
-                        
-                        echo createPagination($page, $total_pages, $url);
-                    ?>
-                </nav>
-            </div>
+
             <?php endif; ?>
 
-        <?php else: ?>
-            
-            <?php 
-                $empty_message = 'Belum ada data layanan.'; // Default
-                
-                if ($search) {
-                    $empty_message = 'Tidak ditemukan layanan untuk "' . htmlspecialchars($search) . '"';
-                } elseif ($filter_tipe) {
-                    $empty_message = 'Tidak ada layanan dengan tipe "' . htmlspecialchars($filter_tipe) . '"';
-                }
-            ?>
-
-            <div class="text-center py-12 px-4">
-                <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
-                <p class="text-gray-500 text-lg">
-                    <?php echo $empty_message; ?>
-                </p>
-            </div>
-
-        <?php endif; ?>
-
+        </div>
     </div>
+</div>
 
-<!-- Modal -->
 <div class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]" id="modalLayanan" aria-hidden="true">
     <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
         
@@ -342,6 +392,7 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
             <div class="p-6 pt-4">
                 <input type="hidden" name="id" id="inputId">
                 <input type="hidden" name="action" value="save">
+                <input type="hidden" name="gambar_lama" id="inputGambarLama">
 
                 <div class="space-y-4">
                     <div>
@@ -356,7 +407,7 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
                             <label class="block text-sm font-medium text-slate-700 mb-2">Tipe Layanan <span class="text-red-500">*</span></label>
                             <input type="text" name="tipe_layanan" id="inputTipe" required
                                    class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
-                                   placeholder="Contoh: Jasa">
+                                   placeholder="Contoh: Jasa / Konsultatif">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">Status <span class="text-red-500">*</span></label>
@@ -457,35 +508,43 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
 </div>
 
 <script>
+    // Reset form saat tombol tambah diklik
     function resetForm() {
         $('#inputId').val('');
         $('#inputNama').val('');
         $('#inputTipe').val('');
         $('#inputStatus').val('Aktif');
         $('#inputGambar').val('');
+        $('#inputGambarLama').val('');
         $('#inputDeskripsi').val('');
         $('#modalTitle').html('<i class="fas fa-plus-circle mr-2 text-blue-600"></i>Tambah Layanan Baru');
         $('#fileHelpText').html('<i class="fas fa-info-circle mr-1"></i>Format: JPG, PNG, GIF, WEBP. Maksimal 5MB.');
         $('#preview-image').attr('src', '').addClass('hidden');
     }
 
+    // Isi form saat tombol edit diklik
     function editData(data) {
         $('#inputId').val(data.id);
         $('#inputNama').val(data.nama_layanan);
         $('#inputTipe').val(data.tipe_layanan);
         $('#inputStatus').val(data.status);
-        $('#inputGambar').val('');
+        $('#inputGambar').val(''); // File input tidak bisa diisi value-nya demi keamanan browser
+        $('#inputGambarLama').val(data.gambar_path);
         $('#inputDeskripsi').val(data.deskripsi);
+        
         $('#modalTitle').html('<i class="fas fa-edit mr-2 text-blue-600"></i>Edit Layanan');
         $('#fileHelpText').html('<i class="fas fa-info-circle mr-1"></i>Biarkan kosong jika tetap menggunakan gambar lama.');
         
         if (data.gambar_path) {
-            $('#preview-image').attr('src', `../uploads/${data.gambar_path}`).removeClass('hidden');
+            // Pastikan path image benar sesuai konfigurasi UPLOAD_URL
+            const imgPath = "<?php echo UPLOAD_URL; ?>" + data.gambar_path;
+            $('#preview-image').attr('src', imgPath).removeClass('hidden');
         } else {
             $('#preview-image').attr('src', '').addClass('hidden');
         }
     }
 
+    // Isi modal detail saat tombol mata diklik
     function getData(data) {
         $('#detail-nama').text(data.nama_layanan);
         $('#detail-tipe').html(`<span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${data.tipe_layanan}</span>`);
@@ -497,7 +556,8 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan ");
         $('#detail-deskripsi').text(data.deskripsi);
         
         if (data.gambar_path) {
-            $('#detail-preview-image').attr('src', `../uploads/${data.gambar_path}`);
+            const imgPath = "<?php echo UPLOAD_URL; ?>" + data.gambar_path;
+            $('#detail-preview-image').attr('src', imgPath);
         } else {
             $('#detail-preview-image').attr('src', 'https://via.placeholder.com/400x300?text=No+Image');
         }
