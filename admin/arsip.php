@@ -70,20 +70,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_action'])) {
     
     // Handle PDF upload
     $upload_required = ($form_action === 'add');
+    $file_pdf_path = null;
+    
+    // Jika edit, ambil file PDF lama terlebih dahulu
+    if ($form_action === 'edit' && $id_edit) {
+        $old_arsip = executeQuerySingle("SELECT file_pdf_path FROM arsip WHERE id = ?", [$id_edit]);
+        $file_pdf_path = $old_arsip['file_pdf_path'] ?? null;
+    }
     
     if (isset($_FILES['file_pdf']) && $_FILES['file_pdf']['error'] === UPLOAD_ERR_OK) {
         $upload_result = uploadPDF($_FILES['file_pdf'], 'arsip', 'arsip');
         
         if ($upload_result['success']) {
-            $file_pdf_path = '/arsip/' . $upload_result['filename'];
-            
-            // Delete old PDF if editing
-            if ($form_action === 'edit' && $id_edit) {
-                $old_arsip = executeQuerySingle("SELECT file_pdf_path FROM arsip WHERE id = ?", [$id_edit]);
-                if ($old_arsip && $old_arsip['file_pdf_path']) {
-                    deleteFile($old_arsip['file_pdf_path']);
-                }
+            // Delete old PDF if editing and new file uploaded
+            if ($form_action === 'edit' && $file_pdf_path) {
+                deleteFile($file_pdf_path);
             }
+            $file_pdf_path = '/arsip/' . $upload_result['filename'];
         } else {
             $errors[] = $upload_result['message'];
         }
