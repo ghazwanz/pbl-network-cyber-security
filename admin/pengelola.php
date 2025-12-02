@@ -17,22 +17,25 @@ $id = $_GET['id'] ?? ($_POST['id'] ?? null);
 // --- 1. HANDLE DELETE ---
 if ($action === 'delete' && $id) {
     $pengelola = executeQuerySingle("SELECT * FROM pengelola WHERE id = ?", [$id]);
-
+    
     if ($pengelola) {
         // Check relations (Arsip)
         $arsip_count = countRows("SELECT COUNT(*) FROM arsip_pengelola WHERE pengelola_id = ?", [$id]);
-
+        
         if ($arsip_count > 0) {
             setFlashMessage('error', 'Gagal: Pengelola ini memiliki arsip terkait. Hapus relasi arsip terlebih dahulu.');
         } else {
-            // Delete photo file using helper function
+            // Delete photo file
             if ($pengelola['foto_path']) {
-                deleteFile($pengelola['foto_path']);
+                $file_path_abs = $_SERVER['DOCUMENT_ROOT'] . $pengelola['foto_path'];
+                if (file_exists($file_path_abs)) {
+                    unlink($file_path_abs);
+                }
             }
-
+            
             // Delete from database
             $result = executeNonQuery("DELETE FROM pengelola WHERE id = ?", [$id]);
-
+            
             if ($result) {
                 setFlashMessage('success', 'Pengelola berhasil dihapus');
             } else {
@@ -42,7 +45,7 @@ if ($action === 'delete' && $id) {
     } else {
         setFlashMessage('error', 'Data tidak ditemukan');
     }
-
+    
     redirect(ADMIN_URL . '/pengelola.php');
     exit;
 }
@@ -57,37 +60,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
     $jabatan = sanitize($_POST['jabatan'] ?? '');
     $pendidikan_terakhir = sanitize($_POST['pendidikan_terakhir'] ?? '');
     $bidang_keahlian = sanitize($_POST['bidang_keahlian'] ?? '');
+    $bio = sanitize($_POST['bio'] ?? '');
+    
+    // [MODIFIKASI] Menangkap input Link Sinta dan Google Scholar
+    $link_sinta = sanitize($_POST['link_sinta'] ?? '');
+    $link_google_scholar = sanitize($_POST['link_google_scholar'] ?? '');
+
     $email = sanitize($_POST['email'] ?? '');
     $no_telepon = sanitize($_POST['no_telepon'] ?? '');
-    $urutan_tampil = isset($_POST['urutan_tampil']) ? (int) $_POST['urutan_tampil'] : 99;
     $is_active = isset($_POST['is_active']) ? 1 : 0;
 
     $errors = [];
 
     // Validasi Dasar
-    if (empty($nama_lengkap))
-        $errors[] = "Nama lengkap harus diisi";
-    if (empty($nip_nidn))
-        $errors[] = "NIP/NIDN harus diisi";
-    if (empty($jabatan))
-        $errors[] = "Jabatan harus diisi";
-    if (empty($email))
-        $errors[] = "Email harus diisi";
-    if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL))
-        $errors[] = "Format email tidak valid";
+    if (empty($nama_lengkap)) $errors[] = "Nama lengkap harus diisi";
+    if (empty($nip_nidn)) $errors[] = "NIP/NIDN harus diisi";
+    if (empty($jabatan)) $errors[] = "Jabatan harus diisi";
+    if (empty($email)) $errors[] = "Email harus diisi";
+    if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Format email tidak valid";
 
     // Cek Duplikasi NIP/NIDN
     if ($form_action === 'add') {
         $existing = executeQuerySingle("SELECT id FROM pengelola WHERE nip_nidn = ?", [$nip_nidn]);
-        if ($existing)
-            $errors[] = "NIP/NIDN sudah terdaftar";
+        if ($existing) $errors[] = "NIP/NIDN sudah terdaftar";
     } elseif ($form_action === 'edit' && $id) {
         $existing = executeQuerySingle("SELECT id FROM pengelola WHERE nip_nidn = ? AND id != ?", [$nip_nidn, $id]);
-        if ($existing)
-            $errors[] = "NIP/NIDN sudah terdaftar pada pengelola lain";
+        if ($existing) $errors[] = "NIP/NIDN sudah terdaftar pada pengelola lain";
     }
 
-    // Handle Photo Upload using helper function
+    // Handle Photo Upload
     $foto_path = '';
 
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
@@ -96,11 +97,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
         if ($upload_result['success']) {
             $foto_path = '/pengelola/' . $upload_result['filename'];
 
-            // Hapus foto lama jika mode edit menggunakan helper function
             if ($form_action === 'edit' && $id) {
                 $old_data = executeQuerySingle("SELECT foto_path FROM pengelola WHERE id = ?", [$id]);
                 if ($old_data && $old_data['foto_path']) {
-                    deleteFile($old_data['foto_path']);
+                    $old_file_abs = $_SERVER['DOCUMENT_ROOT'] . $old_data['foto_path'];
+                    if (file_exists($old_file_abs)) {
+                        unlink($old_file_abs);
+                    }
                 }
             }
         } else {
@@ -112,58 +115,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
     if (empty($errors)) {
         if ($form_action === 'add') {
             $id_admin = getCurrentUser() ?? null;
+            // [MODIFIKASI] Menambahkan kolom 'link_google_scholar' pada query INSERT
             $query = "INSERT INTO pengelola (nama_lengkap, nip_nidn, jabatan, pendidikan_terakhir, 
-                      bidang_keahlian, email, no_telepon, foto_path, urutan_tampil, is_active, id_admin) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                      bidang_keahlian, bio, link_sinta, link_google_scholar, email, no_telepon, foto_path, is_active, id_admin) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $params = [
-                $nama_lengkap,
-                $nip_nidn,
-                $jabatan,
-                $pendidikan_terakhir,
-                $bidang_keahlian,
-                $email,
-                $no_telepon,
-                $foto_path,
-                $urutan_tampil,
-                $is_active,
-                $id_admin['id']
+                $nama_lengkap, $nip_nidn, $jabatan, $pendidikan_terakhir, 
+                $bidang_keahlian, $bio, $link_sinta, $link_google_scholar, $email, $no_telepon, $foto_path, 
+                $is_active, $id_admin['id'] ?? 1
             ];
             $msg_success = "Pengelola berhasil ditambahkan";
         } elseif ($form_action === 'edit' && $id) {
-            // Jika ada upload foto baru
+            // [MODIFIKASI] Menambahkan kolom 'link_google_scholar' pada query UPDATE
             if ($foto_path) {
                 $query = "UPDATE pengelola SET nama_lengkap = ?, nip_nidn = ?, jabatan = ?, 
-                          pendidikan_terakhir = ?, bidang_keahlian = ?, email = ?, no_telepon = ?, 
-                          foto_path = ?, urutan_tampil = ?, is_active = ? WHERE id = ?";
+                          pendidikan_terakhir = ?, bidang_keahlian = ?, bio = ?, link_sinta = ?, link_google_scholar = ?, email = ?, no_telepon = ?, 
+                          foto_path = ?, is_active = ? WHERE id = ?";
                 $params = [
-                    $nama_lengkap,
-                    $nip_nidn,
-                    $jabatan,
-                    $pendidikan_terakhir,
-                    $bidang_keahlian,
-                    $email,
-                    $no_telepon,
-                    $foto_path,
-                    $urutan_tampil,
-                    $is_active,
-                    (int) $id
+                    $nama_lengkap, $nip_nidn, $jabatan, $pendidikan_terakhir, 
+                    $bidang_keahlian, $bio, $link_sinta, $link_google_scholar, $email, $no_telepon, $foto_path, 
+                    $is_active, (int) $id
                 ];
             } else {
-                // Tidak ada upload foto baru, keep yang lama
                 $query = "UPDATE pengelola SET nama_lengkap = ?, nip_nidn = ?, jabatan = ?, 
-                          pendidikan_terakhir = ?, bidang_keahlian = ?, email = ?, no_telepon = ?, 
-                          urutan_tampil = ?, is_active = ? WHERE id = ?";
+                          pendidikan_terakhir = ?, bidang_keahlian = ?, bio = ?, link_sinta = ?, link_google_scholar = ?, email = ?, no_telepon = ?, 
+                          is_active = ? WHERE id = ?";
                 $params = [
-                    $nama_lengkap,
-                    $nip_nidn,
-                    $jabatan,
-                    $pendidikan_terakhir,
-                    $bidang_keahlian,
-                    $email,
-                    $no_telepon,
-                    $urutan_tampil,
-                    $is_active,
-                    (int) $id
+                    $nama_lengkap, $nip_nidn, $jabatan, $pendidikan_terakhir, 
+                    $bidang_keahlian, $bio, $link_sinta, $link_google_scholar, $email, $no_telepon, 
+                    $is_active, (int) $id
                 ];
             }
             $msg_success = "Pengelola berhasil diperbarui";
@@ -187,33 +167,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'save') {
     }
 }
 
-// --- 3. GET DATA LIST & FILTERS (Versi Pagination + Filter Baru) ---
+// --- 3. GET DATA LIST & FILTERS ---
 if ($action === 'list') {
-    // Pagination
     $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-    $limit = ITEMS_PER_PAGE; // pastikan ITEMS_PER_PAGE sudah didefinisikan
+    $limit = defined('ITEMS_PER_PAGE') ? ITEMS_PER_PAGE : 10;
     $offset = ($page - 1) * $limit;
 
-    // Filters
     $search = $_GET['search'] ?? '';
     $filter_jabatan = $_GET['filter_jabatan'] ?? '';
 
-    // Build WHERE query
     $where = ["1=1"];
     $params = [];
 
-    // Filter jabatan (jika ada)
     if ($filter_jabatan) {
         $where[] = "jabatan = ?";
         $params[] = $filter_jabatan;
     }
 
-    // Search global
     if ($search) {
-        $where[] = "(nama_lengkap ILIKE ? 
-                     OR nip_nidn ILIKE ? 
-                     OR email ILIKE ? 
-                     OR bidang_keahlian ILIKE ?)";
+        $where[] = "(nama_lengkap ILIKE ? OR nip_nidn ILIKE ? OR email ILIKE ? OR bidang_keahlian ILIKE ?)";
         $search_param = '%' . $search . '%';
         $params[] = $search_param;
         $params[] = $search_param;
@@ -223,35 +195,23 @@ if ($action === 'list') {
 
     $where_clause = implode(' AND ', $where);
 
-    // --- Hitung total data (untuk pagination) ---
-    $total = countRows(
-        "SELECT COUNT(*) FROM pengelola WHERE $where_clause",
-        $params
-    );
+    $total = countRows("SELECT COUNT(*) FROM pengelola WHERE $where_clause", $params);
     $total_pages = ceil($total / $limit);
 
-    // --- Ambil data dengan LIMIT & OFFSET ---
     $query = "SELECT p.*, u.nama_lengkap AS created_by_name
         FROM pengelola p
         LEFT JOIN users u ON p.id_admin = u.id
-        WHERE  " . $where_clause . "
-        ORDER BY p.urutan_tampil ASC, p.nama_lengkap ASC
+        WHERE " . $where_clause . "
+        ORDER BY p.nama_lengkap ASC
         LIMIT ? OFFSET ?";
 
-    // Tambahkan limit & offset ke parameter
     $params_with_limit = $params;
     $params_with_limit[] = $limit;
     $params_with_limit[] = $offset;
 
     $pengelola_list = executeQuery($query, $params_with_limit);
 
-    // --- List jabatan unik untuk dropdown filter ---
-    $jabatan_list = executeQuery("
-        SELECT DISTINCT jabatan 
-        FROM pengelola 
-        WHERE jabatan IS NOT NULL AND jabatan != '' 
-        ORDER BY jabatan
-    ");
+    $jabatan_list = executeQuery("SELECT DISTINCT jabatan FROM pengelola WHERE jabatan IS NOT NULL AND jabatan != '' ORDER BY jabatan");
 }
 ?>
 
@@ -280,13 +240,8 @@ if ($action === 'list') {
 
                 <select name="filter_jabatan" class="form-input md:w-64">
                     <option value="">Semua Jabatan</option>
-                    <?php if ($jabatan_list): ?>
-                        <?php foreach ($jabatan_list as $jab): ?>
-                            <option value="<?php echo htmlspecialchars($jab['jabatan']); ?>" <?php echo $filter_jabatan === $jab['jabatan'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($jab['jabatan']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                    <option value="Kepala Laboratorium" <?php echo $filter_jabatan === 'Kepala Laboratorium' ? 'selected' : ''; ?>>Kepala Laboratorium</option>
+                    <option value="Peneliti" <?php echo $filter_jabatan === 'Peneliti' ? 'selected' : ''; ?>>Peneliti</option>
                 </select>
 
                 <button type="submit" class="btn btn-primary">
@@ -311,13 +266,13 @@ if ($action === 'list') {
             <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
                 <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Kepala Lab</p>
                 <p class="text-2xl font-bold text-purple-600">
-                    <?php echo countRows("SELECT COUNT(*) FROM pengelola WHERE jabatan ILIKE '%kepala%' AND is_active = true"); ?>
+                    <?php echo countRows("SELECT COUNT(*) FROM pengelola WHERE jabatan = 'Kepala Laboratorium' AND is_active = true"); ?>
                 </p>
             </div>
             <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
-                <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Teknisi/Laboran</p>
+                <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Peneliti</p>
                 <p class="text-2xl font-bold text-green-600">
-                    <?php echo countRows("SELECT COUNT(*) FROM pengelola WHERE (jabatan ILIKE '%teknisi%' OR jabatan ILIKE '%laboran%') AND is_active = true"); ?>
+                    <?php echo countRows("SELECT COUNT(*) FROM pengelola WHERE jabatan = 'Peneliti' AND is_active = true"); ?>
                 </p>
             </div>
             <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
@@ -366,15 +321,13 @@ if ($action === 'list') {
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <span
-                                            class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
+                                        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
                                             <?php echo htmlspecialchars($item['jabatan']); ?>
                                         </span>
                                     </td>
                                     <td class="text-sm text-gray-600">
                                         <div class="flex flex-col gap-1">
-                                            <span class="flex items-center text-xs"><i
-                                                    class="fas fa-envelope text-blue-500 w-4"></i>
+                                            <span class="flex items-center text-xs"><i class="fas fa-envelope text-blue-500 w-4"></i>
                                                 <?php echo htmlspecialchars($item['email']); ?></span>
                                             <?php if ($item['no_telepon']): ?>
                                                 <span class="flex items-center text-xs"><i class="fas fa-phone text-green-500 w-4"></i>
@@ -383,23 +336,20 @@ if ($action === 'list') {
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <span
-                                            class="inline-block px-2 py-1 rounded text-xs font-medium <?php echo $item['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                                        <span class="inline-block px-2 py-1 rounded text-xs font-medium <?php echo $item['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
                                             <?php echo $item['is_active'] ? 'Aktif' : 'Nonaktif'; ?>
                                         </span>
                                     </td>
                                     <td>
                                         <div class="flex items-center gap-2">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
+                                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
                                                 <?php
                                                 if ($item['created_by_name']) {
                                                     $initials = '';
                                                     $words = explode(' ', $item['created_by_name']);
                                                     foreach ($words as $word) {
                                                         $initials .= strtoupper(substr($word, 0, 1));
-                                                        if (strlen($initials) >= 2)
-                                                            break;
+                                                        if (strlen($initials) >= 2) break;
                                                     }
                                                     echo htmlspecialchars($initials);
                                                 } else {
@@ -413,10 +363,7 @@ if ($action === 'list') {
                                                 </p>
                                                 <?php if (!empty($item['created_at'])): ?>
                                                     <p class="text-xs text-gray-500">
-                                                        <?php
-                                                        $date = new DateTime($item['created_at']);
-                                                        echo $date->format('d M Y');
-                                                        ?>
+                                                        <?php echo (new DateTime($item['created_at']))->format('d M Y'); ?>
                                                     </p>
                                                 <?php endif; ?>
                                             </div>
@@ -435,7 +382,8 @@ if ($action === 'list') {
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <a href="?action=delete&id=<?php echo $item['id']; ?>"
-                                                class="text-red-600 hover:text-red-800 btn-delete" title="Hapus">
+                                                class="text-red-600 hover:text-red-800 btn-delete" title="Hapus"
+                                                onclick="return confirm('Yakin ingin menghapus data ini?');">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
@@ -445,7 +393,6 @@ if ($action === 'list') {
                         </tbody>
                     </table>
                 </div>
-
             <?php else: ?>
                 <div class="text-center py-12">
                     <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
@@ -462,8 +409,7 @@ if ($action === 'list') {
 
     <div class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]"
         id="modalPengelola" aria-hidden="true">
-        <div
-            class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-3xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
+        <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-3xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
 
             <div class="p-5 pb-3 flex justify-between items-center border-b border-slate-200 sticky top-0 bg-white z-10">
                 <h1 class="text-lg text-slate-800 font-semibold" id="modalTitle">
@@ -473,8 +419,7 @@ if ($action === 'list') {
                     class="inline-grid place-items-center text-slate-600 hover:bg-slate-200/30 rounded-md min-w-[34px] min-h-[34px] transition-all">
                     <svg width="1.5em" height="1.5em" stroke-width="1.5" viewBox="0 0 24 24" fill="none"
                         xmlns="http://www.w3.org/2000/svg" color="currentColor" class="h-5 w-5">
-                        <path
-                            d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426"
+                        <path d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426"
                             stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                 </button>
@@ -488,28 +433,22 @@ if ($action === 'list') {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">Nama Lengkap <span
-                                        class="text-red-500">*</span></label>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
                                 <input type="text" name="nama_lengkap" id="inputNama" class="form-input" required
                                     placeholder="Dr. Nama Lengkap, Gelar">
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">NIP / NIDN <span
-                                        class="text-red-500">*</span></label>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">NIP / NIDN <span class="text-red-500">*</span></label>
                                 <input type="text" name="nip_nidn" id="inputNip" class="form-input" required
                                     placeholder="1234567890">
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">Jabatan <span
-                                        class="text-red-500">*</span></label>
-                                <input type="text" name="jabatan" id="inputJabatan" list="jabatanList" class="form-input"
-                                    required placeholder="Kepala Laboratorium">
-                                <datalist id="jabatanList">
-                                    <option value="Kepala Laboratorium">
-                                    <option value="Teknisi">
-                                    <option value="Laboran">
-                                    <option value="Asisten Peneliti">
-                                </datalist>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Jabatan <span class="text-red-500">*</span></label>
+                                <select name="jabatan" id="inputJabatan" class="form-input" required>
+                                    <option value="">-- Pilih Jabatan --</option>
+                                    <option value="Kepala Laboratorium">Kepala Laboratorium</option>
+                                    <option value="Peneliti">Peneliti</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 mb-1">Pendidikan Terakhir</label>
@@ -525,8 +464,7 @@ if ($action === 'list') {
 
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">Email <span
-                                        class="text-red-500">*</span></label>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
                                 <input type="email" name="email" id="inputEmail" class="form-input" required
                                     placeholder="email@contoh.com">
                             </div>
@@ -535,24 +473,38 @@ if ($action === 'list') {
                                 <input type="tel" name="no_telepon" id="inputTelp" class="form-input"
                                     placeholder="08123456789">
                             </div>
+                            
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Link URL Sinta</label>
+                                <input type="url" name="link_sinta" id="inputLinkSinta" class="form-input"
+                                    placeholder="https://sinta.kemdikbud.go.id/authors/profile/...">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Link URL Google Scholar</label>
+                                <input type="url" name="link_google_scholar" id="inputLinkGoogleScholar" class="form-input"
+                                    placeholder="https://scholar.google.com/citations?user=...">
+                            </div>
+
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 mb-1">Bidang Keahlian</label>
                                 <input type="text" name="bidang_keahlian" id="inputKeahlian" class="form-input"
                                     placeholder="Jaringan, Keamanan, dll">
                             </div>
-                            <div class="flex gap-4">
-                                <div class="flex-1">
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">Urutan</label>
-                                    <input type="number" name="urutan_tampil" id="inputUrutan" class="form-input"
-                                        value="99">
-                                </div>
-                                <div class="flex items-center pt-6">
-                                    <input type="checkbox" name="is_active" id="inputActive"
-                                        class="w-4 h-4 text-blue-600 rounded" checked>
-                                    <label for="inputActive" class="ml-2 text-sm text-gray-700">Aktif</label>
-                                </div>
+                            
+                            <div class="pt-4">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="is_active" id="inputActive" value="1" class="sr-only peer" checked>
+                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    <span class="ms-3 text-sm font-medium text-gray-700">Status Aktif</span>
+                                </label>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Bio / Deskripsi Singkat</label>
+                        <textarea name="bio" id="inputBio" rows="3" class="form-input" placeholder="Tuliskan deskripsi singkat pengelola..."></textarea>
                     </div>
 
                     <div class="mt-4 pt-4 border-t">
@@ -585,8 +537,7 @@ if ($action === 'list') {
 
     <div id="modalDetail" aria-hidden="true"
         class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]">
-        <div
-            class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-lg scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
+        <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-lg scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
 
             <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-center relative">
                 <button type="button" data-dismiss="modal"
@@ -608,6 +559,12 @@ if ($action === 'list') {
             </div>
 
             <div class="p-6 space-y-4">
+                
+                <div>
+                    <p class="text-gray-500 text-xs uppercase tracking-wide">Bio</p>
+                    <p id="detailBio" class="text-gray-700 text-sm italic mt-1"></p>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4 text-sm">
                     <div>
                         <p class="text-gray-500 text-xs uppercase tracking-wide">Pendidikan</p>
@@ -638,6 +595,24 @@ if ($action === 'list') {
                             <p id="detailTelp" class="text-sm font-medium text-gray-800"></p>
                         </div>
                     </div>
+                    
+                    <div id="detailSintaContainer" class="flex items-center gap-3 hidden">
+                        <div class="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-orange-600"><i
+                                class="fas fa-link"></i></div>
+                        <div>
+                            <p class="text-gray-500 text-xs">Link Sinta</p>
+                            <a id="detailSinta" href="#" target="_blank" class="text-sm font-medium text-blue-600 hover:underline">Kunjungi Profil Sinta</a>
+                        </div>
+                    </div>
+
+                    <div id="detailScholarContainer" class="flex items-center gap-3 hidden">
+                        <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600"><i
+                                class="fas fa-graduation-cap"></i></div>
+                        <div>
+                            <p class="text-gray-500 text-xs">Link Google Scholar</p>
+                            <a id="detailScholar" href="#" target="_blank" class="text-sm font-medium text-blue-600 hover:underline">Kunjungi Google Scholar</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -655,16 +630,18 @@ if ($action === 'list') {
         function resetForm() {
             $('#formAction').val('add');
             $('#formId').val('');
-            $('#formNama').val('');
-            $('#formNip').val('');
-            $('#formJabatan').val('');
-            $('#formPendidikan').val('');
-            $('#formKeahlian').val('');
-            $('#formEmail').val('');
-            $('#formTelp').val('');
-            $('#formUrutan').val('99');
-            $('#formActive').prop('checked', true);
-            $('#formFoto').val('');
+            $('#inputNama').val('');
+            $('#inputNip').val('');
+            $('#inputJabatan').val('');
+            $('#inputPendidikan').val('');
+            $('#inputKeahlian').val('');
+            $('#inputBio').val('');
+            $('#inputLinkSinta').val(''); 
+            $('#inputLinkGoogleScholar').val(''); // [MODIFIKASI] Reset input Google Scholar
+            $('#inputEmail').val('');
+            $('#inputTelp').val('');
+            $('#inputActive').prop('checked', true);
+            $('#inputFoto').val('');
             $('#modalFormTitle').html('<i class="fas fa-user-plus mr-2 text-blue-600"></i>Tambah Pengelola');
             $('#fotoHelp').html('<i class="fas fa-info-circle mr-1"></i>Format: JPG, PNG, GIF, WEBP. Maksimal 2MB.');
             $('#preview-image').attr('src', '').addClass('hidden');
@@ -673,17 +650,19 @@ if ($action === 'list') {
         // Edit Data
         function editData(data) {
             $('#formAction').val('edit');
-            $('#formId').val(data.id);
-            $('#formNama').val(data.nama_lengkap);
-            $('#formNip').val(data.nip_nidn);
-            $('#formJabatan').val(data.jabatan);
-            $('#formPendidikan').val(data.pendidikan_terakhir || '');
-            $('#formKeahlian').val(data.bidang_keahlian || '');
-            $('#formEmail').val(data.email);
-            $('#formTelp').val(data.no_telepon || '');
-            $('#formUrutan').val(data.urutan_tampil);
-            $('#formActive').prop('checked', data.is_active == 1);
-            $('#formFoto').val('');
+            $('#inputId').val(data.id);
+            $('#inputNama').val(data.nama_lengkap);
+            $('#inputNip').val(data.nip_nidn);
+            $('#inputJabatan').val(data.jabatan);
+            $('#inputPendidikan').val(data.pendidikan_terakhir || '');
+            $('#inputKeahlian').val(data.bidang_keahlian || '');
+            $('#inputBio').val(data.bio || '');
+            $('#inputLinkSinta').val(data.link_sinta || ''); 
+            $('#inputLinkGoogleScholar').val(data.link_google_scholar || ''); // [MODIFIKASI] Isi input Google Scholar saat edit
+            $('#inputEmail').val(data.email);
+            $('#inputTelp').val(data.no_telepon || '');
+            $('#inputActive').prop('checked', data.is_active == 1);
+            $('#inputFoto').val('');
             $('#modalFormTitle').html('<i class="fas fa-edit mr-2 text-blue-600"></i>Edit Pengelola');
             $('#fotoHelp').html('<i class="fas fa-info-circle mr-1"></i>Biarkan kosong jika tetap menggunakan foto lama.');
 
@@ -701,8 +680,25 @@ if ($action === 'list') {
             $('#detailJabatan').text(data.jabatan);
             $('#detailPendidikan').text(data.pendidikan_terakhir || '-');
             $('#detailKeahlian').text(data.bidang_keahlian || '-');
+            $('#detailBio').text(data.bio || '-');
             $('#detailEmail').text(data.email);
             $('#detailTelp').text(data.no_telepon || '-');
+
+            // Show/Hide Link Sinta
+            if (data.link_sinta) {
+                $('#detailSintaContainer').removeClass('hidden');
+                $('#detailSinta').attr('href', data.link_sinta);
+            } else {
+                $('#detailSintaContainer').addClass('hidden');
+            }
+
+            // [MODIFIKASI] Show/Hide Link Google Scholar
+            if (data.link_google_scholar) {
+                $('#detailScholarContainer').removeClass('hidden');
+                $('#detailScholar').attr('href', data.link_google_scholar);
+            } else {
+                $('#detailScholarContainer').addClass('hidden');
+            }
 
             const imgSrc = data.foto_path ? '<?php echo UPLOAD_URL; ?>' + data.foto_path : '<?php echo ASSETS_URL; ?>/img/no-image.png';
             $('#detailFoto').attr('src', imgSrc);
