@@ -79,9 +79,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_action'])) {
     }
 
     if (empty($errors)) {
+        // Ambil ID Admin yang sedang login
+        $admin = getCurrentUser();
+        $id_admin = $admin['id'] ?? null;
+
         if ($form_action === 'add') {
-            $query = "INSERT INTO galeri (judul, deskripsi, gambar_path, tipe, tanggal_kegiatan, lokasi, is_featured, is_active, created_at) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, true, ?)";
+            $query = "INSERT INTO galeri (judul, deskripsi, gambar_path, tipe, tanggal_kegiatan, lokasi, is_featured, is_active, id_admin) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, true, ?)";
             $params = [
                 $judul,
                 $deskripsi,
@@ -90,12 +94,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_action'])) {
                 $tanggal_kegiatan,
                 $lokasi,
                 $is_featured,
-                $_SESSION['user']['nama'] // nama admin pembuat
+                $id_admin
             ];
             $msg_success = 'Galeri berhasil ditambahkan';
         } elseif ($form_action === 'edit' && $id_edit) {
             $query = "UPDATE galeri SET judul = ?, deskripsi = ?, gambar_path = ?, tipe = ?, 
-          tanggal_kegiatan = ?, lokasi = ?, is_featured = ?, created_by = ? WHERE id = ?";
+                      tanggal_kegiatan = ?, lokasi = ?, is_featured = ?, id_admin = ? WHERE id = ?";
             $params = [
                 $judul,
                 $deskripsi,
@@ -104,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_action'])) {
                 $tanggal_kegiatan,
                 $lokasi,
                 $is_featured,
-                $_SESSION['user']['nama'], // admin yang mengedit
+                $id_admin,
                 $id_edit
             ];
             $msg_success = 'Galeri berhasil diupdate';
@@ -133,8 +137,8 @@ $search = $_GET['search'] ?? '';
 $limit = 10;
 $offset = ($page - 1) * $limit;
 
-// Query Builder
-$where = ["is_active = true"];
+// Build Query
+$where = [];
 $params = [];
 
 if ($filter_tipe && in_array($filter_tipe, ['agenda', 'kegiatan'])) {
@@ -150,21 +154,20 @@ if ($search) {
     $params[] = $search_param;
 }
 
-$where_clause = implode(' AND ', $where);
+$where_clause = count($where) > 0 ? 'WHERE ' . implode(' AND ', $where) : '';
 
-// Hitung Total
-$total_query = "SELECT COUNT(*) as count FROM galeri WHERE " . $where_clause;
-$total_result = executeQuerySingle($total_query, $params);
-$total = $total_result['count'] ?? 0;
+// Hitung Total Data (Pagination)
+$count_query = "SELECT COUNT(*) FROM galeri " . $where_clause;
+$total = countRows($count_query, $params);
 $total_pages = ceil($total / $limit);
 
-// Ambil Data
+// Query Utama
 $query = "SELECT g.*, u.nama_lengkap AS created_by_name
-        FROM galeri g
-        LEFT JOIN users u ON g.id_admin = u.id
-        WHERE  " . $where_clause . "
-        ORDER BY g.tanggal_kegiatan ASC
-        LIMIT ? OFFSET ?";
+          FROM galeri g
+          LEFT JOIN users u ON g.id_admin = u.id
+          " . $where_clause . "
+          ORDER BY g.tanggal_kegiatan ASC
+          LIMIT ? OFFSET ?";
 $params[] = $limit;
 $params[] = $offset;
 $galeri_list = executeQuery($query, $params);

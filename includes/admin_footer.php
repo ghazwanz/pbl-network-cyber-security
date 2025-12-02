@@ -104,6 +104,7 @@
     
     <!-- Custom Admin JS -->
     <script src="<?php echo ASSETS_URL; ?>/js/admin.js"></script>
+    <?php echo displayFlashMessage(); ?>
     
     <!-- Mobile Sidebar Toggle Script -->
     <script>

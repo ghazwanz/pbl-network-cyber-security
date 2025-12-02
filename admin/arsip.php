@@ -46,7 +46,10 @@ if ($action === 'delete' && $id) {
 }
 
 // Handle Form Submission (Add/Edit)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_action'])) {
+    $form_action = $_POST['form_action']; // 'add' atau 'edit'
+    $id_edit = $_POST['id'] ?? null;
+    
     $judul = sanitize($_POST['judul'] ?? '');
     $kategori = sanitize($_POST['kategori'] ?? 'penelitian');
     $abstrak = sanitize($_POST['abstrak'] ?? '');
@@ -66,8 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
     if (empty($pengelola_ids)) $errors[] = "Pilih minimal satu pengelola/penulis";
     
     // Handle PDF upload
-    $file_pdf_path = '';
-    $upload_required = ($action === 'add');
+    $upload_required = ($form_action === 'add');
     
     if (isset($_FILES['file_pdf']) && $_FILES['file_pdf']['error'] === UPLOAD_ERR_OK) {
         $upload_result = uploadPDF($_FILES['file_pdf'], 'arsip', 'arsip');
@@ -76,8 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
             $file_pdf_path = '/arsip/' . $upload_result['filename'];
             
             // Delete old PDF if editing
-            if ($action === 'edit' && $id) {
-                $old_arsip = executeQuerySingle("SELECT file_pdf_path FROM arsip WHERE id = ?", [$id]);
+            if ($form_action === 'edit' && $id_edit) {
+                $old_arsip = executeQuerySingle("SELECT file_pdf_path FROM arsip WHERE id = ?", [$id_edit]);
                 if ($old_arsip && $old_arsip['file_pdf_path']) {
                     deleteFile($old_arsip['file_pdf_path']);
                 }
@@ -91,26 +93,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
     
     // If no errors, save to database
     if (empty($errors)) {
+        // Ambil ID Admin yang sedang login
+        $admin = getCurrentUser();
+        $id_admin = $admin['id'] ?? null;
+
         $pdo = beginTransaction();
         try {
-            if ($action === 'add') {
+            if ($form_action === 'add') {
                 $query = "INSERT INTO arsip (judul, kategori, abstrak, tahun_publikasi, penerbit, 
-                          file_pdf_path, keywords, is_featured, is_active, jumlah_download) 
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
+                          file_pdf_path, keywords, is_featured, is_active, jumlah_download, id_admin) 
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)";
                 $params = [$judul, $kategori, $abstrak, $tahun_publikasi, $penerbit, 
-                          $file_pdf_path, $keywords, $is_featured, $is_active];
+                          $file_pdf_path, $keywords, $is_featured, $is_active, $id_admin];
                 
                 executeInsert($query, $params);
                 $getQuery = "SELECT id from arsip order by id desc limit 1";
                 $arsip_id = executeQuerySingle($getQuery);
                 
                 // Insert pengelola relations
-                foreach ($pengelola_ids as $index => $pengelola_id) {
-                    $urutan = $index + 1;
-                    $peran = ($urutan === 1) ? 'Penulis Utama' : 'Penulis Pendamping';
+                foreach ($pengelola_ids as $pengelola_id) {
                     executeInsert(
-                        "INSERT INTO arsip_pengelola (arsip_id, pengelola_id, urutan_penulis, peran) VALUES (?, ?, ?, ?)",
-                        [$arsip_id["id"], $pengelola_id, $urutan, $peran]
+                        "INSERT INTO arsip_pengelola (arsip_id, pengelola_id) VALUES (?, ?)",
+                        [$arsip_id["id"], $pengelola_id]
                     );
                 }
                 
@@ -118,31 +122,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
                 setFlashMessage('success', 'Arsip berhasil ditambahkan');
                 redirect(ADMIN_URL . '/arsip.php');
                 
-            } elseif ($action === 'edit' && $id) {
-                if ($file_pdf_path) {
-                    $query = "UPDATE arsip SET judul = ?, kategori = ?, abstrak = ?, tahun_publikasi = ?, 
-                              penerbit = ?, file_pdf_path = ?, keywords = ?, is_featured = ?, is_active = ? WHERE id = ?";
-                    $params = [$judul, $kategori, $abstrak, $tahun_publikasi, $penerbit, 
-                              $file_pdf_path, $keywords, $is_featured, $is_active, $id];
-                } else {
-                    $query = "UPDATE arsip SET judul = ?, kategori = ?, abstrak = ?, tahun_publikasi = ?, 
-                              penerbit = ?, keywords = ?, is_featured = ?, is_active = ? WHERE id = ?";
-                    $params = [$judul, $kategori, $abstrak, $tahun_publikasi, $penerbit, 
-                              $keywords, $is_featured, $is_active, $id];
-                }
+            } elseif ($form_action === 'edit' && $id_edit) {
+                $query = "UPDATE arsip SET judul = ?, kategori = ?, abstrak = ?, tahun_publikasi = ?, 
+                          penerbit = ?, file_pdf_path = ?, keywords = ?, is_featured = ?, is_active = ?, id_admin = ? WHERE id = ?";
+                $params = [$judul, $kategori, $abstrak, $tahun_publikasi, $penerbit, 
+                          $file_pdf_path, $keywords, $is_featured, $is_active, $id_admin, $id_edit];
                 
                 executeNonQuery($query, $params);
                 
                 // Delete old relations
-                executeNonQuery("DELETE FROM arsip_pengelola WHERE arsip_id = ?", [$id]);
+                executeNonQuery("DELETE FROM arsip_pengelola WHERE arsip_id = ?", [$id_edit]);
                 
                 // Insert new relations
-                foreach ($pengelola_ids as $index => $pengelola_id) {
-                    $urutan = $index + 1;
-                    $peran = ($urutan === 1) ? 'Penulis Utama' : 'Penulis Pendamping';
+                foreach ($pengelola_ids as $pengelola_id) {
                     executeInsert(
-                        "INSERT INTO arsip_pengelola (arsip_id, pengelola_id, urutan_penulis, peran) VALUES (?, ?, ?, ?)",
-                        [$id, $pengelola_id, $urutan, $peran]
+                        "INSERT INTO arsip_pengelola (arsip_id, pengelola_id) VALUES (?, ?)",
+                        [$id_edit, $pengelola_id]
                     );
                 }
                 
@@ -164,44 +159,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['add', 'edit']))
     }
 }
 
-// Get data for edit
-$edit_data = null;
-$edit_pengelola_ids = [];
-if ($action === 'edit' && $id) {
-    $edit_data = executeQuerySingle("SELECT * FROM arsip WHERE id = ?", [$id]);
-    if (!$edit_data) {
-        setFlashMessage('error', 'Data tidak ditemukan');
-        redirect(ADMIN_URL . '/arsip.php');
-    }
-    
-    // Get pengelola relations
-    $relations = executeQuery(
-        "SELECT pengelola_id FROM arsip_pengelola WHERE arsip_id = ? ORDER BY urutan_penulis",
-        [$id]
-    );
-    foreach ($relations as $rel) {
-        $edit_pengelola_ids[] = $rel['pengelola_id'];
-    }
-}
-
 // Get list data with pagination and filter
-if ($action === 'list') {
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $filter_kategori = $_GET['filter_kategori'] ?? '';
-    $filter_tahun = $_GET['filter_tahun'] ?? '';
-    $search = $_GET['search'] ?? '';
-    
-    $limit = ITEMS_PER_PAGE;
-    $offset = ($page - 1) * $limit;
-    
-    // Build query
-    $where = ["1=1"];
-    $params = [];
-    
-    if ($filter_kategori && in_array($filter_kategori, ['penelitian', 'pengabdian'])) {
-        $where[] = "kategori = ?";
-        $params[] = $filter_kategori;
-    }
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$filter_kategori = $_GET['filter_kategori'] ?? '';
+$filter_tahun = $_GET['filter_tahun'] ?? '';
+$search = $_GET['search'] ?? '';
+
+$limit = ITEMS_PER_PAGE;
+$offset = ($page - 1) * $limit;
+
+// Build query
+$where = ["1=1"];
+$params = [];
+
+if ($filter_kategori && in_array($filter_kategori, ['penelitian', 'pengabdian'])) {
+    $where[] = "kategori = ?";
+    $params[] = $filter_kategori;
+}
     
     if ($filter_tahun) {
         $where[] = "tahun_publikasi = ?";
@@ -218,26 +192,28 @@ if ($action === 'list') {
     }
     
     $where_clause = implode(' AND ', $where);
-    
-    // Count total
-    $total = countRows("SELECT COUNT(*) FROM arsip WHERE " . $where_clause, $params);
-    $total_pages = ceil($total / $limit);
-    
-    // Get data
-    $query = "SELECT * FROM arsip WHERE " . $where_clause . " ORDER BY tahun_publikasi DESC, created_at DESC LIMIT ? OFFSET ?";
-    $params[] = $limit;
-    $params[] = $offset;
-    $arsip_list = executeQuery($query, $params);
-    
-    // Get years for filter
-    $years = executeQuery("SELECT DISTINCT tahun_publikasi FROM arsip ORDER BY tahun_publikasi DESC");
-}
+
+// Count total
+$total = countRows("SELECT COUNT(*) FROM arsip WHERE " . $where_clause, $params);
+$total_pages = ceil($total / $limit);
+
+// Get data
+$query = "SELECT a.*, u.nama_lengkap as created_by_name 
+          FROM arsip a 
+          LEFT JOIN users u ON a.id_admin = u.id 
+          WHERE " . $where_clause . " 
+          ORDER BY a.tahun_publikasi DESC, a.created_at DESC 
+          LIMIT ? OFFSET ?";
+$params[] = $limit;
+$params[] = $offset;
+$arsip_list = executeQuery($query, $params);
+
+// Get years for filter
+$years = executeQuery("SELECT DISTINCT tahun_publikasi FROM arsip ORDER BY tahun_publikasi DESC");
 
 // Get all active pengelola for form
 $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola WHERE is_active = true ORDER BY nama_lengkap");
 ?>
-
-<?php if ($action === 'list'): ?>
 
 <!-- List View -->
 <div class="space-y-6">
@@ -248,8 +224,8 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
             <h2 class="text-lg font-semibold text-blue-900"><i class="fas fa-file-pdf mr-2"></i>Arsip Penelitian & Pengabdian</h2>
             <p class="text-gray-600 mt-1">Kelola dokumen penelitian dan pengabdian masyarakat</p>
         </div>
-        <button type="button" id="openAddArsipModal" class="btn btn-primary">
-            <i class="fas fa-plus mr-2"></i>Tambah Arsip
+        <button type="button" data-toggle="modal" data-target="#modalArsip" onclick="openModalAdd()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow transition flex items-center gap-2">
+            <i class="fas fa-plus"></i>Tambah Arsip
         </button>
     </div>
     
@@ -345,6 +321,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                         <th class="w-40">Penerbit</th>
                         <th class="w-24 text-center">Download</th>
                         <th class="w-24 text-center">Status</th>
+                        <th class="w-40">Dibuat Oleh</th>
                         <th class="w-32 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -353,11 +330,11 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                     <?php
                     // Get authors
                     $authors = executeQuery(
-                        "SELECT p.nama_lengkap, ap.peran 
+                        "SELECT p.nama_lengkap 
                          FROM arsip_pengelola ap 
                          JOIN pengelola p ON ap.pengelola_id = p.id 
                          WHERE ap.arsip_id = ? 
-                         ORDER BY ap.urutan_penulis",
+                         ORDER BY p.nama_lengkap",
                         [$item['id']]
                     );
                     ?>
@@ -406,22 +383,62 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                                 <?php echo $item['is_active'] ? 'Aktif' : 'Nonaktif'; ?>
                             </span>
                         </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
+                                    <?php 
+                                    if ($item['created_by_name']) {
+                                        $name_parts = explode(' ', $item['created_by_name']);
+                                        $initials = '';
+                                        foreach ($name_parts as $part) {
+                                            $initials .= strtoupper(substr($part, 0, 1));
+                                            if (strlen($initials) >= 2) break;
+                                        }
+                                        echo htmlspecialchars($initials);
+                                    } else {
+                                        echo '<i class="fas fa-user text-xs"></i>';
+                                    }
+                                    ?>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">
+                                        <?php echo htmlspecialchars($item['created_by_name'] ?? 'Unknown'); ?>
+                                    </p>
+                                    <?php if (!empty($item['created_at'])): ?>
+                                    <p class="text-xs text-gray-500">
+                                        <?php 
+                                        $date = new DateTime($item['created_at']);
+                                        echo $date->format('d M Y');
+                                        ?>
+                                    </p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </td>
                         <td class="text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <a href="<?php echo SITE_URL . '/..' . htmlspecialchars($item['file_pdf_path']); ?>" 
+                                <button type="button" data-toggle="modal" data-target="#modalDetailArsip" 
+                                   onclick='viewDetailArsip(<?php echo json_encode($item); ?>, <?php echo json_encode($author_names ?? []); ?>)'
+                                   class="text-gray-500 hover:bg-gray-50 p-2 rounded-lg transition" 
+                                   title="Lihat Detail">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <a href="<?php echo UPLOAD_URL . htmlspecialchars($item['file_pdf_path']); ?>" 
                                    target="_blank" 
-                                   class="text-green-600 hover:text-green-800" 
+                                   class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition" 
                                    title="Lihat PDF">
                                     <i class="fas fa-file-pdf"></i>
                                 </a>
-                                <a href="?action=edit&id=<?php echo $item['id']; ?>" 
-                                   class="text-blue-600 hover:text-blue-800" 
+                                <button type="button" data-toggle="modal" data-target="#modalArsip" 
+                                   onclick='openModalEdit(<?php echo json_encode($item); ?>, <?php echo json_encode(array_map(function($a) { return $a["pengelola_id"]; }, executeQuery("SELECT pengelola_id FROM arsip_pengelola WHERE arsip_id = ?", [$item["id"]]))); ?>)'
+                                   class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition" 
                                    title="Edit">
                                     <i class="fas fa-edit"></i>
-                                </a>
+                                </button>
                                 <a href="?action=delete&id=<?php echo $item['id']; ?>" 
-                                   class="text-red-600 hover:text-red-800 btn-delete" 
-                                   title="Hapus">
+                                   class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" 
+                                   title="Hapus"
+                                   onclick="return confirm('Yakin ingin menghapus data ini?');">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>
@@ -449,22 +466,101 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
         <div class="text-center py-12">
             <i class="fas fa-file-pdf text-6xl text-gray-300 mb-4"></i>
             <p class="text-gray-500 text-lg">Belum ada arsip</p>
-            <button type="button" data-toggle="modal" data-target="#modalArsip" onclick="resetForm()"class="btn btn-primary mt-4">
-                <i class="fas fa-plus mr-2"></i>Tambah Arsip Pertama
+            <button type="button" data-toggle="modal" data-target="#modalArsip" onclick="openModalAdd()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow transition inline-flex items-center gap-2 mt-4">
+                <i class="fas fa-plus"></i>Tambah Arsip Pertama
             </button>
         </div>
         <?php endif; ?>
     </div> 
 </div>
 
-<div class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]"
-     id="modalTambahArsip" aria-hidden="true">
-    <div
-        class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-4xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
+<!-- Modal Detail Arsip -->
+<div id="modalDetailArsip" aria-hidden="true"
+    class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
+
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 relative">
+            <button type="button" data-dismiss="modal"
+                class="absolute top-4 right-4 text-white/70 hover:text-white text-2xl transition"><i
+                    class="fas fa-times"></i></button>
+
+            <div class="flex items-start gap-4">
+                <div class="w-16 h-16 rounded-lg bg-white/20 flex items-center justify-center text-white text-2xl">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 id="detailJudul" class="text-xl font-bold text-white leading-tight"></h3>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <span id="detailKategoriBadge" class="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-semibold"></span>
+                        <span id="detailTahunBadge" class="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-semibold"></span>
+                        <span id="detailStatusBadge" class="inline-block px-3 py-1 rounded-full text-xs font-semibold"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-4">
+            <!-- Penulis -->
+            <div>
+                <p class="text-gray-500 text-xs uppercase tracking-wide mb-1"><i class="fas fa-users mr-1"></i>Penulis</p>
+                <p id="detailPenulis" class="font-medium text-gray-800"></p>
+            </div>
+
+            <hr class="border-gray-100">
+
+            <!-- Penerbit -->
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <p class="text-gray-500 text-xs uppercase tracking-wide">Penerbit</p>
+                    <p id="detailPenerbit" class="font-medium text-gray-800"></p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-xs uppercase tracking-wide">Jumlah Download</p>
+                    <p id="detailDownload" class="font-medium text-purple-600"></p>
+                </div>
+            </div>
+
+            <hr class="border-gray-100">
+
+            <!-- Abstrak -->
+            <div>
+                <p class="text-gray-500 text-xs uppercase tracking-wide mb-1"><i class="fas fa-align-left mr-1"></i>Abstrak</p>
+                <p id="detailAbstrak" class="text-sm text-gray-700 leading-relaxed"></p>
+            </div>
+
+            <!-- Keywords -->
+            <div id="detailKeywordsContainer">
+                <p class="text-gray-500 text-xs uppercase tracking-wide mb-2"><i class="fas fa-tags mr-1"></i>Keywords</p>
+                <div id="detailKeywords" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Featured Badge -->
+            <div id="detailFeaturedContainer" class="hidden">
+                <span class="inline-block bg-yellow-100 text-yellow-800 text-sm px-3 py-1 rounded-full">
+                    <i class="fas fa-star mr-1"></i>Featured - Ditampilkan di Homepage
+                </span>
+            </div>
+        </div>
+
+        <div class="p-5 pt-3 flex justify-between gap-3 border-t border-slate-200 sticky bottom-0 bg-white">
+            <a id="detailPdfLink" href="#" target="_blank"
+                class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-all">
+                <i class="fas fa-file-pdf mr-2"></i>Lihat PDF
+            </a>
+            <button type="button" data-dismiss="modal"
+                class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                <i class="fas fa-times mr-2"></i>Tutup
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="modalArsip" aria-hidden="true" class="fixed inset-0 bg-slate-950/50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[9999]">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-4xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
         
         <div class="p-5 pb-3 flex justify-between items-center border-b border-slate-200 sticky top-0 bg-white z-10">
-            <h1 class="text-lg text-slate-800 font-semibold" id="openAddArsipModal">
-                <i class="fas fa-user-plus mr-2 text-blue-600"></i>Tambah Arsip
+            <h1 id="modalArsipTitle" class="text-lg text-slate-800 font-semibold">
+                <i class="fas fa-file-alt mr-2 text-blue-600"></i>Tambah Arsip
             </h1>
             <button type="button" data-dismiss="modal" 
                     class="inline-grid place-items-center text-slate-600 hover:bg-slate-200/30 rounded-md min-w-[34px] min-h-[34px] transition-all"> 
@@ -477,8 +573,10 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
             </button>
         </div>
 
-        <form method="POST" enctype="multipart/form-data" class="needs-validation"
-              action="?action=<?php echo $action === 'edit' ? 'edit&id=' . htmlspecialchars($id) : 'add'; ?>">
+        <form method="POST" enctype="multipart/form-data" id="formArsip">
+            <input type="hidden" name="form_action" id="formAction" value="add">
+            <input type="hidden" name="id" id="formId">
+            
             <div class="p-6 pt-4 space-y-6">
                 
                 <div class="form-group">
@@ -488,7 +586,6 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                         id="judul" 
                         name="judul" 
                         class="form-input" 
-                        value="<?php echo $edit_data ? htmlspecialchars($edit_data['judul']) : ''; ?>"
                         required
                         maxlength="200"
                         placeholder="Judul penelitian/pengabdian"
@@ -500,8 +597,8 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                         <label class="form-label" for="kategori">Kategori <span class="text-red-500">*</span></label>
                         <select id="kategori" name="kategori" class="form-input" required>
                             <option value="">-- Pilih --</option>
-                            <option value="penelitian" <?php echo ($edit_data && $edit_data['kategori'] === 'penelitian') ? 'selected' : ''; ?>>Penelitian</option>
-                            <option value="pengabdian" <?php echo ($edit_data && $edit_data['kategori'] === 'pengabdian') ? 'selected' : ''; ?>>Pengabdian Masyarakat</option>
+                            <option value="penelitian">Penelitian</option>
+                            <option value="pengabdian">Pengabdian Masyarakat</option>
                         </select>
                     </div>
                     
@@ -512,7 +609,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                             id="tahun_publikasi" 
                             name="tahun_publikasi" 
                             class="form-input"
-                            value="<?php echo $edit_data ? $edit_data['tahun_publikasi'] : date('Y'); ?>"
+                            value="<?php echo date('Y'); ?>"
                             required
                             min="1900"
                             max="<?php echo date('Y'); ?>"
@@ -529,7 +626,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                         rows="5"
                         maxlength="1000"
                         placeholder="Ringkasan singkat penelitian/pengabdian"
-                    ><?php echo $edit_data ? htmlspecialchars($edit_data['abstrak']) : ''; ?></textarea>
+                    ></textarea>
                     <p class="text-sm text-gray-500 mt-1">Maksimal 1000 karakter</p>
                 </div>
                 
@@ -540,7 +637,6 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                         id="penerbit" 
                         name="penerbit" 
                         class="form-input" 
-                        value="<?php echo $edit_data ? htmlspecialchars($edit_data['penerbit']) : ''; ?>"
                         maxlength="200"
                         placeholder="Contoh: Jurnal Teknik Informatika Vol. 12"
                     >
@@ -553,7 +649,6 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                         id="keywords" 
                         name="keywords" 
                         class="form-input" 
-                        value="<?php echo $edit_data ? htmlspecialchars($edit_data['keywords']) : ''; ?>"
                         maxlength="200"
                         placeholder="Contoh: Machine Learning, Cybersecurity, Network"
                     >
@@ -571,7 +666,6 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                                     name="pengelola_ids[]" 
                                     value="<?php echo $pengelola['id']; ?>"
                                     class="mt-1 w-4 h-4 text-blue-600"
-                                    <?php echo in_array($pengelola['id'], $edit_pengelola_ids) ? 'checked' : ''; ?>
                                 >
                                 <div class="ml-3">
                                     <p class="font-semibold text-gray-800"><?php echo htmlspecialchars($pengelola['nama_lengkap']); ?></p>
@@ -583,36 +677,43 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                             <p class="text-gray-500">Tidak ada pengelola aktif</p>
                         <?php endif; ?>
                     </div>
-                    <p class="text-sm text-gray-500 mt-1">Pilih satu atau lebih penulis. Urutan pertama akan menjadi penulis utama.</p>
+                    <p class="text-sm text-gray-500 mt-1">Pilih satu atau lebih penulis.</p>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label" for="file_pdf">
-                        File PDF <span class="text-red-500" id="filePdfRequiredSpan"><?php echo $action === 'add' ? '*' : ''; ?></span>
+                        File PDF <span class="text-red-500" id="filePdfRequiredSpan">*</span>
                     </label>
                     <input 
                         type="file" 
-                        id="file_pdf_input" 
+                        id="formFilePdf" 
                         name="file_pdf" 
                         class="form-input" 
                         accept=".pdf"
-                        <?php echo $action === 'add' ? 'required' : ''; ?>
                     >
-                    <p class="text-sm text-gray-500 mt-1">Format: PDF. Maksimal 5MB</p>
+                    <p class="text-sm text-gray-500 mt-1" id="formPdfHelp">
+                        <i class="fas fa-info-circle mr-1"></i>Format: PDF. Maksimal 5MB.
+                    </p>
                     
-                    <?php if ($edit_data && $edit_data['file_pdf_path']): ?>
-                    <div class="mt-3 p-3 bg-blue-50 rounded-lg" id="currentPdfContainer">
+                    <!-- Preview PDF Container -->
+                    <div class="mt-3 p-3 bg-blue-50 rounded-lg hidden" id="pdfPreviewContainer">
                         <p class="text-sm text-blue-800">
-                            <i class="fas fa-file-pdf mr-2"></i>
+                            <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                            <span id="pdfFileName"></span>
+                            <span id="pdfFileSize" class="text-gray-500 ml-2"></span>
+                        </p>
+                    </div>
+                    
+                    <!-- Current PDF (for edit mode) -->
+                    <div class="mt-3 p-3 bg-green-50 rounded-lg hidden" id="currentPdfContainer">
+                        <p class="text-sm text-green-800">
+                            <i class="fas fa-file-pdf text-red-500 mr-2"></i>
                             File saat ini: 
-                            <a href="<?php echo SITE_URL . '/..' . htmlspecialchars($edit_data['file_pdf_path']); ?>" 
-                               target="_blank" 
-                               class="underline hover:text-blue-600">
+                            <a href="#" id="currentPdfLink" target="_blank" class="underline hover:text-green-600 font-medium">
                                 Lihat PDF
                             </a>
                         </p>
                     </div>
-                    <?php endif; ?>
                 </div>
                 
                 <div class="form-group space-y-2">
@@ -622,7 +723,6 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                             name="is_featured" 
                             id="is_featured_input"
                             class="w-4 h-4 text-blue-600 mr-2"
-                            <?php echo ($edit_data && $edit_data['is_featured']) ? 'checked' : ''; ?>
                         >
                         <span class="text-gray-700">Featured (tampilkan di homepage)</span>
                     </label>
@@ -633,7 +733,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                             name="is_active" 
                             id="is_active_input"
                             class="w-4 h-4 text-blue-600 mr-2"
-                            <?php echo (!$edit_data || $edit_data['is_active']) ? 'checked' : ''; ?>
+                            checked
                         >
                         <span class="text-gray-700">Aktif (tampilkan di halaman publik)</span>
                     </label>
@@ -641,9 +741,8 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
             </div>
 
             <div class="p-5 pt-3 flex justify-end gap-3 border-t border-slate-200 sticky bottom-0 bg-white">
-                <button type="button" id="cancelFormModal"
-                        class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all"
-                        onclick="closeModal()">
+                <button type="button" data-dismiss="modal"
+                        class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
                     <i class="fas fa-times mr-2"></i>Batal
                 </button>
                 <button type="submit"
@@ -656,117 +755,139 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
 </div>
 
 <script>
-// Fungsi global agar bisa dipanggil dari tombol di HTML
-window.closeModal = function() {
-    const modal = document.getElementById('modalTambahArsip');
-    if (modal) {
-        modal.classList.add('opacity-0', 'pointer-events-none');
-        modal.classList.remove('opacity-100', 'pointer-events-auto');
+    // --- VIEW DETAIL ARSIP ---
+    function viewDetailArsip(data, authorNames) {
+        // Judul
+        $('#detailJudul').text(data.judul || '-');
         
-        const content = modal.querySelector('.scale-100');
-        if(content) {
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
+        // Kategori badge
+        const kategori = data.kategori || 'penelitian';
+        $('#detailKategoriBadge').text(kategori.charAt(0).toUpperCase() + kategori.slice(1));
+        
+        // Tahun badge
+        $('#detailTahunBadge').text('Tahun ' + (data.tahun_publikasi || '-'));
+        
+        // Status badge
+        if (data.is_active == 1) {
+            $('#detailStatusBadge').attr('class', 'inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-400 text-white').text('Aktif');
+        } else {
+            $('#detailStatusBadge').attr('class', 'inline-block px-3 py-1 rounded-full text-xs font-semibold bg-red-400 text-white').text('Nonaktif');
         }
-    }
-    // Hapus parameter action dari URL
-    window.history.pushState({}, '', '<?php echo ADMIN_URL . '/arsip.php'; ?>'); 
-    resetFormToAdd(); // Pastikan form di-reset setelah ditutup
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // === 1. DEFINISI ELEMEN (Gunakan ID yang baru dan benar) ===
-    const modal = document.getElementById('modalTambahArsip'); 
-    // Tombol "Tambah Arsip" di List View perlu diupdate ID-nya menjadi openAddArsipModal
-    const openButton = document.getElementById('openAddArsipModal'); 
-    const form = modal ? modal.querySelector('form') : null;
-    const modalTitle = document.getElementById('modalArsipTitle');
-    const filePdfInput = document.getElementById('file_pdf_input');
-    const filePdfRequiredSpan = document.getElementById('filePdfRequiredSpan');
-    const currentPdfContainer = document.getElementById('currentPdfContainer');
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // === 2. FUNGSI LOGIKA ===
-
-    // Fungsi untuk mereset formulir ke mode 'Tambah'
-    function resetFormToAdd() {
-        if (!form) return;
         
-        // Reset action URL dan visual
-        form.action = '?action=add';
-        form.reset();
-        if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-file-alt mr-2 text-blue-600"></i>Tambah Arsip';
+        // Penulis
+        if (authorNames && authorNames.length > 0) {
+            $('#detailPenulis').text(authorNames.join(', '));
+        } else {
+            $('#detailPenulis').text('-');
+        }
         
-        // Reset status input
-        if (filePdfInput) filePdfInput.required = true;
-        if (filePdfRequiredSpan) filePdfRequiredSpan.textContent = '*';
-        if (currentPdfContainer) currentPdfContainer.style.display = 'none';
-
-        // Reset default values dan checkboxes
-        document.getElementById('is_active_input').checked = true; 
-        document.getElementById('kategori').value = ''; 
-        document.getElementById('tahun_publikasi').value = new Date().getFullYear(); 
+        // Penerbit
+        $('#detailPenerbit').text(data.penerbit || '-');
         
-        form.querySelectorAll('input[name="pengelola_ids[]"]').forEach(cb => cb.checked = false);
-    }
-
-    // Tampilkan modal (menggunakan class Tailwind CSS)
-    function openModal() {
-        if (modal) {
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modal.classList.add('opacity-100', 'pointer-events-auto');
-            
-            // Animasi scale
-            const content = modal.querySelector('.scale-95');
-            if(content) {
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
-            }
+        // Download count
+        $('#detailDownload').html('<i class="fas fa-download mr-1"></i>' + (data.jumlah_download || 0).toLocaleString());
+        
+        // Abstrak
+        $('#detailAbstrak').text(data.abstrak || 'Tidak ada abstrak');
+        
+        // Keywords
+        if (data.keywords) {
+            const keywords = data.keywords.split(',').map(k => k.trim());
+            let keywordsHtml = '';
+            keywords.forEach(function(keyword) {
+                keywordsHtml += '<span class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">' + keyword + '</span>';
+            });
+            $('#detailKeywords').html(keywordsHtml);
+            $('#detailKeywordsContainer').removeClass('hidden');
+        } else {
+            $('#detailKeywordsContainer').addClass('hidden');
+        }
+        
+        // Featured
+        if (data.is_featured == 1) {
+            $('#detailFeaturedContainer').removeClass('hidden');
+        } else {
+            $('#detailFeaturedContainer').addClass('hidden');
+        }
+        
+        // PDF Link
+        if (data.file_pdf_path) {
+            $('#detailPdfLink').attr('href', '<?php echo UPLOAD_URL; ?>' + data.file_pdf_path).removeClass('hidden');
+        } else {
+            $('#detailPdfLink').addClass('hidden');
         }
     }
 
-    // === 3. EVENT LISTENERS ===
+    // --- FORM MODAL LOGIC (ADD/EDIT) menggunakan jQuery ---
+    function openModalAdd() {
+        // Reset Form
+        $('#modalArsipTitle').html('<i class="fas fa-file-alt mr-2 text-blue-600"></i>Tambah Arsip');
+        $('#formAction').val('add');
+        $('#formId').val('');
+        $('#formArsip')[0].reset();
+        
+        // Reset input fields
+        $('#judul').val('');
+        $('#kategori').val('');
+        $('#tahun_publikasi').val(new Date().getFullYear());
+        $('#abstrak').val('');
+        $('#penerbit').val('');
+        $('#keywords').val('');
+        
+        // Reset file input
+        $('#formFilePdf').val('');
+        $('#filePdfRequiredSpan').text('*');
+        $('#formPdfHelp').html('<i class="fas fa-info-circle mr-1"></i>Format: PDF. Maksimal 5MB.');
+        
+        // Hide preview containers
+        $('#pdfPreviewContainer').addClass('hidden');
+        $('#currentPdfContainer').addClass('hidden');
+        
+        // Reset checkboxes
+        $('#is_featured_input').prop('checked', false);
+        $('#is_active_input').prop('checked', true);
+        
+        // Uncheck all pengelola
+        $('input[name="pengelola_ids[]"]').prop('checked', false);
+    }
 
-    // 3a. Event Listener untuk tombol "Tambah Arsip" di List View
-    if (openButton) {
-        openButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            resetFormToAdd();
-            openModal();
-            window.history.pushState({}, '', '?action=add');
+    function openModalEdit(data, pengelolaIds) {
+        // Set form action dan id
+        $('#modalArsipTitle').html('<i class="fas fa-edit mr-2 text-blue-600"></i>Edit Arsip');
+        $('#formAction').val('edit');
+        $('#formId').val(data.id);
+        
+        // Populate form fields
+        $('#judul').val(data.judul || '');
+        $('#kategori').val(data.kategori || '');
+        $('#tahun_publikasi').val(data.tahun_publikasi || new Date().getFullYear());
+        $('#abstrak').val(data.abstrak || '');
+        $('#penerbit').val(data.penerbit || '');
+        $('#keywords').val(data.keywords || '');
+        
+        // File PDF tidak required saat edit
+        $('#formFilePdf').val('');
+        $('#filePdfRequiredSpan').text('');
+        $('#formPdfHelp').html('<i class="fas fa-info-circle mr-1"></i>Biarkan kosong jika tidak ingin mengganti file.');
+        
+        // Hide new preview, show current PDF if exists
+        $('#pdfPreviewContainer').addClass('hidden');
+        if (data.file_pdf_path) {
+            $('#currentPdfLink').attr('href', '../uploads' + data.file_pdf_path);
+            $('#currentPdfContainer').removeClass('hidden');
+        } else {
+            $('#currentPdfContainer').addClass('hidden');
+        }
+        
+        // Checkboxes
+        $('#is_featured_input').prop('checked', data.is_featured == 1);
+        $('#is_active_input').prop('checked', data.is_active == 1);
+        
+        // Set pengelola checkboxes
+        $('input[name="pengelola_ids[]"]').each(function() {
+            $(this).prop('checked', pengelolaIds.includes(parseInt($(this).val())));
         });
     }
-
-    // 3b. Event Listener untuk tombol Edit di tabel
-    // Logika di sini adalah REDIRECT agar PHP memproses data $edit_data
-    document.querySelectorAll('a[href*="action=edit"]').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Redirect dilakukan untuk me-reload halaman dengan data Edit yang diperlukan PHP
-            window.location.href = this.href;
-        });
-    });
-
-    // 3c. Tombol Batal/Tutup di dalam modal sudah menggunakan onclick="closeModal()"
-
-    // === 4. PENANGANAN STATE URL (Saat halaman dimuat karena 'add' atau 'edit') ===
-    const action = urlParams.get('action');
-
-    if (action === 'add' || action === 'edit') {
-        openModal();
-        
-        if (action === 'edit') {
-            if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-file-alt mr-2 text-blue-600"></i>Edit Arsip';
-            if (form) form.action = '?action=edit&id=' + urlParams.get('id');
-            if (filePdfInput) filePdfInput.required = false; 
-            if (filePdfRequiredSpan) filePdfRequiredSpan.textContent = '';
-            // Tampilkan kembali Current PDF info jika ada
-            if (currentPdfContainer) currentPdfContainer.style.display = 'block'; 
-        }
-    }
-});
 </script>
-
-<?php endif; ?>
 
 <?php require_once __DIR__ . '/../includes/admin_footer.php'; ?>
