@@ -90,3 +90,157 @@ html {
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+/* Hero Floating Icons Animation */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-15px) rotate(2deg);
+    }
+}
+
+@keyframes float-delayed {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-12px) rotate(-2deg);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+    animation: float-delayed 7s ease-in-out infinite;
+    animation-delay: 1s;
+}
+
+/* Gradient text support for older browsers */
+.bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+/* Smooth transitions for all interactive elements */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Bento Card Shine Animation */
+@keyframes shine {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Card glow effects */
+.shadow-blue-500\/20 {
+    box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.2);
+}
+
+.shadow-orange-500\/20 {
+    box-shadow: 0 25px 50px -12px rgba(249, 115, 22, 0.2);
+}
+
+.shadow-violet-500\/20 {
+    box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.2);
+}
+
+.shadow-emerald-500\/20 {
+    box-shadow: 0 25px 50px -12px rgba(16, 185, 129, 0.2);
+}
+
+/* Glassmorphic backdrop */
+.backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+/* Arsip Filter Chips */
+.arsip-filter-btn {
+    color: #6B7280;
+    background: transparent;
+}
+
+.arsip-filter-btn:hover {
+    color: #1B2D62;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.arsip-filter-btn.active {
+    color: white;
+    background: linear-gradient(135deg, #1B2D62 0%, #2C4AA4 100%);
+    box-shadow: 0 4px 15px rgba(27, 45, 98, 0.3);
+}
+
+/* Arsip Card Hover Effect */
+.arsip-card {
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.arsip-card:hover {
+    transform: translateY(-8px);
+}
+
+/* Filter Animation */
+.arsip-card.hidden-filter {
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+    position: absolute;
+}
+
+.arsip-card.show-filter {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    position: relative;
+}
+
+/* FAQ Section Styles */
+.faq-item {
+    transition: all 0.3s ease;
+}
+
+.faq-item.faq-active > div {
+    border-color: #fb923c !important;
+    box-shadow: 0 20px 40px -10px rgba(251, 146, 60, 0.2);
+}
+
+.faq-item .faq-content {
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* FAQ Number Badge Animation */
+.faq-item .flex-shrink-0.w-10.h-10.bg-gradient-to-br {
+    transition: all 0.3s ease;
+}
+
+/* Galeri Card Styles */
+.galeri-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.galeri-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Galeri Card Image Zoom */
+.galeri-card img {
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.galeri-card:hover img {
+    transform: scale(1.1);
+}

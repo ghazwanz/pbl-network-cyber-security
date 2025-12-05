@@ -30,7 +30,7 @@ if (!$profil) {
 
 // 3. Ambil Data Pengelola Lab
 try {
-    $stmt_pengelola = $pdo->prepare("SELECT * FROM pengelola WHERE is_active = true ORDER BY urutan_tampil ASC");
+    $stmt_pengelola = $pdo->prepare("SELECT * FROM pengelola WHERE is_active = true");
     $stmt_pengelola->execute();
     $pengelola_list = $stmt_pengelola->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {

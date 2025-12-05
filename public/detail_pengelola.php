@@ -20,7 +20,7 @@ if (!$pengelola) {
 }
 
 $queryArsip = "
-    SELECT a.*, ap.peran 
+    SELECT a.*
     FROM arsip a
     JOIN arsip_pengelola ap ON a.id = ap.arsip_id
     WHERE ap.pengelola_id = ? AND a.is_active = true
@@ -36,27 +36,8 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
 
 ?>
 
-<main class="overflow-hidden bg-white">
-
-    <section class="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-white border-b border-gray-100">
-        <div class="container mx-auto max-w-7xl px-4 relative text-center">
-
-            <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg" data-aos="fade-down">
-                <i class="fas fa-id-badge"></i>
-                <span class="text-sm tracking-wide">PROFIL PENGELOLA LAB</span>
-            </div>
-
-            <h1 class="text-4xl md:text-5xl font-bold text-[#1B2D62] mb-4" data-aos="fade-up">
-                <?= htmlspecialchars($pengelola['nama_lengkap']) ?>
-            </h1>
-            
-            <p class="text-xl text-gray-500 font-medium" data-aos="fade-up" data-aos-delay="100">
-                <?= htmlspecialchars($pengelola['jabatan']) ?>
-            </p>
-        </div>
-    </section>
-
-    <div class="container mx-auto max-w-7xl px-4 py-16">
+<main class="px-4 bg-white">
+    <div class="container mx-auto max-w-7xl py-16 pt-32 lg:pt-40">
         
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
             
@@ -122,8 +103,28 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
 
             <div class="lg:col-span-8 space-y-12" data-aos="fade-left">
 
+                <!-- Label dan Nama Pengelola -->
+                <div class="text-left">
+                    <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-4 shadow-lg">
+                        <i class="fas fa-id-badge"></i>
+                        <span class="text-sm tracking-wide">PROFIL PENGELOLA LAB</span>
+                    </div>
+
+                    <h1 class="text-4xl md:text-5xl font-bold text-[#1B2D62] mb-2">
+                        <?= htmlspecialchars($pengelola['nama_lengkap']) ?>
+                    </h1>
+                    
+                    <p class="text-xl text-gray-500 font-medium">
+                        <?= htmlspecialchars($pengelola['jabatan']) ?>
+                    </p>
+                </div>
+
                 <div>
                     <?php if (!empty($pengelola['bidang_keahlian'])): ?>
+                    <h2 class="text-xl font-bold text-[#1B2D62] mb-4 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-orange-500 rounded-full block"></span>
+                        Bidang Keahlian
+                    </h2>
                     <div class="flex flex-wrap gap-2 mb-6">
                         <?php 
                             $skills = explode(',', $pengelola['bidang_keahlian']);
@@ -149,7 +150,7 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                         ?>
                             <a href="<?= htmlspecialchars($data['url']) ?>" target="_blank" 
                                class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-600 border border-gray-300 rounded-lg text-sm font-medium hover:border-orange-500 hover:text-orange-600 transition-all hover:-translate-y-0.5 shadow-sm">
-                                <i class="fab <?= $data['icon'] ?> text-lg"></i> <?= $name ?>
+                                <i class="fa-solidw <?php echo $data['icon'] ?> text-lg"></i> <?= $name ?>
                             </a>
                         <?php endforeach; ?>
                     </div>
@@ -206,9 +207,6 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                                         <span class="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 bg-gray-100 text-gray-500 rounded">
                                             <?= htmlspecialchars($pub['kategori']) ?>
                                         </span>
-                                        <?php if(!empty($pub['peran'])): ?>
-                                        <span class="ml-2 text-[10px] text-blue-600 font-semibold">• <?= htmlspecialchars($pub['peran']) ?></span>
-                                        <?php endif; ?>
                                     </div>
 
                                     <h4 class="font-bold text-[#1B2D62] mb-3 line-clamp-3 group-hover:text-blue-600 transition-colors leading-snug">
