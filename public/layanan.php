@@ -217,7 +217,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                                 <!-- Condition Badge -->
                                 <?php 
                                 $kondisi = strtolower($sarana['kondisi'] ?? 'baik');
-                                $kondisi_class = $kondisi === 'baik' ? 'bg-green-500' : ($kondisi === 'rusak' ? 'bg-red-500' : 'bg-yellow-500');
+                                $kondisi_class = $kondisi === 'baik' ? 'bg-green-500' : ($kondisi === 'rusak berat' ? 'bg-red-500' : 'bg-yellow-500');
                                 ?>
                                 <span class="absolute top-4 left-4 px-3 py-1.5 text-xs font-bold rounded-lg shadow-lg <?php echo $kondisi_class; ?> text-white">
                                     <?php echo htmlspecialchars(ucfirst($sarana['kondisi'] ?? 'Baik')); ?>
