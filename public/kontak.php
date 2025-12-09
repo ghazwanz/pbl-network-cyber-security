@@ -11,6 +11,15 @@ $page_title = "Kontak - Laboratorium NCS";
 // Include header
 require_once __DIR__ . '/../includes/header.php';
 
+// Fetch profil_lab data
+$profil = executeQuerySingle("SELECT * FROM profil_lab LIMIT 1");
+$email = $profil['email'] ?? 'labncs@polinema.ac.id';
+$no_telepon = $profil['no_telepon'] ?? '+62 31 2345 6789';
+$alamat = $profil['alamat'] ?? 'Gedung TI Lt. 3, Jl. Soekarno Hatta No.9, Malang';
+$youtube = $profil['youtube'] ?? '#';
+$instagram = $profil['instagram'] ?? '#';
+$github = $profil['github'] ?? '#';
+
 // Form handling
 $success_message = '';
 $error_message = '';
@@ -40,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<main class="relative min-h-screen overflow-hidden">
+<main class="relative min-h-screen px-4 overflow-hidden">
     
     <div class="absolute inset-0 bg-gradient-to-b from-orange-50/80 via-white to-blue-50/60"></div>
     
@@ -49,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     <div class="absolute inset-0 opacity-[0.015] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"></div>
 
-    <div class="container mx-auto px-4 py-32 lg:py-40 relative">
+    <div class="mx-auto py-32 lg:py-40 relative">
         
         <div class="text-center mb-16" data-aos="fade-up">
             <div class="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/80 backdrop-blur-sm border border-orange-200/60 rounded-full text-orange-600 font-semibold text-sm mb-6 shadow-lg shadow-orange-100/50">
@@ -145,8 +154,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
                             <div>
                                 <h3 class="text-base font-bold text-[#1B2D62] mb-0.5">Email</h3>
-                                <a href="mailto:labncs@polinema.ac.id" class="text-gray-500 hover:text-orange-600 transition-colors text-sm font-medium">
-                                    labncs@polinema.ac.id
+                                <a href="mailto:<?php echo htmlspecialchars($email); ?>" class="text-gray-500 hover:text-orange-600 transition-colors text-sm font-medium">
+                                    <?php echo htmlspecialchars($email); ?>
                                 </a>
                             </div>
                         </div>
@@ -159,8 +168,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
                             <div>
                                 <h3 class="text-base font-bold text-[#1B2D62] mb-0.5">Telepon</h3>
-                                <a href="tel:+6231234567890" class="text-gray-500 hover:text-blue-600 transition-colors text-sm font-medium">
-                                    +62 31 2345 6789
+                                <a href="tel:<?php echo htmlspecialchars(str_replace([' ', '-'], '', $no_telepon)); ?>" class="text-gray-500 hover:text-blue-600 transition-colors text-sm font-medium">
+                                    <?php echo htmlspecialchars($no_telepon); ?>
                                 </a>
                             </div>
                         </div>
@@ -174,22 +183,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div>
                                 <h3 class="text-base font-bold text-[#1B2D62] mb-1">Lokasi</h3>
                                 <p class="text-gray-500 text-sm leading-relaxed">
-                                    Gedung TI Lt. 3, Jl. Soekarno Hatta No.9, Malang
+                                    <?php echo htmlspecialchars($alamat); ?>
                                 </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 group">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-50 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 border border-green-100">
-                                <i class="fab fa-whatsapp text-green-600 text-xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-[#1B2D62] mb-0.5">WhatsApp</h3>
-                                <a href="https://wa.me/6281234567890" target="_blank" class="text-gray-500 hover:text-green-600 transition-colors text-sm font-medium">
-                                    +62 812 3456 7890
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -199,16 +194,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         
                         <h3 class="text-base font-bold mb-4 relative z-10">Ikuti Sosial Media Kami</h3>
                         <div class="flex items-center gap-3 relative z-10">
-                            <a href="#" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-pink-600 hover:scale-110 transition-all duration-300 border border-white/10">
+                            <a href="<?php echo htmlspecialchars($instagram); ?>" target="_blank" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-pink-600 hover:scale-110 transition-all duration-300 border border-white/10">
                                 <i class="fab fa-instagram"></i>
                             </a>
-                            <a href="#" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-blue-700 hover:scale-110 transition-all duration-300 border border-white/10">
-                                <i class="fab fa-linkedin-in"></i>
-                            </a>
-                            <a href="#" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-red-600 hover:scale-110 transition-all duration-300 border border-white/10">
+                            <a href="<?php echo htmlspecialchars($youtube); ?>" target="_blank" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-red-600 hover:scale-110 transition-all duration-300 border border-white/10">
                                 <i class="fab fa-youtube"></i>
                             </a>
-                            <a href="#" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-gray-900 hover:scale-110 transition-all duration-300 border border-white/10">
+                            <a href="<?php echo htmlspecialchars($github); ?>" target="_blank" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-gray-900 hover:scale-110 transition-all duration-300 border border-white/10">
                                 <i class="fab fa-github"></i>
                             </a>
                         </div>

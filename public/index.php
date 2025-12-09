@@ -103,12 +103,12 @@
         </div>
     </section>
 
-    <section class="relative py-24 sm:py-32 overflow-hidden">
+    <section class="relative py-24 sm:py-32 px-4 overflow-hidden">
         <!-- Background dengan subtle pattern -->
         <div class="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-orange-50/30"></div>
         <!-- <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23000%22 fill-opacity=%221%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
          -->
-        <div class="container relative mx-auto max-w-7xl px-4">
+        <div class="relative mx-auto max-w-7xl">
             
             <!-- Section Header - Centered -->
             <div class="max-w-3xl mx-auto text-center mb-16" data-aos="fade-up">
@@ -597,7 +597,7 @@
 
     <section class="relative py-24 sm:py-32 overflow-hidden px-4">
         <!-- Background Elements -->
-        <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50/50 to-white"></div>
+        <!-- <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50/50 to-white"></div> -->
         
         <!-- Decorative Blur Elements -->
         <div class="absolute top-40 right-0 w-80 h-80 bg-orange-100/30 rounded-full blur-3xl"></div>

@@ -321,7 +321,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
 
 <!-- Archive List Section -->
 <section class="pt-0 pb-32 bg-[#F8FCFF]">
-    <div class="container mx-auto px-4">
+    <div class="mx-auto px-4">
         
         <?php if ($arsip_list && count($arsip_list) > 0): ?>
         

@@ -63,6 +63,19 @@ require_once __DIR__ . '/functions.php';
                     fontFamily: {
                         'inter': ['Plus Jakarta Sans', 'sans-serif'],
                     },
+                    animation: {
+                        scroll: 'scroll var(--ticker-speed) linear infinite',
+                    },
+                    keyframes: {
+                        scroll: {
+                            'from': {
+                                transform: 'translateX(0)'
+                            },
+                            'to': {
+                                transform: 'translateX(-100%)'
+                            },
+                        }
+                    }
                 }
             }
         }

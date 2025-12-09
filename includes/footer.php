@@ -1,3 +1,15 @@
+<?php
+// Fetch profil_lab data for footer
+if (!isset($profil)) {
+    $profil = executeQuerySingle("SELECT * FROM profil_lab LIMIT 1");
+}
+$footer_email = $profil['email'] ?? 'labncs@mail.com';
+$footer_telepon = $profil['no_telepon'] ?? '+628123456789';
+$footer_alamat = $profil['alamat'] ?? 'Jl. Soekarno Hatta No.9, Jatimulyo, Kec. Lowokwaru, Kota Malang, Jawa Timur 65141';
+$footer_youtube = $profil['youtube'] ?? '#';
+$footer_instagram = $profil['instagram'] ?? '#';
+$footer_github = $profil['github'] ?? '#';
+?>
 </div>
 <!-- End Main Content Wrapper -->
 
@@ -17,7 +29,7 @@
                         <img src="../assets/img/jti.webp">
                     </a>
                     <p class="text-white leading-relaxed">
-                        Jl. Soekarno Hatta No.9, Jatimulyo, Kec. Lowokwaru, Kota Malang, Jawa Timur 65141
+                        <?php echo htmlspecialchars($footer_alamat); ?>
                     </p>
                 </div>
     
@@ -32,35 +44,32 @@
                         <li><a href="./arsip.php" class="<?php echo ($current_page == 'arsip.php') ? 'text-white font-semibold' : 'text-[#EDEDED]'; ?> hover:text-white transition-colors">Arsip</a></li>
                         <li><a href="./galeri.php" class="<?php echo ($current_page == 'galeri.php') ? 'text-white font-semibold' : 'text-[#EDEDED]'; ?> hover:text-white transition-colors">Galeri</a></li>
                         <li><a href="./layanan.php" class="<?php echo ($current_page == 'layanan.php') ? 'text-white font-semibold' : 'text-[#EDEDED]'; ?> hover:text-white transition-colors">Layanan</a></li>
+                        <li><a href="./kontak.php" class="<?php echo ($current_page == 'kontak.php') ? 'text-white font-semibold' : 'text-[#EDEDED]'; ?> hover:text-white transition-colors">Kontak</a></li>
                     </ul>
                 </div>
     
                 <div class="md:col-span-3">
                     <h4 class="text-lg font-semibold text-white mb-5">Kontak Kami</h4>
                     <ul class="space-y-3 text-[#EDEDED]">
-                        <li>+628123456789</li>
-                        <li>labncs@mail.com</li>
+                        <li><?php echo htmlspecialchars($footer_telepon); ?></li>
+                        <li><?php echo htmlspecialchars($footer_email); ?></li>
                     </ul>
                 </div>
     
                 <div class="md:col-span-2">
                     <h4 class="text-lg font-semibold text-white mb-5">Social</h4>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-[#EDEDED] hover:text-white transition-colors">
-                            <span class="sr-only">Facebook</span>
-                            <img src="../assets/icons/facebook.svg">
-                        </a>
-                        <a href="#" class="text-[#EDEDED] hover:text-white transition-colors">
+                    <div class="flex space-x-4 items-center">
+                        <a href="<?php echo htmlspecialchars($footer_instagram); ?>" target="_blank" class="text-[#EDEDED] hover:text-white transition-colors">
                             <span class="sr-only">Instagram</span>
                             <img src="../assets/icons/instagram.svg">
                         </a>
-                        <a href="#" class="text-[#EDEDED] hover:text-white transition-colors">
-                            <span class="sr-only">Twitter</span>
-                            <img src="../assets/icons/twitter.svg">
-                        </a>
-                        <a href="#" class="text-[#EDEDED] hover:text-white transition-colors">
+                        <a href="<?php echo htmlspecialchars($footer_youtube); ?>" target="_blank" class="text-[#EDEDED] hover:text-white transition-colors">
                             <span class="sr-only">YouTube</span>
                             <img src="../assets/icons/youtube.svg">
+                        </a>
+                        <a href="<?php echo htmlspecialchars($footer_github); ?>" target="_blank" class="text-[#EDEDED] hover:text-white transition-colors">
+                            <span class="sr-only">GitHub</span>
+                            <i class="fab fa-github text-xl"></i>
                         </a>
                     </div>
                 </div>

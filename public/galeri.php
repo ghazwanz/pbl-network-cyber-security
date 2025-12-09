@@ -313,7 +313,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
             </div>
 
             <!-- Card Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
                 <?php foreach ($kegiatan_halaman as $index => $item): ?>
 
                     <?php
@@ -332,86 +332,78 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                         'is_featured' => !empty($item['is_featured'])
                     ];
                     ?>
-                    <div class="group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-orange-500 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer"
-                        data-aos="fade-up" data-aos-delay="<?php echo ($index * 50); ?>"
-                        onclick='showGaleriDetail(<?php echo json_encode($item_data); ?>)' data-toggle="modal"
+
+                    <!-- Gallery Card -->
+                    <div class="galeri-card hover-glow group relative rounded-3xl overflow-hidden cursor-pointer"
+                        data-aos="fade-up"
+                        data-aos-delay="<?php echo ($index * 100); ?>"
+                        onclick='showGaleriDetail(<?php echo json_encode($item_data, JSON_HEX_APOS | JSON_HEX_QUOT); ?>)'
+                        data-toggle="modal"
                         data-target="#modalDetailGaleri">
-
-                        <!-- Card Image -->
-                        <div class="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
-                            <img src="<?php echo $gambar_url; ?>" alt="<?php echo htmlspecialchars($item['judul']); ?>"
-                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-
-                            <!-- Overlay on Hover -->
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        
+                        <!-- Image Container -->
+                        <div class="relative h-[360px] bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden">
+                            <img src="<?= htmlspecialchars($gambar_url) ?>" 
+                                 alt="<?= htmlspecialchars($item['judul']) ?>" 
+                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                 loading="lazy">
+                            
+                            <!-- Gradient Overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+                            
+                            <!-- Top Badges -->
+                            <div class="absolute top-4 left-4 right-4 flex items-start justify-between">
+                                <!-- Type Badge -->
+                                <span class="px-4 py-2 text-xs font-bold rounded-xl uppercase tracking-wider backdrop-blur-md shadow-lg badge-interactive
+                                    <?= strtolower($item['tipe']) === 'agenda' 
+                                        ? 'bg-blue-500/90 text-white' 
+                                        : 'bg-orange-500/90 text-white'; ?>">
+                                    <i class="fas <?= strtolower($item['tipe']) === 'agenda' ? 'fa-calendar-alt' : 'fa-images'; ?> mr-1.5"></i>
+                                    <?= htmlspecialchars($item['tipe']) ?>
+                                </span>
+                                
+                                <?php if (!empty($item['is_featured'])): ?>
+                                <!-- Featured Badge -->
+                                <span class="px-3 py-2 text-xs font-bold rounded-xl uppercase tracking-wider bg-yellow-500/90 text-white backdrop-blur-md shadow-lg">
+                                    <i class="fas fa-star"></i>
+                                </span>
+                                <?php endif; ?>
                             </div>
-
-                            <!-- View Button on Hover -->
-                            <div
-                                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <span
-                                    class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-all duration-300 shadow-xl">
-                                    <i class="fas fa-eye text-xl"></i>
-                                </span>
-                            </div>
-
-                            <!-- Category Badge -->
-                            <span class="absolute top-4 left-4 px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wide shadow-lg
-                        <?php echo strtolower($item['tipe']) === 'agenda'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-orange-500 text-white'; ?>">
-                                <?php echo htmlspecialchars($item['tipe']); ?>
-                            </span>
-
-                            <!-- Featured Badge -->
-                            <?php if (!empty($item['is_featured'])): ?>
-                                <span
-                                    class="absolute top-4 right-4 px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wide shadow-lg bg-yellow-500 text-white">
-                                    <i class="fas fa-star mr-1"></i>Featured
-                                </span>
-                            <?php endif; ?>
-                        </div>
-
-                        <!-- Card Content -->
-                        <div class="p-6">
-                            <!-- Title -->
-                            <h3
-                                class="text-xl font-medium text-[#1B2D62] mb-3 group-hover:text-[#2C4AA4] transition-colors duration-300 line-clamp-2">
-                                <?php echo htmlspecialchars($item['judul']); ?>
-                            </h3>
-
-                            <!-- Location if available -->
-                            <?php if (!empty($item['lokasi'])): ?>
-                                <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                                    <i class="fas fa-map-marker-alt text-orange-500"></i>
-                                    <span><?php echo htmlspecialchars($item['lokasi']); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <!-- Description -->
-                            <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
-                                <?php echo htmlspecialchars($item['deskripsi'] ?: 'Dokumentasi kegiatan Laboratorium Network & Cyber Security.'); ?>
-                            </p>
-
-                            <!-- Footer -->
-                            <div class="flex items-center justify-between pt-5 mt-5 border-t-2 border-gray-100">
-                                <span
-                                    class="inline-flex items-center gap-2 text-orange-600 font-medium hover:text-orange-700 transition-colors group/link">
-                                    <span>Lihat Detail</span>
-                                    <i class="fas fa-arrow-right group-hover/link:translate-x-1 transition-transform"></i>
-                                </span>
-
-                                <div class="flex items-center gap-2 text-gray-500">
-                                    <div class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg">
-                                        <i class="fas fa-calendar text-gray-400"></i>
-                                        <span class="font-medium text-sm">
-                                            <?php echo !empty($item['tanggal_kegiatan']) ? date('d M Y', strtotime($item['tanggal_kegiatan'])) : '-'; ?>
-                                        </span>
-                                    </div>
+                            
+                            <!-- Center Play/View Button -->
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-100 scale-50">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-white/40 shadow-2xl group-hover:bg-orange-500 transition-all duration-300">
+                                    <i class="fas fa-expand text-white text-xl"></i>
                                 </div>
                             </div>
+                            
+                            <!-- Bottom Content Overlay -->
+                            <div class="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                <!-- Date Badge -->
+                                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-white/90 text-xs font-medium mb-3">
+                                    <i class="fas fa-calendar-day"></i>
+                                    <span><?= !empty($item['tanggal_kegiatan']) ? date('d M Y', strtotime($item['tanggal_kegiatan'])) : '-'; ?></span>
+                                </div>
+                                
+                                <!-- Title -->
+                                <h3 class="text-xl font-bold text-white mb-2 line-clamp-2 leading-tight">
+                                    <?= htmlspecialchars($item['judul']) ?>
+                                </h3>
+                                
+                                <!-- Location -->
+                                <?php if (!empty($item['lokasi'])): ?>
+                                <div class="flex items-center gap-2 text-white/80 text-sm">
+                                    <i class="fas fa-map-marker-alt text-orange-400"></i>
+                                    <span class="line-clamp-1"><?= htmlspecialchars($item['lokasi']) ?></span>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            
                         </div>
+                        
+                        <!-- Hover Border Effect -->
+                        <div class="absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-orange-400/50 transition-colors duration-300 pointer-events-none"></div>
+                        
                     </div>
 
                 <?php endforeach; ?>
