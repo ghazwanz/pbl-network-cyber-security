@@ -2,7 +2,7 @@
 /**
  * Public Kontak Page
  * File: public/kontak.php
- * Design Reference: Single Section Contact Page with Form & Info Cards
+ * Updated: Form Card Clean Style (Removed Top Orange Border)
  */
 
 // Set page title
@@ -40,176 +40,176 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<!-- Single Contact Section -->
-<main class="relative min-h-screen bg-gradient-to-br from-[#F8FCFF] via-white to-orange-50 overflow-hidden">
-    <!-- Decorative Elements -->
-    <div class="absolute top-20 right-10 w-72 h-72 bg-orange-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30"></div>
-    <div class="absolute bottom-20 left-10 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30"></div>
+<main class="relative min-h-screen overflow-hidden">
+    
+    <div class="absolute inset-0 bg-gradient-to-b from-orange-50/80 via-white to-blue-50/60"></div>
+    
+    <div class="absolute -left-20 top-0 w-[60%] h-full bg-gradient-to-br from-orange-100/40 via-orange-50/30 to-transparent blur-3xl pointer-events-none"></div>
+    <div class="absolute -right-20 top-0 w-[60%] h-full bg-gradient-to-bl from-blue-100/40 via-indigo-50/20 to-transparent blur-3xl pointer-events-none"></div>
+    
+    <div class="absolute inset-0 opacity-[0.015] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"></div>
 
-    <div class="mx-auto px-4 py-32 lg:py-40">
-        <!-- Header Section -->
+    <div class="container mx-auto px-4 py-32 lg:py-40 relative">
+        
         <div class="text-center mb-16" data-aos="fade-up">
-            <!-- Badge -->
-            <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg">
-                <i class="fas fa-headset text-orange-500"></i>
-                <span class="text-sm tracking-wide">HUBUNGI KAMI</span>
+            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/80 backdrop-blur-sm border border-orange-200/60 rounded-full text-orange-600 font-semibold text-sm mb-6 shadow-lg shadow-orange-100/50">
+                <span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                <span class="tracking-wide">HUBUNGI KAMI</span>
             </div>
             
-            <!-- Heading -->
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-medium text-[#1B2D62] mb-6 font-inter leading-tight">
-                Kontak Laboratorium NCS
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-medium text-[#1B2D62] mb-6 leading-tight tracking-tight">
+                Kontak <br class="hidden sm:block">
+                <span class="bg-gradient-to-r from-[#1B2D62] via-[#2C4AA4] to-orange-500 bg-clip-text text-transparent">Laboratorium NCS</span>
             </h1>
             
-            <!-- Subtitle -->
-            <p class="text-lg text-gray-500 font-inter max-w-2xl mx-auto">
-                Ada pertanyaan seputar layanan laboratorium atau kerjasama? Kami siap membantu Anda.
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                Ada pertanyaan seputar layanan laboratorium atau kerjasama? Kami siap membantu Anda dengan solusi terbaik.
             </p>
         </div>
 
-        <!-- Main Content Grid -->
         <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
                 
-                <!-- Left Column - Form (3 cols) -->
                 <div class="lg:col-span-3" data-aos="fade-right">
-                    <div class="bg-white rounded-3xl border border-gray-200 p-8 lg:p-10 shadow-sm">
-                        <!-- Form Header -->
-                        <div class="flex items-center gap-4 mb-8">
-                            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-comment-dots text-orange-500 text-lg"></i>
+                    <div class="bg-white/90 backdrop-blur-sm rounded-3xl border border-gray-100 p-8 lg:p-10 shadow-2xl shadow-blue-900/5 relative overflow-hidden group">
+                        
+                        <div class="flex items-center gap-5 mb-8">
+                            <div class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-50 rounded-2xl flex items-center justify-center shadow-inner border border-orange-100">
+                                <i class="fas fa-comment-dots text-orange-500 text-2xl"></i>
                             </div>
                             <div>
-                                <h2 class="text-xl font-bold text-[#1B2D62] font-inter">Kirim Pertanyaan</h2>
-                                <p class="text-gray-500 text-sm font-inter">Sampaikan pertanyaan Anda kepada kami.</p>
+                                <h2 class="text-2xl font-bold text-[#1B2D62]">Kirim Pertanyaan</h2>
+                                <p class="text-gray-500">Sampaikan pesan Anda kepada kami.</p>
                             </div>
                         </div>
 
-                        <!-- Success Message -->
                         <?php if (!empty($success_message)): ?>
-                        <div class="bg-green-50 border border-green-200 text-green-700 px-5 py-4 rounded-xl mb-6" role="alert">
+                        <div class="bg-green-50/80 border border-green-200 text-green-700 px-5 py-4 rounded-xl mb-6 backdrop-blur-sm animate-fade-in" role="alert">
                             <div class="flex items-center gap-3">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                                <p class="font-inter text-sm"><?php echo $success_message; ?></p>
+                                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-check text-xs text-green-600"></i>
+                                </div>
+                                <p class="text-sm font-medium"><?php echo $success_message; ?></p>
                             </div>
                         </div>
                         <?php endif; ?>
 
-                        <!-- Error Message -->
                         <?php if (!empty($error_message)): ?>
-                        <div class="bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-xl mb-6" role="alert">
+                        <div class="bg-red-50/80 border border-red-200 text-red-700 px-5 py-4 rounded-xl mb-6 backdrop-blur-sm animate-fade-in" role="alert">
                             <div class="flex items-center gap-3">
-                                <i class="fas fa-exclamation-circle text-red-500"></i>
-                                <p class="font-inter text-sm"><?php echo $error_message; ?></p>
+                                <div class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-exclamation text-xs text-red-600"></i>
+                                </div>
+                                <p class="text-sm font-medium"><?php echo $error_message; ?></p>
                             </div>
                         </div>
                         <?php endif; ?>
 
-                        <!-- Contact Form -->
-                        <form method="POST" action="" class="space-y-5">
-                            <!-- Message/Question -->
-                            <div>
-                                <label class="block text-[#1B2D62] font-semibold mb-2 text-sm font-inter" for="message">
-                                    PERTANYAAN <span class="text-red-500">*</span>
+                        <form method="POST" action="" class="space-y-6">
+                            <div class="group/input">
+                                <label class="block text-[#1B2D62] font-semibold mb-2.5 text-sm tracking-wide" for="message">
+                                    PERTANYAAN <span class="text-orange-500">*</span>
                                 </label>
-                                <textarea 
-                                    id="message" 
-                                    name="message"
-                                    rows="6"
-                                    class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:bg-white transition resize-none font-inter text-gray-700"
-                                    placeholder="Tulis pertanyaan Anda di sini... (minimal 10 karakter)"
-                                    required
-                                    minlength="10"
-                                    maxlength="1000"
-                                ><?php echo htmlspecialchars($message ?? ''); ?></textarea>
-                                <p class="text-gray-400 text-xs mt-2 font-inter">Minimal 10 karakter, maksimal 1000 karakter.</p>
+                                <div class="relative">
+                                    <textarea 
+                                        id="message" 
+                                        name="message"
+                                        rows="6"
+                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 focus:bg-white transition-all resize-none text-gray-700 placeholder-gray-400"
+                                        placeholder="Tulis pertanyaan Anda di sini... (minimal 10 karakter)"
+                                        required
+                                        minlength="10"
+                                        maxlength="1000"
+                                    ><?php echo htmlspecialchars($message ?? ''); ?></textarea>
+                                    <div class="absolute bottom-4 right-4 text-gray-400 pointer-events-none">
+                                        <i class="fas fa-pen text-sm opacity-50"></i>
+                                    </div>
+                                </div>
+                                <p class="text-gray-400 text-xs mt-2 ml-1">Minimal 10 karakter, maksimal 1000 karakter.</p>
                             </div>
 
-                            <!-- Submit Button -->
-                            <button type="submit" class="w-full inline-flex items-center justify-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-base px-8 py-4 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-300 font-inter">
+                            <button type="submit" class="w-full group/btn inline-flex items-center justify-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-base px-8 py-4 rounded-xl shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300">
                                 <span>Kirim Pertanyaan</span>
-                                <i class="fas fa-paper-plane"></i>
+                                <i class="fas fa-paper-plane transition-transform duration-300 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1"></i>
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <!-- Right Column - Info Cards (2 cols) -->
-                <div class="lg:col-span-2 space-y-5" data-aos="fade-left">
-                    <!-- Email Card -->
-                    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-300 group">
+                <div class="lg:col-span-2 space-y-6" data-aos="fade-left">
+                    
+                    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 group">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange-500 transition-colors duration-300">
-                                <i class="fas fa-envelope text-orange-500 text-lg group-hover:text-white transition-colors duration-300"></i>
+                            <div class="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 border border-orange-100">
+                                <i class="fas fa-envelope text-orange-500 text-lg"></i>
                             </div>
                             <div>
-                                <h3 class="text-lg font-bold text-[#1B2D62] font-inter">Email</h3>
-                                <a href="mailto:labncs@polinema.ac.id" class="text-gray-500 hover:text-orange-500 transition text-sm font-inter">
+                                <h3 class="text-base font-bold text-[#1B2D62] mb-0.5">Email</h3>
+                                <a href="mailto:labncs@polinema.ac.id" class="text-gray-500 hover:text-orange-600 transition-colors text-sm font-medium">
                                     labncs@polinema.ac.id
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Phone Card -->
-                    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-300 group">
+                    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 group">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-blue-500 transition-colors duration-300">
-                                <i class="fas fa-phone-alt text-blue-500 text-lg group-hover:text-white transition-colors duration-300"></i>
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 border border-blue-100">
+                                <i class="fas fa-phone-alt text-blue-600 text-lg"></i>
                             </div>
                             <div>
-                                <h3 class="text-lg font-bold text-[#1B2D62] font-inter">Telepon</h3>
-                                <a href="tel:+6231234567890" class="text-gray-500 hover:text-blue-500 transition text-sm font-inter">
+                                <h3 class="text-base font-bold text-[#1B2D62] mb-0.5">Telepon</h3>
+                                <a href="tel:+6231234567890" class="text-gray-500 hover:text-blue-600 transition-colors text-sm font-medium">
                                     +62 31 2345 6789
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Location Card -->
-                    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-300 group">
+                    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 group">
                         <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-green-500 transition-colors duration-300">
-                                <i class="fas fa-map-marker-alt text-green-500 text-lg group-hover:text-white transition-colors duration-300"></i>
+                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 border border-emerald-100">
+                                <i class="fas fa-map-marker-alt text-emerald-600 text-lg"></i>
                             </div>
                             <div>
-                                <h3 class="text-lg font-bold text-[#1B2D62] font-inter">Lokasi</h3>
-                                <p class="text-gray-500 text-sm font-inter leading-relaxed">
+                                <h3 class="text-base font-bold text-[#1B2D62] mb-1">Lokasi</h3>
+                                <p class="text-gray-500 text-sm leading-relaxed">
                                     Gedung TI Lt. 3, Jl. Soekarno Hatta No.9, Malang
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- WhatsApp Card -->
-                    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-300 group">
+                    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 group">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-green-500 transition-colors duration-300">
-                                <i class="fab fa-whatsapp text-green-500 text-xl group-hover:text-white transition-colors duration-300"></i>
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-50 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 border border-green-100">
+                                <i class="fab fa-whatsapp text-green-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-lg font-bold text-[#1B2D62] font-inter">WhatsApp</h3>
-                                <a href="https://wa.me/6281234567890" target="_blank" class="text-gray-500 hover:text-green-500 transition text-sm font-inter">
+                                <h3 class="text-base font-bold text-[#1B2D62] mb-0.5">WhatsApp</h3>
+                                <a href="https://wa.me/6281234567890" target="_blank" class="text-gray-500 hover:text-green-600 transition-colors text-sm font-medium">
                                     +62 812 3456 7890
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Social Media Card -->
-                    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-[#1B2D62] font-inter mb-4">Ikuti Kami</h3>
-                        <div class="flex items-center gap-3">
-                            <a href="#" class="w-11 h-11 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center hover:scale-110 transition-transform duration-300">
-                                <i class="fab fa-instagram text-white"></i>
+                    <div class="bg-gradient-to-br from-[#1B2D62] to-[#2C4AA4] rounded-2xl p-6 shadow-lg shadow-blue-900/20 text-white relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
+                        
+                        <h3 class="text-base font-bold mb-4 relative z-10">Ikuti Sosial Media Kami</h3>
+                        <div class="flex items-center gap-3 relative z-10">
+                            <a href="#" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-pink-600 hover:scale-110 transition-all duration-300 border border-white/10">
+                                <i class="fab fa-instagram"></i>
                             </a>
-                            <a href="#" class="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center hover:scale-110 transition-transform duration-300">
-                                <i class="fab fa-linkedin-in text-white"></i>
+                            <a href="#" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-blue-700 hover:scale-110 transition-all duration-300 border border-white/10">
+                                <i class="fab fa-linkedin-in"></i>
                             </a>
-                            <a href="#" class="w-11 h-11 bg-red-600 rounded-xl flex items-center justify-center hover:scale-110 transition-transform duration-300">
-                                <i class="fab fa-youtube text-white"></i>
+                            <a href="#" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-red-600 hover:scale-110 transition-all duration-300 border border-white/10">
+                                <i class="fab fa-youtube"></i>
                             </a>
-                            <a href="#" class="w-11 h-11 bg-[#1B2D62] rounded-xl flex items-center justify-center hover:scale-110 transition-transform duration-300">
-                                <i class="fab fa-github text-white"></i>
+                            <a href="#" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white hover:text-gray-900 hover:scale-110 transition-all duration-300 border border-white/10">
+                                <i class="fab fa-github"></i>
                             </a>
                         </div>
                     </div>
