@@ -3,7 +3,7 @@
 /**
  * Public Layanan Page
  * File: public/layanan.php
- * Design Reference: Modern & Professional with Navy Blue Theme (Consistent with Arsip)
+ * Design Reference: Modern & Professional (Consistent with Index)
  */
 
 // Set page title
@@ -27,367 +27,448 @@ $count_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif WHERE status = 
 $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
 ?>
 
-<!-- Hero Section -->
-<section class="relative lg:py-44 py-32 bg-gradient-to-br from-[#F8FCFF] via-white to-blue-50">
-    <div class="relative max-w-7xl mx-auto">
-        <div class="absolute top-0 left-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse"></div>
-        <div class="absolute bottom-0 right-0 w-96 h-96 bg-orange-100 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse" style="animation-delay: 1s;"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 2s;"></div>
-    
-        <!-- Geometric Floating Shapes - Left Side (Different from Arsip) -->
-        <div class="absolute left-4 md:left-8 lg:left-16 top-20 md:top-28 w-16 h-16 md:w-20 md:h-20 border-4 border-orange-300 rounded-full opacity-40 animate-spin" style="animation-duration: 20s;"></div>
-    
-        <div class="absolute left-12 md:left-28 lg:left-44 top-40 md:top-52 w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-400 to-blue-600 rotate-45 shadow-lg opacity-70 animate-pulse" style="animation-duration: 3s;"></div>
-    
-        <div class="absolute left-6 md:left-20 lg:left-36 bottom-28 md:bottom-36 w-14 h-14 md:w-18 md:h-18 border-4 border-dashed border-blue-300 rounded-2xl opacity-50 animate-spin" style="animation-duration: 15s; animation-direction: reverse;"></div>
-    
-        <div class="hidden md:block absolute left-2 lg:left-10 bottom-52 lg:bottom-60 w-6 h-6 lg:w-8 lg:h-8 bg-orange-400 rounded-full opacity-60 animate-ping" style="animation-duration: 2s;"></div>
-    
-        <div class="absolute left-16 md:left-36 lg:left-56 top-64 md:top-72 w-3 h-3 md:w-4 md:h-4 bg-green-500 rounded-full opacity-80 animate-bounce" style="animation-duration: 2.5s;"></div>
-    
-        <!-- Geometric Floating Shapes - Right Side (Different from Arsip) -->
-        <div class="absolute right-4 md:right-12 lg:right-24 top-24 md:top-32 w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl rotate-12 shadow-xl opacity-60 animate-bounce" style="animation-duration: 4s;"></div>
-    
-        <div class="absolute right-16 md:right-32 lg:right-48 top-44 md:top-56 w-20 h-20 md:w-24 md:h-24 border-4 border-purple-300 rounded-full opacity-30 animate-spin" style="animation-duration: 25s;"></div>
-    
-        <div class="absolute right-8 md:right-20 lg:right-36 bottom-32 md:bottom-40 w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-green-400 to-teal-500 rounded-2xl -rotate-12 shadow-lg opacity-70 animate-pulse" style="animation-duration: 3.5s;"></div>
-    
-        <div class="hidden md:block absolute right-2 lg:right-8 bottom-56 lg:bottom-64 w-5 h-5 lg:w-6 lg:h-6 bg-blue-500 rounded-full opacity-50 animate-ping" style="animation-duration: 3s;"></div>
-    
-        <div class="absolute right-24 md:right-44 lg:right-64 top-72 md:top-80 w-6 h-6 md:w-8 md:h-8 border border-orange-400 rotate-45 opacity-60 animate-spin" style="animation-duration: 8s;"></div>
-    
-        <!-- Decorative Lines -->
-        <div class="hidden lg:block absolute left-0 top-1/3 w-32 h-1 bg-gradient-to-r from-transparent via-orange-300 to-transparent opacity-50"></div>
-        <div class="hidden lg:block absolute right-0 bottom-1/3 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent opacity-50"></div>
+<!-- Hero Section - Matching Index Style -->
+<section class="relative lg:py-44 py-32 px-4 overflow-hidden">  
+    <div class="absolute inset-0 opacity-[0.5]" style="background-image: url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23000%22 fill-opacity=%221%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+
+    <!-- Gradient Mesh Background -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute inset-0 bg-gradient-to-b from-orange-50/80 via-white to-blue-50/60"></div>
+        <div class="absolute -left-20 top-0 w-[60%] h-full bg-gradient-to-br from-orange-100/70 via-orange-50/50 to-transparent blur-3xl"></div>
+        <div class="absolute -right-20 top-0 w-[60%] h-full bg-gradient-to-bl from-blue-100/60 via-indigo-50/40 to-transparent blur-3xl"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/30 to-white/60"></div>
+        <div class="absolute inset-0 opacity-[0.015]" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"></div>
     </div>
 
-    <div class="container mx-auto px-4 relative z-[5]">
-        <div class="max-w-5xl mx-auto text-center">
-            <!-- Badge -->
-            <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-orange-200 rounded-full text-orange-600 font-bold mb-6 shadow-lg" data-aos="fade-up">
-                <i class="fas fa-concierge-bell text-orange-500"></i>
-                <span class="text-sm tracking-wide">LAYANAN LABORATORIUM</span>
+    <!-- Floating Icons -->
+    <div class="hidden md:block absolute inset-0 max-w-7xl mx-auto pointer-events-none">
+        <div class="absolute left-4 lg:left-12 xl:left-20 top-1/4 w-14 h-14 lg:w-18 lg:h-18 xl:w-20 xl:h-20 bg-white rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center opacity-90 animate-float">
+            <i class="fas fa-shield-alt text-[#1B2D62] text-xl lg:text-2xl xl:text-3xl"></i>
+        </div>
+        <div class="absolute left-8 lg:left-20 xl:left-32 bottom-1/4 w-14 h-14 lg:w-18 lg:h-18 xl:w-20 xl:h-20 bg-white rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center opacity-90 animate-float-delayed">
+            <i class="fas fa-server text-[#1B2D62] text-xl lg:text-2xl xl:text-3xl"></i>
+        </div>
+        <div class="absolute right-4 lg:right-12 xl:right-20 top-1/4 w-14 h-14 lg:w-18 lg:h-18 xl:w-20 xl:h-20 bg-white rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center opacity-90 animate-float-delayed">
+            <i class="fas fa-network-wired text-orange-500 text-xl lg:text-2xl xl:text-3xl"></i>
+        </div>
+        <div class="absolute right-8 lg:right-20 xl:right-32 bottom-1/4 w-14 h-14 lg:w-18 lg:h-18 xl:w-20 xl:h-20 bg-white rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center opacity-90 animate-float">
+            <i class="fas fa-tools text-orange-500 text-xl lg:text-2xl xl:text-3xl"></i>
+        </div>
+    </div>
+     
+    <!-- Hero Content -->
+    <div class="mx-auto max-w-4xl flex flex-col items-center relative text-center">
+        
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/80 backdrop-blur-sm border border-orange-200/60 rounded-full text-orange-600 font-semibold text-sm mb-8 shadow-lg shadow-orange-100/50" data-aos="fade-up">
+            <span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+            <span class="tracking-wide">LAYANAN LABORATORIUM</span>
+        </div>
+
+        <!-- Main Heading -->
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-[#1B2D62] leading-[1.1] tracking-tight mb-8" data-aos="fade-up" data-aos-delay="100">
+            Jelajahi<br class="hidden sm:block"> 
+            <span class="bg-gradient-to-r from-[#1B2D62] via-[#2C4AA4] to-orange-500 bg-clip-text text-transparent">Layanan & Fasilitas</span>
+        </h1>
+
+        <p class="text-lg md:text-xl text-gray-600 max-w-2xl mb-10 leading-relaxed" data-aos="fade-up" data-aos-delay="200">
+            Solusi komprehensif untuk kebutuhan praktikum, penelitian, dan pengembangan keamanan siber dengan fasilitas standar industri.
+        </p>
+
+        <!-- Feature Tags -->
+        <div class="flex flex-wrap justify-center gap-3 sm:gap-6 mb-12" data-aos="fade-up" data-aos-delay="300">
+            <div class="flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full border border-gray-200/60 shadow-sm">
+                <div class="w-5 h-5 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check text-white text-[10px]"></i>
+                </div>
+                <span class="font-medium text-gray-700 text-sm">Praktikum</span>
             </div>
-
-            <!-- Heading -->
-            <h1 class="text-5xl md:text-6xl font-medium text-[#1B2D62] mb-6 leading-tight" data-aos="fade-up" data-aos-delay="100">
-                Layanan & Fasilitas
-            </h1>
-
-            <!-- Subtitle -->
-            <p class="text-xl md:text-2xl text-gray-600 leading-relaxed mb-10" data-aos="fade-up" data-aos-delay="200">
-                Jelajahi layanan dan fasilitas yang kami sediakan untuk<br class="hidden md:block">
-                mendukung kebutuhan praktikum, penelitian, dan pengembangan
-            </p>
-
-            <!-- Stats Bar - Simple Style -->
-            <div class="flex flex-wrap justify-center gap-8 md:gap-16" data-aos="fade-up" data-aos-delay="300">
-                <div class="text-center">
-                    <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                        <i class="fas fa-cogs text-blue-600 text-xl"></i>
-                    </div>
-                    <p class="text-3xl font-bold text-[#1B2D62] mb-1"><?php echo number_format($count_layanan); ?></p>
-                    <p class="text-sm text-gray-500 font-medium">Total Layanan</p>
+            <div class="flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full border border-gray-200/60 shadow-sm">
+                <div class="w-5 h-5 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check text-white text-[10px]"></i>
                 </div>
-
-                <div class="text-center">
-                    <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                        <i class="fas fa-server text-orange-600 text-xl"></i>
-                    </div>
-                    <p class="text-3xl font-bold text-[#1B2D62] mb-1"><?php echo number_format($count_sarana); ?></p>
-                    <p class="text-sm text-gray-500 font-medium">Sarana & Prasarana</p>
+                <span class="font-medium text-gray-700 text-sm">Penelitian</span>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full border border-gray-200/60 shadow-sm">
+                <div class="w-5 h-5 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check text-white text-[10px]"></i>
                 </div>
-
-                <div class="text-center">
-                    <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                        <i class="fas fa-comments text-green-600 text-xl"></i>
-                    </div>
-                    <p class="text-3xl font-bold text-[#1B2D62] mb-1"><?php echo number_format($count_konsultatif); ?></p>
-                    <p class="text-sm text-gray-500 font-medium">FAQ Terjawab</p>
-                </div>
+                <span class="font-medium text-gray-700 text-sm">Konsultasi</span>
             </div>
         </div>
+
+        <!-- CTA Button -->
+        <div class="flex flex-col sm:flex-row gap-4" data-aos="fade-up" data-aos-delay="400">
+            <a href="#layanan-section" class="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#1B2D62] to-[#2C4AA4] text-white font-medium text-base px-8 py-4 rounded-xl shadow-lg shadow-blue-900/25 transition-all duration-300 hover:shadow-xl hover:shadow-blue-900/30 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#1B2D62] focus:ring-offset-2">
+                <span>Lihat Layanan</span>
+                <i class="fas fa-arrow-down transition-transform duration-300 group-hover:translate-y-1"></i>
+            </a>
+            <a href="./kontak.php" class="group inline-flex items-center justify-center gap-3 bg-white text-[#1B2D62] font-medium text-base px-8 py-4 rounded-xl border-2 border-gray-200 shadow-sm transition-all duration-300 hover:border-[#1B2D62]/30 hover:shadow-lg hover:bg-gray-50 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#1B2D62] focus:ring-offset-2">
+                <span>Hubungi Kami</span>
+                <i class="fas fa-paper-plane text-sm transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"></i>
+            </a>
+        </div>
+
     </div>
 </section>
 
 <!-- Layanan Section -->
-<section class="py-20 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="max-w-7xl mx-auto">
-
-            <!-- Section Header -->
-            <div class="text-center mb-16" data-aos="fade-up">
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-orange-200 rounded-full text-orange-600 font-semibold mb-4">
-                    <i class="fas fa-star text-orange-500"></i>
-                    <span class="text-sm">APA YANG KAMI TAWARKAN</span>
-                </div>
-                <h2 class="text-4xl md:text-5xl font-medium text-[#1B2D62] mb-4">
-                    Layanan Kami
-                </h2>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Berbagai layanan profesional untuk mendukung kegiatan akademik dan penelitian Anda
-                </p>
+<section class="relative py-24 sm:py-32 overflow-hidden" id="layanan-section">
+    <div class="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-orange-50/30"></div>
+    
+    <div class="container relative mx-auto max-w-7xl px-4">
+        
+        <!-- Section Header -->
+        <div class="max-w-3xl mx-auto text-center mb-16" data-aos="fade-up">
+            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/80 backdrop-blur-sm border border-orange-200/60 rounded-full text-orange-600 font-semibold text-sm mb-6 shadow-lg shadow-orange-100/50">
+                <span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                <span class="tracking-wide">LAYANAN UNGGULAN</span>
             </div>
 
-            <?php if ($layanan_list && count($layanan_list) > 0): ?>
-                <!-- Layanan Grid - Simple Card Style -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <?php 
-                    // Icon mapping for different service types
-                    $icons = ['fa-clock', 'fa-headset', 'fa-shield-alt', 'fa-laptop-code', 'fa-network-wired', 'fa-cogs'];
-                    foreach ($layanan_list as $index => $layanan): 
-                    $icon = $icons[$index % count($icons)];
-                    ?>
-                        <div class="bg-gray-100 rounded-2xl p-6 hover:bg-white hover:shadow-xl transition-all duration-300 group"
-                            data-aos="fade-up"
-                            data-aos-delay="<?php echo ($index * 100); ?>">
-
-                            <!-- Icon -->
-                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-blue-500 transition-colors duration-300">
-                                <i class="fas <?php echo $icon; ?> text-blue-600 text-lg group-hover:text-white transition-colors duration-300"></i>
-                            </div>
-
-                            <!-- Title -->
-                            <h3 class="text-lg font-medium text-[#1B2D62] mb-3">
-                                <?php echo htmlspecialchars($layanan['nama_layanan']); ?>
-                            </h3>
-
-                            <!-- Description -->
-                            <p class="text-sm text-gray-500 leading-relaxed">
-                                <?php echo htmlspecialchars($layanan['deskripsi'] ?? 'Layanan profesional dari Laboratorium Network & Cyber Security.'); ?>
-                            </p>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php else: ?>
-                <!-- Empty State -->
-                <div class="text-center py-16" data-aos="fade-up">
-                    <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-inbox text-gray-400 text-4xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-medium text-[#1B2D62] mb-2">Belum Ada Layanan</h3>
-                    <p class="text-gray-600">Layanan akan segera tersedia. Silakan kunjungi kembali.</p>
-                </div>
-            <?php endif; ?>
-
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-medium text-[#1B2D62] leading-[1.1] tracking-tight mb-6">
+                Layanan<br class="hidden sm:block">
+                <span class="bg-gradient-to-r from-[#1B2D62] via-[#2C4AA4] to-orange-500 bg-clip-text text-transparent">Profesional Kami</span>
+            </h2>
+            
+            <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                Berbagai layanan profesional untuk mendukung kegiatan akademik, penelitian, dan pengembangan di bidang keamanan siber.
+            </p>
         </div>
+
+        <?php if ($layanan_list && count($layanan_list) > 0): ?>
+            <!-- Layanan Grid - Simple Card Style -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <?php 
+                // Icon mapping for different service types
+                $icons = ['fa-clock', 'fa-headset', 'fa-shield-alt', 'fa-laptop-code', 'fa-network-wired', 'fa-cogs'];
+                foreach ($layanan_list as $index => $layanan): 
+                    $icon = $icons[$index % count($icons)];
+                ?>
+                    <div class="bg-gray-100 rounded-2xl p-6 hover:bg-white hover:shadow-xl transition-all duration-300 group"
+                        data-aos="fade-up"
+                        data-aos-delay="<?php echo ($index * 100); ?>">
+
+                        <!-- Icon -->
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-blue-500 transition-colors duration-300">
+                            <i class="fas <?php echo $icon; ?> text-blue-600 text-lg group-hover:text-white transition-colors duration-300"></i>
+                        </div>
+
+                        <!-- Title -->
+                        <h3 class="text-lg font-medium text-[#1B2D62] mb-3">
+                            <?php echo htmlspecialchars($layanan['nama_layanan']); ?>
+                        </h3>
+
+                        <!-- Description -->
+                        <p class="text-sm text-gray-500 leading-relaxed break-words">
+                            <?php echo htmlspecialchars($layanan['deskripsi'] ?? 'Layanan profesional dari Laboratorium Network & Cyber Security.'); ?>
+                        </p>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+                            
+        <?php else: ?>
+            <!-- Empty State -->
+            <div class="text-center py-16 bg-white rounded-3xl border-2 border-dashed border-gray-200" data-aos="fade-up">
+                <i class="fas fa-inbox text-gray-400 text-6xl mb-4"></i>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Layanan</h3>
+                <p class="text-gray-600">Layanan akan segera tersedia. Silakan kunjungi kembali.</p>
+            </div>
+        <?php endif; ?>
+
     </div>
 </section>
 
 <!-- Sarana & Prasarana Section -->
-<section class="py-20 bg-[#F8FCFF]">
-    <div class="container mx-auto px-4">
-        <div class="max-w-7xl mx-auto">
-
-            <!-- Section Header -->
-            <div class="text-center mb-16" data-aos="fade-up">
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-orange-200 rounded-full text-orange-600 font-semibold mb-4">
-                    <i class="fas fa-server text-orange-500"></i>
-                    <span class="text-sm">FASILITAS LABORATORIUM</span>
-                </div>
-                <h2 class="text-4xl md:text-5xl font-medium text-[#1B2D62] mb-4">
-                    Sarana & Prasarana
-                </h2>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Perangkat dan fasilitas yang tersedia untuk mendukung kegiatan praktikum dan penelitian
-                </p>
+<section class="relative py-24 sm:py-32 overflow-hidden px-4">
+    <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50/30 to-white"></div>
+    
+    <div class="relative mx-auto max-w-7xl">
+        
+        <!-- Section Header -->
+        <div class="max-w-3xl mx-auto text-center mb-16" data-aos="fade-up">
+            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/80 backdrop-blur-sm border border-orange-200/60 rounded-full text-orange-600 font-semibold text-sm mb-6 shadow-lg shadow-orange-100/50">
+                <span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                <span class="tracking-wide">SARANA & PRASARANA</span>
             </div>
 
-            <?php if ($sarana_list && count($sarana_list) > 0): ?>
-                <!-- Sarana Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <?php foreach ($sarana_list as $index => $sarana): ?>
-                        <div class="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-green-500 hover:shadow-2xl transition-all duration-300"
-                            data-aos="fade-up"
-                            data-aos-delay="<?php echo ($index * 100); ?>">
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-medium text-[#1B2D62] leading-[1.1] tracking-tight mb-6">
+                Perangkat<br class="hidden sm:block">
+                <span class="bg-gradient-to-r from-[#1B2D62] via-[#2C4AA4] to-orange-500 bg-clip-text text-transparent">Laboratorium</span>
+            </h2>
+            
+            <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                Perangkat dan fasilitas yang tersedia untuk mendukung kegiatan praktikum dan penelitian dengan standar industri terkini.
+            </p>
+        </div>
 
-                            <!-- Card Image -->
-                            <div class="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
-                                <?php
-                                $gambar_url = !empty($sarana['gambar']) && file_exists("../uploads" . $sarana['gambar'])
-                                    ? UPLOAD_URL . $sarana['gambar']
-                                    : ASSETS_URL . '/img/no-image.png';
-                                ?>
-                                <img src="<?php echo $gambar_url; ?>" alt="<?php echo htmlspecialchars($sarana['nama_sarana']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-
-                                <!-- Quantity Badge -->
-                                <span class="absolute top-4 right-4 px-3 py-1.5 text-xs font-bold rounded-lg shadow-lg bg-[#1B2D62] text-white">
-                                    <i class="fas fa-cubes mr-1"></i><?php echo htmlspecialchars($sarana['jumlah'] ?? '1'); ?> Unit
+        <?php if ($sarana_list && count($sarana_list) > 0): ?>
+            <!-- Sarana Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                <?php foreach ($sarana_list as $index => $sarana): ?>
+                    <!-- Sarana Card -->
+                    <div class="group relative bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-xl hover:shadow-orange-200/50" data-aos="fade-up" data-aos-delay="<?php echo ($index * 100); ?>">
+                        
+                        <!-- Border -->
+                        <div class="absolute inset-0 rounded-3xl border-2 border-gray-100 group-hover:border-orange-300 transition-colors duration-300 z-10"></div>
+                        
+                        <!-- Image -->
+                        <div class="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden">
+                            <?php
+                            $gambar_url = !empty($sarana['gambar']) && file_exists("../uploads" . $sarana['gambar'])
+                                ? UPLOAD_URL . $sarana['gambar']
+                                : ASSETS_URL . '/img/no-image.png';
+                            ?>
+                            <img src="<?php echo $gambar_url; ?>" alt="<?php echo htmlspecialchars($sarana['nama_sarana']); ?>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            
+                            <!-- Badges -->
+                            <div class="absolute top-4 right-4 flex flex-col gap-2">
+                                <!-- Quantity -->
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/90 text-white text-xs font-semibold rounded-lg backdrop-blur-sm shadow-lg">
+                                    <i class="fas fa-cubes"></i><?php echo htmlspecialchars($sarana['jumlah'] ?? '1'); ?> Unit
                                 </span>
-
-                                <!-- Condition Badge -->
+                                
+                                <!-- Condition -->
                                 <?php 
                                 $kondisi = strtolower($sarana['kondisi'] ?? 'baik');
-                                $kondisi_class = $kondisi === 'baik' ? 'bg-green-500' : ($kondisi === 'rusak berat' ? 'bg-red-500' : 'bg-yellow-500');
+                                $kondisi_class = $kondisi === 'baik' ? 'bg-emerald-500' : ($kondisi === 'rusak berat' ? 'bg-red-500' : 'bg-amber-500');
                                 ?>
-                                <span class="absolute top-4 left-4 px-3 py-1.5 text-xs font-bold rounded-lg shadow-lg <?php echo $kondisi_class; ?> text-white">
-                                    <?php echo htmlspecialchars(ucfirst($sarana['kondisi'] ?? 'Baik')); ?>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 <?php echo $kondisi_class; ?> text-white text-xs font-semibold rounded-lg backdrop-blur-sm shadow-lg">
+                                    <i class="fas fa-circle text-xs"></i><?php echo htmlspecialchars(ucfirst($sarana['kondisi'] ?? 'Baik')); ?>
                                 </span>
                             </div>
-
-                            <!-- Card Content -->
-                            <div class="p-6">
-                                <!-- Title -->
-                                <h3 class="text-xl font-medium text-[#1B2D62] mb-3 group-hover:text-green-600 transition-colors">
-                                    <?php echo htmlspecialchars($sarana['nama_sarana']); ?>
-                                </h3>
-
-                                <!-- Description -->
-                                <p class="text-sm text-gray-600 leading-relaxed line-clamp-2 mb-4">
-                                    <?php echo htmlspecialchars($sarana['deskripsi'] ?? 'Perangkat laboratorium.'); ?>
-                                </p>
-
-                                <!-- Specifications -->
-                                <?php if (!empty($sarana['spesifikasi'])): ?>
-                                <div class="bg-gray-50 rounded-xl p-4">
-                                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                                        <i class="fas fa-microchip mr-1"></i>Spesifikasi
-                                    </p>
-                                    <p class="text-sm text-gray-700 leading-relaxed line-clamp-2">
-                                        <?php echo htmlspecialchars($sarana['spesifikasi']); ?>
-                                    </p>
-                                </div>
-                                <?php endif; ?>
-                            </div>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php else: ?>
-                <!-- Empty State -->
-                <div class="text-center py-16 bg-white rounded-2xl border border-gray-200" data-aos="fade-up">
-                    <div class="w-24 h-24 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-server text-orange-400 text-4xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-medium text-[#1B2D62] mb-2">Belum Ada Sarana</h3>
-                    <p class="text-gray-600">Data sarana akan segera tersedia. Silakan kunjungi kembali.</p>
-                </div>
-            <?php endif; ?>
 
-        </div>
+                        <!-- Content -->
+                        <div class="relative p-6 z-10">
+                            
+                            <!-- Title -->
+                            <h3 class="text-lg font-medium text-[#1B2D62] mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                                <?php echo htmlspecialchars($sarana['nama_sarana']); ?>
+                            </h3>
+
+                            <!-- Description -->
+                            <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                <?php echo htmlspecialchars($sarana['deskripsi'] ?? 'Perangkat laboratorium profesional.'); ?>
+                            </p>
+
+                            <!-- Specifications -->
+                            <?php if (!empty($sarana['spesifikasi'])): ?>
+                            <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                                <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
+                                    <i class="fas fa-microchip mr-1"></i>Spesifikasi
+                                </p>
+                                <p class="text-xs text-gray-700 line-clamp-2">
+                                    <?php echo htmlspecialchars($sarana['spesifikasi']); ?>
+                                </p>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <!-- Empty State -->
+            <div class="text-center py-16 bg-white rounded-3xl border-2 border-dashed border-gray-200" data-aos="fade-up">
+                <i class="fas fa-server text-gray-400 text-6xl mb-4"></i>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Sarana</h3>
+                <p class="text-gray-600">Data sarana akan segera tersedia. Silakan kunjungi kembali.</p>
+            </div>
+        <?php endif; ?>
+
     </div>
 </section>
 
 <!-- Konsultatif / FAQ Section -->
-<section class="py-20 pb-32 bg-[#F8FCFF]">
-    <div class="mx-auto px-4">
-        <div class="max-w-4xl mx-auto">
-
-            <!-- Section Header -->
-            <div class="text-center mb-16" data-aos="fade-up">
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-orange-200 rounded-full text-orange-600 font-semibold mb-4">
-                    <i class="fas fa-question-circle text-orange-500"></i>
-                    <span class="text-sm">SERING DITANYAKAN</span>
+<section class="relative py-24 sm:py-32 overflow-hidden px-4">
+    <div class="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-orange-50/30"></div>
+    
+    <div class="relative mx-auto max-w-7xl">
+        
+        <!-- Two Column Layout -->
+        <div class="grid lg:grid-cols-5 gap-12 lg:gap-16 items-start">
+            
+            <!-- Left Column: Header -->
+            <div class="lg:col-span-2" data-aos="fade-right">
+                <div class="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/80 backdrop-blur-sm border border-orange-200/60 rounded-full text-orange-600 font-semibold text-sm mb-6 shadow-lg shadow-orange-100/50">
+                    <span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                    <span class="tracking-wide">LAYANAN KONSULTATIF</span>
                 </div>
-                <h2 class="text-4xl md:text-5xl font-medium text-[#1B2D62] mb-4">
-                    Layanan Konsultatif
+
+                <h2 class="text-4xl md:text-5xl font-medium text-[#1B2D62] leading-[1.1] tracking-tight mb-6">
+                    Pertanyaan<br>
+                    <span class="bg-gradient-to-r from-[#1B2D62] via-[#2C4AA4] to-orange-500 bg-clip-text text-transparent">yang Sering Diajukan</span>
                 </h2>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Temukan jawaban atas pertanyaan yang sering diajukan seputar layanan laboratorium kami
+                
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    Temukan jawaban atas pertanyaan umum seputar layanan penelitian dan konsultasi laboratorium kami di bawah ini.
                 </p>
             </div>
+            
+            <!-- Right Column: FAQ Items -->
+            <div class="lg:col-span-3">
+                
+                <?php
+                $faqList = executeQuery("SELECT pertanyaan, jawaban FROM konsultatif WHERE jawaban IS NOT NULL AND jawaban != '' ORDER BY id DESC LIMIT 5");
+                if ($faqList === false) $faqList = [];
+                ?>
 
-            <?php if ($konsultatif_list && count($konsultatif_list) > 0): ?>
-                <!-- FAQ Accordion - Material Tailwind Style -->
-                <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="100" data-accordion-container data-accordion-mode="exclusive">
-                    <?php foreach ($konsultatif_list as $index => $faq): ?>
-                        <div
-                            class="flex items-center justify-between w-full px-6 py-5 text-left cursor-pointer hover:bg-orange-50/20 transition-colors duration-300 <?php echo $index > 0 ? 'border-t border-gray-200' : ''; ?>"
-                            data-accordion-toggle
-                            data-accordion-target="#faq-<?php echo $index; ?>"
-                            aria-expanded="false">
-                            <span class="text-lg font-semibold text-[#1B2D62] pr-4">
-                                <?php echo htmlspecialchars($faq['pertanyaan']); ?>
-                            </span>
-                            <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300">
-                                <svg data-accordion-icon-close xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                                <svg data-accordion-icon-open xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
-                                </svg>
+                <?php if (!empty($faqList)): ?>
+                    <div class="space-y-4" data-accordion-container data-accordion-mode="exclusive" data-aos="fade-up">
+                        <?php foreach ($faqList as $index => $faq): ?>
+                            
+                            <div class="group">
+                                <div class="relative bg-white/80 backdrop-blur-sm rounded-2xl border-2 border-gray-100 overflow-hidden transition-all duration-300 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/50">
+                                    
+                                    <!-- Question Header -->
+                                    <div class="flex items-start gap-4 w-full p-6 text-left cursor-pointer transition-colors duration-300"
+                                         data-accordion-toggle
+                                         data-accordion-target="#faq-layanan-<?php echo $index; ?>"
+                                         aria-expanded="false">
+                                        <!-- Number Badge -->
+                                        <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl flex items-center justify-center font-medium text-orange-600 group-hover:from-orange-500 group-hover:to-orange-600 group-hover:text-white transition-all duration-300">
+                                            <?php echo str_pad($index + 1, 2, '0', STR_PAD_LEFT); ?>
+                                        </div>
+                                        
+                                        <!-- Question Text -->
+                                        <div class="flex-1 pt-1.5">
+                                            <span class="text-lg font-semibold text-[#1B2D62] group-hover:text-orange-600 transition-colors duration-300 leading-tight">
+                                                <?= htmlspecialchars($faq['pertanyaan']) ?>
+                                            </span>
+                                        </div>
+                                        
+                                        <!-- Toggle Icon -->
+                                        <div class="flex-shrink-0 w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:bg-orange-50">
+                                            <svg data-accordion-icon-close xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-gray-400 transition-all duration-300 group-hover:text-orange-500">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                            </svg>
+                                            <svg data-accordion-icon-open xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-orange-500 transition-all duration-300">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Answer Content -->
+                                    <div id="faq-layanan-<?php echo $index; ?>" class="overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                                        <div class="px-6 pb-6 pl-20">
+                                            <div class="relative pl-6 border-l-2 border-orange-200">
+                                                <p class="text-gray-600 leading-relaxed">
+                                                    <?= htmlspecialchars($faq['jawaban']) ?>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
                             </div>
-                        </div>
-                        <div id="faq-<?php echo $index; ?>" class="overflow-hidden transition-all duration-300">
-                            <div class="px-6 pb-6 pt-0">
-                                <div class="h-px bg-gray-200 mb-4"></div>
-                                <p class="text-gray-600 leading-relaxed">
-                                    <?php echo nl2br(htmlspecialchars($faq['jawaban'])); ?>
-                                </p>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php else: ?>
-                <!-- Empty State -->
-                <div class="text-center py-16 bg-white rounded-2xl border border-gray-200" data-aos="fade-up">
-                    <div class="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-comments text-blue-400 text-4xl"></i>
+
+                        <?php endforeach; ?>
                     </div>
-                    <h3 class="text-2xl font-medium text-[#1B2D62] mb-2">Belum Ada FAQ</h3>
-                    <p class="text-gray-600 mb-6">Pertanyaan yang sering ditanyakan akan ditampilkan di sini.</p>
-                    <a href="kontak.php" class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-6 py-3 rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300">
-                        <i class="fas fa-paper-plane"></i>
-                        <span>Ajukan Pertanyaan</span>
-                    </a>
-                </div>
-            <?php endif; ?>
+                    
+                <?php else: ?>
+                    <div class="text-center py-16 bg-white/80 backdrop-blur-sm rounded-3xl border-2 border-dashed border-gray-200" data-aos="fade-up">
+                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-question-circle text-gray-400 text-3xl"></i>
+                        </div>
+                        <h3 class="text-xl font-medium text-gray-700 mb-2">Belum Ada FAQ</h3>
+                        <p class="text-gray-500">Pertanyaan yang sering diajukan akan muncul di sini.</p>
+                    </div>
+                <?php endif; ?>
 
-            <!-- CTA Box -->
-            <!-- <div class="mt-12 bg-gradient-to-r from-[#1B2D62] to-[#2C4AA4] rounded-2xl p-8 md:p-10 text-center" data-aos="fade-up" data-aos-delay="200">
-                <h3 class="text-2xl md:text-3xl font-medium text-white mb-4">
-                    Masih Punya Pertanyaan?
-                </h3>
-                <p class="text-blue-100 mb-6">
-                    Jangan ragu untuk menghubungi kami. Tim kami siap membantu Anda.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="kontak.php" class="inline-flex items-center justify-center gap-2 bg-white text-[#1B2D62] font-bold px-8 py-4 rounded-xl hover:bg-orange-50 hover:scale-105 transition-all duration-300">
-                        <i class="fas fa-envelope"></i>
-                        <span>Hubungi Kami</span>
-                    </a>
-                    <a href="mailto:labncs@mail.com" class="inline-flex items-center justify-center gap-2 bg-transparent border border-white text-white font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition-all duration-300">
-                        <i class="fas fa-paper-plane"></i>
-                        <span>Email Langsung</span>
-                    </a>
-                </div>
-            </div> -->
-
+            </div>
+            
         </div>
+
     </div>
 </section>
 
 <!-- Contact CTA Section -->
-<section class="px-4 pb-20">
-    <div data-aos="fade-up" class="sm:py-20 py-16 bg-gradient-to-r from-[#1B2D62] to-[#2C4AA4] mx-auto rounded-2xl max-w-7xl">
-        <div class="mx-auto sm:px-12 px-6">
+<section class="relative px-4 pb-24 overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-orange-200/20 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div data-aos="fade-up" class="relative max-w-7xl mx-auto">
+        <div class="relative overflow-hidden rounded-3xl">
+            <!-- Gradient Background -->
+            <div class="absolute inset-0 bg-gradient-to-br from-[#1B2D62] via-[#243a73] to-[#2C4AA4]"></div>
+            
+            <!-- Animated Background Pattern -->
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%221%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+            </div>
+            
+            <!-- Floating Decorative Elements -->
+            <div class="absolute top-10 left-10 w-20 h-20 bg-white/5 rounded-2xl rotate-12 hidden lg:block"></div>
+            <div class="absolute bottom-10 right-10 w-32 h-32 bg-orange-500/10 rounded-full hidden lg:block"></div>
+            <div class="absolute top-1/2 right-20 w-16 h-16 bg-white/5 rounded-xl -rotate-12 hidden lg:block"></div>
+            
+            <!-- Glowing Orbs -->
+            <div class="absolute -top-20 -right-20 w-64 h-64 bg-orange-500/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl"></div>
+            
+            <!-- Content -->
+            <div class="relative px-6 py-16 sm:px-12 sm:py-20 lg:py-24">
                 <div class="max-w-4xl mx-auto text-center">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-full text-white font-semibold mb-6">
-                        <i class="fas fa-envelope text-orange-400"></i>
-                        <span class="text-sm">HUBUNGI KAMI</span>
+                    
+                    <!-- Badge -->
+                    <div class="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white font-semibold text-sm mb-8" data-aos="fade-up">
+                        <span class="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></span>
+                        <span class="tracking-wide">BUTUH BANTUAN?</span>
                     </div>
                     
-                    <h2 class="text-4xl md:text-5xl font-medium text-white mb-6 font-inter">
-                        Butuh Bantuan Lebih Lanjut?
+                    <!-- Heading -->
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-medium text-white mb-6 leading-tight" data-aos="fade-up">
+                        Hubungi Kami<br class="hidden sm:block">
+                        <span class="bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-300 bg-clip-text text-transparent">Sekarang</span>
                     </h2>
                     
-                    <p class="text-xl text-white/80 mb-10 font-inter leading-relaxed">
-                        Jika Anda memiliki pertanyaan atau membutuhkan informasi lebih lanjut<br class="hidden md:block">
-                        tentang layanan kami, jangan ragu untuk menghubungi tim kami.
+                    <!-- Description -->
+                    <p class="text-lg md:text-xl text-white/80 mb-12 leading-relaxed max-w-2xl mx-auto" data-aos="fade-up">
+                        Jika Anda memiliki pertanyaan atau membutuhkan informasi lebih lanjut tentang layanan kami, jangan ragu untuk menghubungi tim kami.
                     </p>
                     
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="./kontak.php" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-8 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                            <i class="fas fa-paper-plane"></i>
-                            Hubungi Kami
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center" data-aos="fade-up">
+                        <a href="./kontak.php" class="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-medium text-base px-8 py-4 rounded-xl shadow-lg shadow-orange-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/40 hover:scale-[1.02] active:scale-[0.98]">
+                            <i class="fas fa-paper-plane transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"></i>
+                            <span>Hubungi Kami</span>
                         </a>
-                        <a href="./arsip.php" class="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-all duration-300">
-                            <i class="fas fa-book"></i>
-                            Lihat Arsip
+                        <a href="./about.php" class="group inline-flex items-center justify-center gap-3 bg-white/10 border border-white/30 text-white font-medium text-base px-8 py-4 rounded-xl backdrop-blur-sm transition-all duration-300 hover:bg-white/20 hover:border-white/50 hover:scale-[1.02] active:scale-[0.98]">
+                            <i class="fas fa-info-circle transition-transform duration-300 group-hover:-translate-y-0.5"></i>
+                            <span>Tentang Kami</span>
                         </a>
                     </div>
+                    
+                    <!-- Trust Indicators -->
+                    <div class="mt-12 pt-10 border-t border-white/10" data-aos="fade-up">
+                        <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+                            <div class="flex items-center gap-3 text-white/70">
+                                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-clock text-orange-400"></i>
+                                </div>
+                                <span class="text-sm font-medium">Respon Cepat</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-white/70">
+                                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-headset text-orange-400"></i>
+                                </div>
+                                <span class="text-sm font-medium">Support 24/7</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-white/70">
+                                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-users text-orange-400"></i>
+                                </div>
+                                <span class="text-sm font-medium">Tim Profesional</span>
+                            </div>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
-    </div>    
+            
+        </div>
+    </div>
 </section>
 
 <?php
