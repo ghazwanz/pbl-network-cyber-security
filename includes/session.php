@@ -42,7 +42,6 @@ function setLoginSession($user_data) {
         'username' => $user_data['username'],
         'nama_lengkap' => $user_data['nama_lengkap'],
         'email' => $user_data['email'],
-        'role' => $user_data['role']
     ];
     $_SESSION['login_time'] = time();
 }

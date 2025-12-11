@@ -162,7 +162,6 @@ $current_user = getCurrentUser();
                     </div>
                     <div class="ml-3 flex-1">
                         <p class="text-sm font-semibold"><?php echo htmlspecialchars($current_user['nama_lengkap']); ?></p>
-                        <p class="text-xs text-gray-400"><?php echo htmlspecialchars($current_user['role']); ?></p>
                     </div>
                     <i class="fas fa-chevron-right text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
                 </a>
