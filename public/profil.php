@@ -48,7 +48,7 @@ function formatMisiToList($misiData) {
                         <div class="mt-1 w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-50 rounded-full flex items-center justify-center flex-shrink-0 border border-blue-100 shadow-sm">
                             <span class="text-blue-600 font-bold text-sm">' . $num . '</span>
                         </div>
-                        <p class="text-lg text-gray-600 leading-relaxed">' . htmlspecialchars($cleanItem) . '</p>
+                        <p class="text-lg text-gray-600 leading-relaxed">' . $cleanItem . '</p>
                       </li>';
         }
     }
@@ -89,7 +89,7 @@ function formatMisiToList($misiData) {
                 </h1>
 
                 <div class="text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl" data-aos="fade-up" data-aos-delay="200">
-                    <?= nl2br(htmlspecialchars($profil['sejarah'] ?? '')) ?>
+                    <?= nl2br($profil['sejarah'] ?? '') ?>
                 </div>
 
             </div>
@@ -140,9 +140,9 @@ function formatMisiToList($misiData) {
                     <div class="ticker-item">
                         <div class="relative h-[400px] w-[600px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
-                            <img src="<?= htmlspecialchars($img) ?>" 
+                            <img src="<?= $img ?>" 
                                  class="w-full h-full object-cover" 
-                                 alt="<?= htmlspecialchars($profil['nama_lab'] ?? 'Laboratorium') ?> - Ruang <?= ($index % count($room_images)) + 1 ?>" 
+                                 alt="<?= $profil['nama_lab'] ?? 'Laboratorium' ?> - Ruang <?= ($index % count($room_images)) + 1 ?>" 
                                  loading="lazy">
                             <div class="absolute bottom-6 left-6 z-20">
                                 <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full">
@@ -182,7 +182,7 @@ function formatMisiToList($misiData) {
 
                 <div class="bg-gradient-to-br from-blue-50 to-white p-8 lg:p-10 rounded-3xl border border-blue-100 border-l-8 border-l-orange-500 shadow-sm relative">
                     <p class="text-lg md:text-xl text-gray-700 leading-relaxed italic relative z-10 pl-4">
-                        "<?= htmlspecialchars($profil['visi'] ?? '') ?>"
+                        "<?= $profil['visi'] ?? '' ?>"
                     </p>
                 </div>
             </div>
@@ -252,8 +252,8 @@ function formatMisiToList($misiData) {
                          data-aos-delay="<?= ($index * 100) ?>">
                         
                         <a href="detail_pengelola.php?id=<?= $p['id'] ?>" class="block cursor-pointer overflow-hidden rounded-2xl relative aspect-[4/5] mb-5">
-                            <img src="<?= htmlspecialchars($imgSrc) ?>" 
-                                 alt="<?= htmlspecialchars($p['nama_lengkap']) ?>"
+                            <img src="<?= $imgSrc ?>" 
+                                 alt="<?= $p['nama_lengkap'] ?>"
                                  class="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-110 filter grayscale-[10%] group-hover:grayscale-0">
                             
                             <div class="absolute inset-0 bg-gradient-to-t from-[#1B2D62]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -268,12 +268,12 @@ function formatMisiToList($misiData) {
                         <div class="px-2 pb-2 text-center">
                             <a href="detail_pengelola.php?id=<?= $p['id'] ?>" class="hover:text-orange-600 transition-colors">
                                 <h3 class="text-xl font-bold text-[#1B2D62] leading-tight mb-2">
-                                    <?= htmlspecialchars($p['nama_lengkap']) ?>
+                                    <?= $p['nama_lengkap'] ?>
                                 </h3>
                             </a>
                             
                             <p class="text-orange-500 text-sm font-semibold uppercase tracking-wide">
-                                <?= htmlspecialchars($p['jabatan']) ?>
+                                <?= $p['jabatan'] ?>
                             </p>
                         </div>
                     </div>

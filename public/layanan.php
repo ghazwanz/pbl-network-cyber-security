@@ -170,12 +170,12 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                             <div class="flex-1 min-w-0">
                                 <!-- Title -->
                                 <h3 class="text-xl font-semibold text-[#1B2D62] mb-2 group-hover:text-orange-600 transition-colors duration-300">
-                                    <?php echo htmlspecialchars($layanan['nama_layanan']); ?>
+                                    <?php echo $layanan['nama_layanan']; ?>
                                 </h3>
 
                                 <!-- Description -->
                                 <p class="text-base text-gray-600 leading-relaxed">
-                                    <?php echo htmlspecialchars($layanan['deskripsi'] ?? 'Layanan profesional dari Laboratorium Network & Cyber Security.'); ?>
+                                    <?php echo $layanan['deskripsi'] ?? 'Layanan profesional dari Laboratorium Network & Cyber Security.'; ?>
                                 </p>
                             </div>
 
@@ -240,13 +240,13 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                                 ? UPLOAD_URL . $sarana['gambar']
                                 : ASSETS_URL . '/img/no-image.png';
                             ?>
-                            <img src="<?php echo $gambar_url; ?>" alt="<?php echo htmlspecialchars($sarana['nama_sarana']); ?>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <img src="<?php echo $gambar_url; ?>" alt="<?php echo $sarana['nama_sarana']; ?>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                             
                             <!-- Badges -->
                             <div class="absolute top-4 right-4 flex flex-col gap-2">
                                 <!-- Quantity -->
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/90 text-white text-xs font-semibold rounded-lg backdrop-blur-sm shadow-lg">
-                                    <i class="fas fa-cubes"></i><?php echo htmlspecialchars($sarana['jumlah'] ?? '1'); ?> Unit
+                                    <i class="fas fa-cubes"></i><?php echo $sarana['jumlah'] ?? '1'; ?> Unit
                                 </span>
                                 
                                 <!-- Condition -->
@@ -255,7 +255,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                                 $kondisi_class = $kondisi === 'baik' ? 'bg-emerald-500' : ($kondisi === 'rusak berat' ? 'bg-red-500' : 'bg-amber-500');
                                 ?>
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 <?php echo $kondisi_class; ?> text-white text-xs font-semibold rounded-lg backdrop-blur-sm shadow-lg">
-                                    <i class="fas fa-circle text-xs"></i><?php echo htmlspecialchars(ucfirst($sarana['kondisi'] ?? 'Baik')); ?>
+                                    <i class="fas fa-circle text-xs"></i><?php echo ucfirst($sarana['kondisi'] ?? 'Baik'); ?>
                                 </span>
                             </div>
                         </div>
@@ -265,12 +265,12 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                             
                             <!-- Title -->
                             <h3 class="text-lg font-medium text-[#1B2D62] mb-2 group-hover:text-orange-600 transition-colors duration-300">
-                                <?php echo htmlspecialchars($sarana['nama_sarana']); ?>
+                                <?php echo $sarana['nama_sarana']; ?>
                             </h3>
 
                             <!-- Description -->
                             <p class="text-sm text-gray-600 leading-relaxed mb-4">
-                                <?php echo htmlspecialchars($sarana['deskripsi'] ?? 'Perangkat laboratorium profesional.'); ?>
+                                <?php echo $sarana['deskripsi'] ?? 'Perangkat laboratorium profesional.'; ?>
                             </p>
 
                             <!-- Specifications -->
@@ -280,7 +280,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                                     <i class="fas fa-microchip mr-1"></i>Spesifikasi
                                 </p>
                                 <p class="text-xs text-gray-700 line-clamp-2">
-                                    <?php echo htmlspecialchars($sarana['spesifikasi']); ?>
+                                    <?php echo $sarana['spesifikasi']; ?>
                                 </p>
                             </div>
                             <?php endif; ?>
@@ -354,7 +354,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                                         <!-- Question Text -->
                                         <div class="flex-1 pt-1.5">
                                             <span class="text-lg font-semibold text-[#1B2D62] group-hover:text-orange-600 transition-colors duration-300 leading-tight">
-                                                <?= htmlspecialchars($faq['pertanyaan']) ?>
+                                                <?= $faq['pertanyaan'] ?>
                                             </span>
                                         </div>
                                         
@@ -374,7 +374,7 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                                         <div class="px-6 pb-6 pl-20">
                                             <div class="relative pl-6 border-l-2 border-orange-200">
                                                 <p class="text-gray-600 leading-relaxed">
-                                                    <?= htmlspecialchars($faq['jawaban']) ?>
+                                                    <?= $faq['jawaban'] ?>
                                                 </p>
                                             </div>
                                         </div>

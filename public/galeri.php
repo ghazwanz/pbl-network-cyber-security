@@ -264,7 +264,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                     <span
                         class="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 rounded-lg text-orange-700 text-sm font-semibold">
                         <i class="fas fa-search"></i>
-                        "<?php echo htmlspecialchars($search); ?>"
+                        "<?php echo $search; ?>"
                         <a href="?<?php echo $filter_kategori ? 'filter=' . urlencode($filter_kategori) : ''; ?>"
                             class="ml-1 hover:text-orange-900">
                             <i class="fas fa-times"></i>
@@ -323,10 +323,10 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                         : ASSETS_URL . '/img/no-image.png';
 
                     $item_data = [
-                        'judul' => htmlspecialchars($item['judul']),
-                        'deskripsi' => htmlspecialchars($item['deskripsi'] ?: 'Dokumentasi kegiatan Laboratorium Network & Cyber Security.'),
-                        'tipe' => htmlspecialchars($item['tipe']),
-                        'lokasi' => htmlspecialchars($item['lokasi'] ?? ''),
+                        'judul' => $item['judul'],
+                        'deskripsi' => $item['deskripsi'] ?: 'Dokumentasi kegiatan Laboratorium Network & Cyber Security.',
+                        'tipe' => $item['tipe'],
+                        'lokasi' => $item['lokasi'] ?? '',
                         'tanggal' => !empty($item['tanggal_kegiatan']) ? date('d F Y', strtotime($item['tanggal_kegiatan'])) : '-',
                         'gambar' => $gambar_url,
                         'is_featured' => !empty($item['is_featured'])
@@ -343,8 +343,8 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                         
                         <!-- Image Container -->
                         <div class="relative h-[360px] bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden">
-                            <img src="<?= htmlspecialchars($gambar_url) ?>" 
-                                 alt="<?= htmlspecialchars($item['judul']) ?>" 
+                            <img src="<?= $gambar_url ?>" 
+                                 alt="<?= $item['judul'] ?>" 
                                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                  loading="lazy">
                             
@@ -359,7 +359,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                                         ? 'bg-blue-500/90 text-white' 
                                         : 'bg-orange-500/90 text-white'; ?>">
                                     <i class="fas <?= strtolower($item['tipe']) === 'agenda' ? 'fa-calendar-alt' : 'fa-images'; ?> mr-1.5"></i>
-                                    <?= htmlspecialchars($item['tipe']) ?>
+                                    <?= $item['tipe'] ?>
                                 </span>
                                 
                                 <?php if (!empty($item['is_featured'])): ?>
@@ -387,14 +387,14 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                                 
                                 <!-- Title -->
                                 <h3 class="text-xl font-bold text-white mb-2 line-clamp-2 leading-tight">
-                                    <?= htmlspecialchars($item['judul']) ?>
+                                    <?= $item['judul'] ?>
                                 </h3>
                                 
                                 <!-- Location -->
                                 <?php if (!empty($item['lokasi'])): ?>
                                 <div class="flex items-center gap-2 text-white/80 text-sm">
                                     <i class="fas fa-map-marker-alt text-orange-400"></i>
-                                    <span class="line-clamp-1"><?= htmlspecialchars($item['lokasi']) ?></span>
+                                    <span class="line-clamp-1"><?= $item['lokasi'] ?></span>
                                 </div>
                                 <?php endif; ?>
                             </div>
@@ -517,7 +517,7 @@ $total_galeri = countRows("SELECT COUNT(*) FROM galeri WHERE is_active = true");
                 <p class="text-lg text-gray-600 mb-8 leading-relaxed">
                     <?php if ($search): ?>
                         Tidak ada hasil untuk pencarian "<strong
-                            class="text-orange-600"><?php echo htmlspecialchars($search); ?></strong>".<br>
+                            class="text-orange-600"><?php echo $search; ?></strong>".<br>
                         Coba gunakan kata kunci yang berbeda atau lihat semua galeri.
                     <?php elseif ($filter_kategori): ?>
                         Belum ada <strong class="text-orange-600"><?php echo ucfirst($filter_kategori); ?></strong> yang

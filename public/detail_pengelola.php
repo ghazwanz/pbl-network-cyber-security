@@ -45,8 +45,8 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                 
                 <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 p-2">
                     <div class="aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 relative group">
-                        <img src="<?= htmlspecialchars($imgSrc) ?>" 
-                             alt="<?= htmlspecialchars($pengelola['nama_lengkap']) ?>" 
+                        <img src="<?= $imgSrc ?>" 
+                             alt="<?= $pengelola['nama_lengkap'] ?>" 
                              class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
                     </div>
                 </div>
@@ -66,7 +66,7 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                     ?>
                     <div>
                         <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold"><?= $label ?></p>
-                        <p class="text-[#1B2D62] font-medium"><?= htmlspecialchars($value) ?></p>
+                        <p class="text-[#1B2D62] font-medium"><?= $value ?></p>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -79,8 +79,8 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                         <i class="fas fa-envelope text-orange-500 mt-1"></i>
                         <div class="overflow-hidden">
                             <p class="text-xs text-gray-500">Email</p>
-                            <a href="mailto:<?= htmlspecialchars($pengelola['email']) ?>" class="text-sm font-medium text-blue-600 hover:underline truncate block">
-                                <?= htmlspecialchars($pengelola['email']) ?>
+                            <a href="mailto:<?= $pengelola['email'] ?>" class="text-sm font-medium text-blue-600 hover:underline truncate block">
+                                <?= $pengelola['email'] ?>
                             </a>
                         </div>
                     </div>
@@ -92,7 +92,7 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                         <div>
                             <p class="text-xs text-gray-500">Telepon</p>
                             <p class="text-sm text-gray-700 leading-snug">
-                                <?= htmlspecialchars($pengelola['no_telepon']) ?>
+                                <?= $pengelola['no_telepon'] ?>
                             </p>
                         </div>
                     </div>
@@ -111,11 +111,11 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                     </div>
 
                     <h1 class="text-4xl md:text-5xl font-bold text-[#1B2D62] mb-2">
-                        <?= htmlspecialchars($pengelola['nama_lengkap']) ?>
+                        <?= $pengelola['nama_lengkap'] ?>
                     </h1>
                     
                     <p class="text-xl text-gray-500 font-medium">
-                        <?= htmlspecialchars($pengelola['jabatan']) ?>
+                        <?= $pengelola['jabatan'] ?>
                     </p>
                 </div>
 
@@ -132,7 +132,7 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                                 if(trim($skill) == '') continue;
                         ?>
                             <span class="px-4 py-1.5 bg-blue-50 text-[#1B2D62] rounded-full text-sm font-semibold border border-blue-100 hover:bg-blue-100 transition-colors cursor-default">
-                                <?= htmlspecialchars(trim($skill)) ?>
+                                <?= trim($skill) ?>
                             </span>
                         <?php endforeach; ?>
                     </div>
@@ -148,7 +148,7 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                         foreach ($links as $name => $data):
                             if (empty($data['url'])) continue;
                         ?>
-                            <a href="<?= htmlspecialchars($data['url']) ?>" target="_blank" 
+                            <a href="<?= $data['url'] ?>" target="_blank" 
                                class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-600 border border-gray-300 rounded-lg text-sm font-medium hover:border-orange-500 hover:text-orange-600 transition-all hover:-translate-y-0.5 shadow-sm">
                                 <i class="fa-solidw <?php echo $data['icon'] ?> text-lg"></i> <?= $name ?>
                             </a>
@@ -165,7 +165,7 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                             Bio
                         </h3>
                         <div class="prose text-gray-700 leading-relaxed text-sm text-justify">
-                            <?= nl2br(htmlspecialchars($pengelola['bio'])) ?>
+                            <?= nl2br($pengelola['bio']) ?>
                         </div>
                     </div>
                     <?php endif; ?>
@@ -181,7 +181,7 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                                 <i class="fas fa-user-graduate"></i>
                              </div>
                              <p class="text-lg font-medium text-gray-800">
-                                 <?= htmlspecialchars($pengelola['pendidikan_terakhir']) ?>
+                                 <?= $pengelola['pendidikan_terakhir'] ?>
                              </p>
                         </div>
                     </div>
@@ -205,27 +205,27 @@ $imgSrc = !empty($pengelola['foto_path']) && file_exists("../uploads" . $pengelo
                                 <div class="flex-1">
                                     <div class="mb-2">
                                         <span class="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 bg-gray-100 text-gray-500 rounded">
-                                            <?= htmlspecialchars($pub['kategori']) ?>
+                                            <?= $pub['kategori'] ?>
                                         </span>
                                     </div>
 
                                     <h4 class="font-bold text-[#1B2D62] mb-3 line-clamp-3 group-hover:text-blue-600 transition-colors leading-snug">
-                                        <?= htmlspecialchars($pub['judul']) ?>
+                                        <?= $pub['judul'] ?>
                                     </h4>
                                 </div>
 
                                 <div class="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center">
                                     <div class="flex items-center gap-2 text-xs text-gray-500">
-                                        <span class="font-semibold text-orange-500"><?= htmlspecialchars($pub['tahun_publikasi']) ?></span>
+                                        <span class="font-semibold text-orange-500"><?= $pub['tahun_publikasi'] ?></span>
                                         <?php if (!empty($pub['penerbit'])): ?>
                                         <span class="text-gray-300">|</span>
-                                        <span class="truncate max-w-[100px]" title="<?= htmlspecialchars($pub['penerbit']) ?>">
-                                            <?= htmlspecialchars($pub['penerbit']) ?>
+                                        <span class="truncate max-w-[100px]" title="<?= $pub['penerbit'] ?>">
+                                            <?= $pub['penerbit'] ?>
                                         </span>
                                         <?php endif; ?>
                                     </div>
                                     
-                                    <a href="<?= htmlspecialchars($link_baca) ?>" target="_blank" class="text-xs font-bold text-blue-600 border border-blue-600 px-3 py-1 rounded hover:bg-blue-600 hover:text-white transition-colors">
+                                    <a href="<?= $link_baca ?>" target="_blank" class="text-xs font-bold text-blue-600 border border-blue-600 px-3 py-1 rounded hover:bg-blue-600 hover:text-white transition-colors">
                                         Baca
                                     </a>
                                 </div>

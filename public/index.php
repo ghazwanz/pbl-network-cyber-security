@@ -220,11 +220,11 @@
                                 <!-- Bottom: Title, Description & CTA -->
                                 <div class="mt-auto">
                                     <h3 class="text-xl <?php echo $isLarge ? 'lg:text-3xl' : 'lg:text-xl'; ?> font-medium text-white mb-2 lg:mb-3 leading-tight">
-                                        <?= htmlspecialchars($item['nama_layanan']) ?>
+                                        <?php echo $item['nama_layanan'] ?>
                                     </h3>
                                     
-                                    <p class="text-white/80 text-sm <?php echo $isLarge ? 'lg:text-base line-clamp-3' : 'line-clamp-2'; ?> leading-relaxed mb-4 break-words">
-                                        <?= htmlspecialchars($item['deskripsi']) ?>
+                                    <p class="text-white/80 text-sm lg:text-base lg:line-clamp-3 leading-relaxed mb-4 break-words">
+                                        <?php echo $item['deskripsi'] ?>
                                     </p>
                                     
                                     <!-- Learn More CTA -->

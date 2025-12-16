@@ -293,7 +293,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
             <?php if ($search): ?>
             <span class="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 rounded-lg text-orange-700 text-sm font-semibold">
                 <i class="fas fa-search"></i>
-                "<?php echo htmlspecialchars($search); ?>"
+                "<?php echo $search; ?>"
                 <a href="?<?php echo $filter_kategori ? 'filter=' . urlencode($filter_kategori) : ''; ?>" class="ml-1 hover:text-orange-900">
                     <i class="fas fa-times"></i>
                 </a>
@@ -344,21 +344,21 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                 // Prepare item data for modal
                 $item_data = [
                     'id' => $item['id'],
-                    'judul' => htmlspecialchars($item['judul']),
-                    'kategori' => htmlspecialchars($item['kategori']),
-                    'abstrak' => htmlspecialchars($item['abstrak'] ?: 'Dokumen penelitian dan pengabdian masyarakat dari Laboratorium Network & Cyber Security.'),
-                    'tahun_publikasi' => htmlspecialchars($item['tahun_publikasi'] ?? ''),
-                    'penerbit' => htmlspecialchars($item['penerbit'] ?? ''),
-                    'keywords' => htmlspecialchars($item['keywords'] ?? ''),
-                    'doi' => htmlspecialchars($item['doi'] ?? ''),
+                    'judul' => $item['judul'],
+                    'kategori' => $item['kategori'],
+                    'abstrak' => $item['abstrak'] ?: 'Dokumen penelitian dan pengabdian masyarakat dari Laboratorium Network & Cyber Security.',
+                    'tahun_publikasi' => $item['tahun_publikasi'] ?? '',
+                    'penerbit' => $item['penerbit'] ?? '',
+                    'keywords' => $item['keywords'] ?? '',
+                    'doi' => $item['doi'] ?? '',
                     'file_size_kb' => $item['file_size_kb'] ?? 0,
                     'jumlah_download' => $item['jumlah_download'] ?? 0,
                     'is_featured' => !empty($item['is_featured']),
-                    'penulis_display' => htmlspecialchars($item['penulis_display'] ?? ''),
+                    'penulis_display' => $item['penulis_display'] ?? '',
                     'penulis_list' => array_map(function($p) {
                         return [
-                            'nama' => htmlspecialchars($p['nama_lengkap']),
-                            'jabatan' => htmlspecialchars($p['jabatan'] ?? ''),
+                            'nama' => $p['nama_lengkap'],
+                            'jabatan' => $p['jabatan'] ?? '',
                         ];
                     }, $item['penulis_list'] ?? [])
                 ];
@@ -384,24 +384,24 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                                 ? 'bg-blue-100 text-blue-700 border border-blue-200' 
                                 : 'bg-emerald-100 text-emerald-700 border border-emerald-200'; ?>">
                             <i class="fas <?php echo $item['kategori'] === 'penelitian' ? 'fa-flask' : 'fa-hands-helping'; ?>"></i>
-                            <?php echo htmlspecialchars($item['kategori']); ?>
+                            <?php echo $item['kategori']; ?>
                         </span>
                         
                         <?php if (!empty($item['tahun_publikasi'])): ?>
                         <span class="text-sm font-medium text-gray-400">
-                            <?php echo htmlspecialchars($item['tahun_publikasi']); ?>
+                            <?php echo $item['tahun_publikasi']; ?>
                         </span>
                         <?php endif; ?>
                     </div>
                     
                     <!-- Title -->
                     <h3 class="text-xl font-medium text-[#1B2D62] mb-4 line-clamp-2 group-hover:text-orange-600 transition-colors duration-300 leading-tight">
-                        <?php echo htmlspecialchars($item['judul']); ?>
+                        <?php echo $item['judul']; ?>
                     </h3>
                     
                     <!-- Abstract -->
                     <p class="text-sm text-gray-500 mb-6 leading-relaxed line-clamp-3">
-                        <?php echo htmlspecialchars($item['abstrak'] ?: 'Dokumen penelitian dan pengabdian masyarakat dari Laboratorium Network & Cyber Security.'); ?>
+                        <?php echo $item['abstrak'] ?: 'Dokumen penelitian dan pengabdian masyarakat dari Laboratorium Network & Cyber Security.'; ?>
                     </p>
                     
                     <!-- Authors Section with Overlapping Avatars -->
@@ -424,7 +424,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                                 }
                                 $colorClass = $colors[$idx % count($colors)];
                             ?>
-                                <div class="w-9 h-9 rounded-full bg-gradient-to-br <?php echo $colorClass; ?> flex items-center justify-center ring-2 ring-white shadow-md" title="<?php echo htmlspecialchars($author['nama_lengkap']); ?>">
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br <?php echo $colorClass; ?> flex items-center justify-center ring-2 ring-white shadow-md" title="<?php echo $author['nama_lengkap']; ?>">
                                     <span class="text-white text-xs font-medium"><?php echo $initials; ?></span>
                                 </div>
                             <?php endforeach; ?>
@@ -439,7 +439,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                         <!-- Author Names -->
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-gray-700 truncate">
-                                <?php echo htmlspecialchars($item['penulis_display']); ?>
+                                <?php echo $item['penulis_display']; ?>
                             </p>
                         </div>
                     </div>
@@ -569,7 +569,7 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
             
             <p class="text-lg text-gray-600 mb-8 leading-relaxed">
                 <?php if ($search): ?>
-                Tidak ada hasil untuk pencarian "<strong class="text-orange-600"><?php echo htmlspecialchars($search); ?></strong>".<br>
+                Tidak ada hasil untuk pencarian "<strong class="text-orange-600"><?php echo $search; ?></strong>".<br>
                 Coba gunakan kata kunci yang berbeda atau lihat semua arsip.
                 <?php elseif ($filter_kategori): ?>
                 Belum ada dokumen <strong class="text-orange-600"><?php echo ucfirst($filter_kategori); ?></strong> yang dipublikasikan.<br>
