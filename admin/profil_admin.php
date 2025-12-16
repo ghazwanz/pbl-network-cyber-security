@@ -155,15 +155,6 @@ $user_data = executeQuerySingle("SELECT * FROM users WHERE id = ?", [$current_us
                 
                 <div class="p-6 space-y-4">
                     <div>
-                        <p class="text-xs text-gray-500 uppercase tracking-wide font-bold">Role</p>
-                        <p class="text-sm font-medium text-gray-800 mt-1">
-                            <span class="inline-block px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-semibold">
-                                <?php echo strtoupper(htmlspecialchars($user_data['role'])); ?>
-                            </span>
-                        </p>
-                    </div>
-                    
-                    <div>
                         <p class="text-xs text-gray-500 uppercase tracking-wide font-bold">Status</p>
                         <p class="text-sm font-medium text-gray-800 mt-1">
                             <span class="inline-block px-3 py-1 rounded-full <?php echo $user_data['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?> text-xs font-semibold">
