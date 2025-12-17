@@ -26,10 +26,10 @@ $footer_github = $profil['github'] ?? '#';
     
                 <div class="sm:col-span-2 md:col-span-5 ">
                     <a href="#" class="inline-block bg-white p-2 rounded-lg mb-4">
-                        <img src="../assets/img/jti.webp">
+                        <img src="<?php echo $logo; ?>" alt="Logo">
                     </a>
                     <p class="text-white leading-relaxed">
-                        <?php echo htmlspecialchars($footer_alamat); ?>
+                        <?php echo $footer_alamat; ?>
                     </p>
                 </div>
     
@@ -51,23 +51,23 @@ $footer_github = $profil['github'] ?? '#';
                 <div class="md:col-span-3">
                     <h4 class="text-lg font-semibold text-white mb-5">Kontak Kami</h4>
                     <ul class="space-y-3 text-[#EDEDED]">
-                        <li><?php echo htmlspecialchars($footer_telepon); ?></li>
-                        <li><?php echo htmlspecialchars($footer_email); ?></li>
+                        <li><?php echo $footer_telepon; ?></li>
+                        <li><?php echo $footer_email; ?></li>
                     </ul>
                 </div>
     
                 <div class="md:col-span-2">
                     <h4 class="text-lg font-semibold text-white mb-5">Social</h4>
                     <div class="flex space-x-4 items-center">
-                        <a href="<?php echo htmlspecialchars($footer_instagram); ?>" target="_blank" class="text-[#EDEDED] hover:text-white transition-colors">
+                        <a href="<?php echo $footer_instagram; ?>" target="_blank" class="text-[#EDEDED] hover:text-white transition-colors">
                             <span class="sr-only">Instagram</span>
                             <img src="../assets/icons/instagram.svg">
                         </a>
-                        <a href="<?php echo htmlspecialchars($footer_youtube); ?>" target="_blank" class="text-[#EDEDED] hover:text-white transition-colors">
+                        <a href="<?php echo $footer_youtube; ?>" target="_blank" class="text-[#EDEDED] hover:text-white transition-colors">
                             <span class="sr-only">YouTube</span>
                             <img src="../assets/icons/youtube.svg">
                         </a>
-                        <a href="<?php echo htmlspecialchars($footer_github); ?>" target="_blank" class="text-[#EDEDED] hover:text-white transition-colors">
+                        <a href="<?php echo $footer_github; ?>" target="_blank" class="text-[#EDEDED] hover:text-white transition-colors">
                             <span class="sr-only">GitHub</span>
                             <i class="fab fa-github text-xl"></i>
                         </a>
@@ -98,10 +98,10 @@ $footer_github = $profil['github'] ?? '#';
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
     AOS.init({
-        duration: 800,
+        duration: 500,
         easing: 'ease-in-out',
         once: true,
-        offset: 100
+        offset: 50
     });
 </script>
 <script src="../assets/js/script.js"></script>

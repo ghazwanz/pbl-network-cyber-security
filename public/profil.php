@@ -9,7 +9,7 @@ $page_title = "Profil Laboratorium Network & Cybersecurity";
 require_once __DIR__ . '/../includes/header.php';
 
 // 1. Ambil Data Profil Lab
-$profil = executeQuerySingle("SELECT * FROM profil_lab LIMIT 1");
+
 
 // Default value jika data kosong
 if (!$profil) {

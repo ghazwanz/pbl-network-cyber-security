@@ -10,6 +10,16 @@
 // Load configuration
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/functions.php';
+
+$profil = executeQuerySingle("SELECT * FROM profil_lab LIMIT 1");
+
+$logo;
+if ($profil && !empty($profil['logo_path']) && file_exists(UPLOAD_PATH . '/' . $profil['logo_path'])) {
+    $logo = UPLOAD_URL . '/' . $profil['logo_path'];
+} else {
+    $logo = '../assets/img/jti.webp'; // Ganti dengan path logo default Anda
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -32,7 +42,7 @@ require_once __DIR__ . '/functions.php';
     <title><?php echo isset($page_title) ? $page_title . ' - ' . SITE_NAME : SITE_NAME; ?></title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="<?php echo ASSETS_URL; ?>/img/favicon.png">
+    <link rel="icon" type="image/png" href="<?php echo $logo; ?>">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -92,7 +102,9 @@ require_once __DIR__ . '/functions.php';
     <header id="nav" class="fixed transition duration-300 ease-in-out top-0 left-0 right-0 bg-white border-b border-gray-200 z-10">
         <div class="px-4 overflow-hidden">
             <nav class="container mx-auto max-w-7xl flex justify-between items-center py-5">
-                <img src="../assets/img/jti.webp" class="h-[2.5rem]">
+                <a href="<?php echo SITE_URL; ?>">
+                    <img src="<?php echo $logo; ?>" class="h-[2.5rem]">
+                </a>
                 <ul class="hidden md:flex items-center space-x-8">
                     <li><a href="./index.php" class="font-medium transition <?php echo ($current_page == 'index.php') ? 'text-[#111]' : 'text-gray-500 hover:text-[#111]'; ?>">Beranda</a></li>
                     <li><a href="./profil.php" class="font-medium transition <?php echo ($current_page == 'profil.php') ? 'text-[#111]' : 'text-gray-500 hover:text-[#111]'; ?>">Profil</a></li>
