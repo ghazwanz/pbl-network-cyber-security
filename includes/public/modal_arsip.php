@@ -1,5 +1,5 @@
 <div id="modalDetailArsip" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm flex justify-center items-center opacity-0 pointer-events-none transition-all duration-300 ease-out z-[9999]">
-    <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-4xl scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-[90vw] scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto mx-4">
         
         <div class="p-5 pb-3 flex justify-between items-center border-b border-gray-200 sticky top-0 bg-white z-10 rounded-t-2xl">
             <h1 class="text-lg text-[#1B2D62] font-semibold flex items-center gap-2">

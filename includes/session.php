@@ -100,25 +100,3 @@ function redirectIfLoggedIn() {
     }
 }
 
-/**
- * Generate CSRF Token
- * @return string CSRF Token
- */
-function generateCSRFToken() {
-    if (!isset($_SESSION[CSRF_TOKEN_NAME])) {
-        $_SESSION[CSRF_TOKEN_NAME] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION[CSRF_TOKEN_NAME];
-}
-
-/**
- * Verify CSRF Token
- * @param string $token Token yang akan diverifikasi
- * @return bool True jika valid, false jika tidak
- */
-function verifyCSRFToken($token) {
-    if (!isset($_SESSION[CSRF_TOKEN_NAME])) {
-        return false;
-    }
-    return hash_equals($_SESSION[CSRF_TOKEN_NAME], $token);
-}

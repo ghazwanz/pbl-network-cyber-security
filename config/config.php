@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Configuration File
  * File: config/config.php
@@ -15,8 +16,8 @@ date_default_timezone_set('Asia/Jakarta');
 
 // Site Configuration
 define('SITE_NAME', 'Laboratorium NCS');
-define('SITE_URL', 'http://localhost/pbl-modular/public'); // Sesuaikan dengan URL Anda
-define('ADMIN_URL', 'http://localhost/pbl-modular/admin'); // Sesuaikan dengan URL Anda
+define('SITE_URL', 'http://localhost:3000/pbl-network-cyber-security/public'); // Sesuaikan dengan URL Anda
+define('ADMIN_URL', 'http://localhost:3000/pbl-network-cyber-security/admin'); // Sesuaikan dengan URL Anda
 
 // Path Configuration
 define('ROOT_PATH', dirname(__DIR__)); // Root directory project
@@ -41,17 +42,6 @@ define('ITEMS_PER_PAGE_PUBLIC', 12);
 define('SESSION_NAME', 'lab_ncs_session');
 define('SESSION_LIFETIME', 3600); // 1 hour in seconds
 
-// Security
-define('HASH_ALGORITHM', 'md5'); // Untuk development, gunakan 'password_hash' untuk production
-define('CSRF_TOKEN_NAME', 'csrf_token');
-
-// Image Thumbnail Configuration
-define('THUMB_WIDTH', 400);
-define('THUMB_HEIGHT', 300);
-
-// Date Format
-define('DATE_FORMAT', 'd-m-Y');
-define('DATETIME_FORMAT', 'd-m-Y H:i:s');
 
 // Include database configuration
 require_once __DIR__ . '/database.php';

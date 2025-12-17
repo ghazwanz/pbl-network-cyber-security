@@ -320,7 +320,7 @@
 
                 foreach ($arsipList as &$arsip_item) {
                     $arsip_item['penulis_list'] = executeQuery(
-                        "SELECT p.nama_lengkap, p.jabatan, p.foto_path FROM arsip_pengelola ap JOIN pengelola p ON ap.pengelola_id = p.id WHERE ap.arsip_id = ?",
+                        "SELECT p.nama_lengkap, p.jabatan FROM arsip_pengelola ap JOIN pengelola p ON ap.pengelola_id = p.id WHERE ap.arsip_id = ?",
                         [$arsip_item['id']]
                     );
                     if ($arsip_item['penulis_list'] === false) $arsip_item['penulis_list'] = [];
