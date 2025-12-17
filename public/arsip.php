@@ -351,7 +351,6 @@ $count_pengabdian = countRows("SELECT COUNT(*) FROM arsip WHERE kategori = 'peng
                     'penerbit' => $item['penerbit'] ?? '',
                     'keywords' => $item['keywords'] ?? '',
                     'doi' => $item['doi'] ?? '',
-                    'file_size_kb' => $item['file_size_kb'] ?? 0,
                     'jumlah_download' => $item['jumlah_download'] ?? 0,
                     'is_featured' => !empty($item['is_featured']),
                     'penulis_display' => $item['penulis_display'] ?? '',
@@ -634,18 +633,6 @@ function showArsipDetail(data) {
     
     // Set download count
     $('#detail-download-arsip').text(data.jumlah_download.toLocaleString());
-    
-    // Set file size
-    const fileSizeKB = data.file_size_kb || 0;
-    let fileSizeDisplay = '-';
-    if (fileSizeKB > 0) {
-        if (fileSizeKB >= 1024) {
-            fileSizeDisplay = (fileSizeKB / 1024).toFixed(2) + ' MB';
-        } else {
-            fileSizeDisplay = fileSizeKB + ' KB';
-        }
-    }
-    $('#detail-filesize-arsip').text(fileSizeDisplay);
     
     // Set authors list
     let authorsHtml = '';

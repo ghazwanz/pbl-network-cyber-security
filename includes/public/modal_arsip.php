@@ -33,7 +33,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200">
                         <label class="text-xs font-bold text-orange-600 uppercase tracking-wide flex items-center gap-1">
                             <i class="fas fa-calendar-alt"></i> Tahun Publikasi
@@ -51,12 +51,6 @@
                             <i class="fas fa-download"></i> Total Unduhan
                         </label>
                         <div id="detail-download-arsip" class="mt-2 text-lg font-bold text-gray-800"></div>
-                    </div>
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
-                        <label class="text-xs font-bold text-purple-600 uppercase tracking-wide flex items-center gap-1">
-                            <i class="fas fa-file"></i> Ukuran File
-                        </label>
-                        <div id="detail-filesize-arsip" class="mt-2 text-lg font-bold text-gray-800"></div>
                     </div>
                 </div>
                 

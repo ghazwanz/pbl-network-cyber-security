@@ -178,11 +178,6 @@ $count_sarana = countRows("SELECT COUNT(*) FROM sarana WHERE is_active = true");
                                     <?php echo $layanan['deskripsi'] ?? 'Layanan profesional dari Laboratorium Network & Cyber Security.'; ?>
                                 </p>
                             </div>
-
-                            <!-- Arrow -->
-                            <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <i class="fas fa-arrow-right text-orange-500 text-xl"></i>
-                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>

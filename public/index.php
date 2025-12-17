@@ -186,7 +186,7 @@
                         $isLarge = $index === 0;
                     ?>
                         <!-- Card <?php echo $index + 1; ?> -->
-                        <div class="group relative <?php echo $config['span']; ?> <?php echo $config['height']; ?> rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl <?php echo $config['glow']; ?>"
+                        <a href="layanan.php" class="group relative <?php echo $config['span']; ?> <?php echo $config['height']; ?> rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl <?php echo $config['glow']; ?>"
                              data-aos="fade-up" 
                              data-aos-delay="<?php echo ($index * 100); ?>">
                             
@@ -239,7 +239,7 @@
                             <!-- Hover Overlay -->
                             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
                             
-                        </div>
+                        </a>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <div class="col-span-full text-center py-16 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200" data-aos="fade-up">
@@ -348,7 +348,6 @@
                             'penerbit' => htmlspecialchars($item['penerbit'] ?? ''),
                             'keywords' => htmlspecialchars($item['keywords'] ?? ''),
                             'doi' => htmlspecialchars($item['doi'] ?? ''),
-                            'file_size_kb' => $item['file_size_kb'] ?? 0,
                             'jumlah_download' => $item['jumlah_download'] ?? 0,
                             'is_featured' => !empty($item['is_featured']),
                             'penulis_display' => htmlspecialchars($item['penulis_display'] ?? ''),
@@ -811,17 +810,6 @@
         $('#detail-tahun-arsip').text(data.tahun_publikasi || '-');
         $('#detail-penerbit-arsip').text(data.penerbit || 'Tidak tersedia');
         $('#detail-download-arsip').text(parseInt(data.jumlah_download).toLocaleString());
-        
-        const fileSizeKB = data.file_size_kb || 0;
-        let fileSizeDisplay = '-';
-        if (fileSizeKB > 0) {
-            if (fileSizeKB >= 1024) {
-                fileSizeDisplay = (fileSizeKB / 1024).toFixed(2) + ' MB';
-            } else {
-                fileSizeDisplay = fileSizeKB + ' KB';
-            }
-        }
-        $('#detail-filesize-arsip').text(fileSizeDisplay);
         
         let authorsHtml = '';
         if (data.penulis_list && data.penulis_list.length > 0) {

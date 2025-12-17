@@ -17,9 +17,9 @@
         
         <div class="p-6">
             <div class="flex flex-col gap-6">
-                <div class="w-full">
+                <div class="w-full max-w-md mx-auto">
                     <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200 bg-gradient-to-br from-gray-100 to-gray-200">
-                        <img id="detail-gambar" src="" alt="Detail Gambar" class="w-full max-h-[400px] object-cover">
+                        <img id="detail-gambar" src="" alt="Detail Gambar" class="w-full aspect-square h-full object-cover">
                     </div>
                 </div>
 
