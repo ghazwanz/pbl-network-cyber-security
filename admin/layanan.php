@@ -405,9 +405,12 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan");
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">Tipe Layanan <span class="text-red-500">*</span></label>
-                            <input type="text" name="tipe_layanan" id="inputTipe" required
-                                   class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
-                                   placeholder="Contoh: Jasa / Konsultatif">
+                            <select name="tipe_layanan" id="inputTipe" required
+                                    class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none bg-white">
+                                <option value="">Pilih Tipe</option>
+                                <option value="Jasa">Jasa</option>
+                                <option value="Produk">Produk</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">Status <span class="text-red-500">*</span></label>
