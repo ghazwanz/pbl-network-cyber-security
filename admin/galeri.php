@@ -250,17 +250,17 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4">
                                     <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border">
-                                        <img src="<?php echo "../uploads/" . htmlspecialchars($item['gambar_path']); ?>"
+                                        <img src="<?php echo "../uploads/" . $item['gambar_path']; ?>"
                                             class="w-full h-full object-cover"
                                             onerror="this.src='https://via.placeholder.com/150?text=No+Img'">
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <p class="font-bold text-gray-800 text-sm"><?php echo htmlspecialchars($item['judul']); ?>
+                                    <p class="font-bold text-gray-800 text-sm"><?php echo $item['judul']; ?>
                                     </p>
                                     <?php if ($item['lokasi']): ?>
                                         <p class="text-xs text-gray-500 mt-1"><i
-                                                class="fas fa-map-marker-alt mr-1"></i><?php echo htmlspecialchars($item['lokasi']); ?>
+                                                class="fas fa-map-marker-alt mr-1"></i><?php echo $item['lokasi']; ?>
                                         </p>
                                     <?php endif; ?>
                                 </td>
@@ -303,7 +303,7 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
                                                     if (strlen($initials) >= 2)
                                                         break;
                                                 }
-                                                echo htmlspecialchars($initials);
+                                                echo $initials;
                                             } else {
                                                 echo '?';
                                             }
@@ -312,7 +312,7 @@ $count_kegiatan = countRows("SELECT COUNT(*) FROM galeri WHERE tipe = 'kegiatan'
 
                                         <div>
                                             <p class="text-sm font-medium text-gray-800">
-                                                <?php echo $item['created_by_name'] ? htmlspecialchars($item['created_by_name']) : 'Unknown'; ?>
+                                                <?php echo $item['created_by_name'] ? $item['created_by_name'] : 'Unknown'; ?>
                                             </p>
 
                                             <?php if (!empty($item['created_at'])): ?>

@@ -264,7 +264,7 @@ if ($profil && !empty($profil['gambar_lab_path'])) {
                 echo $date->format('d M Y, H:i');
                 ?>
                 <?php if (!empty($profil['updated_by_name'])): ?>
-                    oleh <span class="font-medium"><?php echo htmlspecialchars($profil['updated_by_name']); ?></span>
+                    oleh <span class="font-medium"><?php echo $profil['updated_by_name']; ?></span>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
@@ -275,7 +275,7 @@ if ($profil && !empty($profil['gambar_lab_path'])) {
         <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
             <p class="text-gray-500 text-sm mb-1 uppercase font-bold tracking-wider">Nama Lab</p>
             <p class="text-lg font-bold text-gray-800 truncate">
-                <?php echo $profil ? htmlspecialchars($profil['nama_lab']) : '-'; ?>
+                <?php echo $profil ? $profil['nama_lab'] : '-'; ?>
             </p>
         </div>
         <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
@@ -321,7 +321,7 @@ if ($profil && !empty($profil['gambar_lab_path'])) {
                 <div class="bg-white rounded-lg shadow-md overflow-hidden sticky top-4">
                     <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-center">
                         <?php if ($profil['logo_path']): ?>
-                            <img src="<?php echo UPLOAD_URL . htmlspecialchars($profil['logo_path']); ?>"
+                            <img src="<?php echo UPLOAD_URL . $profil['logo_path']; ?>"
                                 alt="Logo Lab"
                                 class="w-32 h-32 object-contain mx-auto bg-white rounded-lg p-2 shadow-lg"
                                 onerror="this.src='<?php echo ASSETS_URL; ?>/img/no-image.png'">
@@ -330,26 +330,26 @@ if ($profil && !empty($profil['gambar_lab_path'])) {
                                 <i class="fas fa-building text-4xl text-white/60"></i>
                             </div>
                         <?php endif; ?>
-                        <h3 class="text-xl font-bold text-white mt-4"><?php echo htmlspecialchars($profil['nama_lab'] ?? 'Nama Lab'); ?></h3>
+                        <h3 class="text-xl font-bold text-white mt-4"><?php echo $profil['nama_lab'] ?? 'Nama Lab'; ?></h3>
                     </div>
 
                     <div class="p-6 space-y-4">
                         <div>
                             <p class="text-xs text-gray-500 uppercase tracking-wide font-bold">Email</p>
                             <p class="text-sm font-medium text-gray-800 mt-1">
-                                <?php echo $profil['email'] ? htmlspecialchars($profil['email']) : '-'; ?>
+                                <?php echo $profil['email'] ? $profil['email'] : '-'; ?>
                             </p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 uppercase tracking-wide font-bold">Telepon</p>
                             <p class="text-sm font-medium text-gray-800 mt-1">
-                                <?php echo $profil['no_telepon'] ? htmlspecialchars($profil['no_telepon']) : '-'; ?>
+                                <?php echo $profil['no_telepon'] ? $profil['no_telepon'] : '-'; ?>
                             </p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 uppercase tracking-wide font-bold">Alamat</p>
                             <p class="text-sm font-medium text-gray-800 mt-1">
-                                <?php echo $profil['alamat'] ? htmlspecialchars($profil['alamat']) : '-'; ?>
+                                <?php echo $profil['alamat'] ? $profil['alamat'] : '-'; ?>
                             </p>
                         </div>
                     </div>
@@ -373,21 +373,21 @@ if ($profil && !empty($profil['gambar_lab_path'])) {
                                 Nama Laboratorium <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="nama_lab" class="form-input" required
-                                value="<?php echo htmlspecialchars($profil['nama_lab'] ?? ''); ?>"
+                                value="<?php echo $profil['nama_lab'] ?? ''; ?>"
                                 placeholder="Nama Laboratorium">
                         </div>
 
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Alamat</label>
                             <textarea name="alamat" class="form-input" rows="3"
-                                placeholder="Alamat lengkap laboratorium..."><?php echo htmlspecialchars($profil['alamat'] ?? ''); ?></textarea>
+                                placeholder="Alamat lengkap laboratorium..."><?php echo $profil['alamat'] ?? ''; ?></textarea>
                         </div>
 
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Logo Laboratorium</label>
                             <?php if ($profil['logo_path']): ?>
                                 <div class="mb-2">
-                                    <img src="<?php echo UPLOAD_URL . htmlspecialchars($profil['logo_path']); ?>"
+                                    <img src="<?php echo UPLOAD_URL . $profil['logo_path']; ?>"
                                         alt="Current Logo" class="w-20 h-20 object-contain border rounded p-1"
                                         onerror="this.src='<?php echo ASSETS_URL; ?>/img/no-image.png'">
                                 </div>
@@ -416,7 +416,7 @@ if ($profil && !empty($profil['gambar_lab_path'])) {
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Visi</label>
                             <textarea name="visi" class="form-input" rows="4"
-                                placeholder="Tuliskan visi laboratorium..."><?php echo htmlspecialchars($profil['visi'] ?? ''); ?></textarea>
+                                placeholder="Tuliskan visi laboratorium..."><?php echo $profil['visi'] ?? ''; ?></textarea>
                         </div>
 
                         <div>
@@ -472,7 +472,7 @@ if ($profil && !empty($profil['gambar_lab_path'])) {
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Sejarah Laboratorium</label>
                             <textarea name="sejarah" class="form-input" rows="5"
-                                placeholder="Tuliskan sejarah laboratorium..."><?php echo htmlspecialchars($profil['sejarah'] ?? ''); ?></textarea>
+                                placeholder="Tuliskan sejarah laboratorium..."><?php echo $profil['sejarah'] ?? ''; ?></textarea>
                         </div>
 
                         <div>
@@ -483,7 +483,7 @@ if ($profil && !empty($profil['gambar_lab_path'])) {
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                                     <?php foreach ($gambar_array as $gambar): ?>
                                         <div class="relative group border rounded-lg overflow-hidden shadow-sm">
-                                            <img src="<?php echo UPLOAD_URL . htmlspecialchars($gambar); ?>"
+                                            <img src="<?php echo UPLOAD_URL . $gambar; ?>"
                                                 alt="Gambar Lab"
                                                 class="w-full h-32 object-cover"
                                                 onerror="this.src='<?php echo ASSETS_URL; ?>/img/no-image.png'">

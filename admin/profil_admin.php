@@ -146,11 +146,11 @@ $user_data = executeQuerySingle("SELECT * FROM users WHERE id = ?", [$current_us
                             $initials .= strtoupper(substr($word, 0, 1));
                             if (strlen($initials) >= 2) break;
                         }
-                        echo htmlspecialchars($initials);
+                        echo $initials;
                         ?>
                     </div>
-                    <h3 class="text-xl font-bold text-white mt-4"><?php echo htmlspecialchars($user_data['nama_lengkap']); ?></h3>
-                    <p class="text-blue-100 text-sm">@<?php echo htmlspecialchars($user_data['username']); ?></p>
+                    <h3 class="text-xl font-bold text-white mt-4"><?php echo $user_data['nama_lengkap']; ?></h3>
+                    <p class="text-blue-100 text-sm">@<?php echo $user_data['username']; ?></p>
                 </div>
                 
                 <div class="p-6 space-y-4">

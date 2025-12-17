@@ -194,13 +194,13 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
                         <?php foreach ($konsultatif_list as $index => $item): ?>
                         
                         <?php 
-                            $json_data = htmlspecialchars(json_encode([
+                            $json_data = json_encode([
                                 "id" => $item["id"],
                                 "pertanyaan" => $item["pertanyaan"],
                                 "status" => $item["status"],
                                 "jawaban" => $item["jawaban"] ?? "",
                                 "created_at" => date('d/m/Y H:i:s', strtotime($item['created_at'])) 
-                            ]), ENT_QUOTES, 'UTF-8');
+                            ]);
                         ?>
                         
                         <tr class="hover:bg-gray-50 transition"> 
@@ -210,7 +210,7 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
                             
                             <td class="px-6 py-4">
                                 <div class="line-clamp-2 text-gray-800 text-sm font-medium">
-                                    <?php echo htmlspecialchars($item['pertanyaan']); ?>
+                                    <?php echo $item['pertanyaan']; ?>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500">
@@ -220,7 +220,7 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
 
                             <td class="px-6 py-4">
                                 <div class="line-clamp-2 text-gray-600 text-sm">
-                                    <?php echo htmlspecialchars($item['jawaban'] ?? '-'); ?>
+                                    <?php echo $item['jawaban'] ?? '-'; ?>
                                 </div>
                             </td>
 
@@ -235,12 +235,12 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
                                                 $initials .= strtoupper(substr($word, 0, 1));
                                                 if (strlen($initials) >= 2) break;
                                             }
-                                            echo htmlspecialchars($initials);
+                                            echo $initials;
                                             ?>
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-gray-800">
-                                                <?php echo htmlspecialchars($item['nama_admin']); ?>
+                                                <?php echo $item['nama_admin']; ?>
                                             </p>
                                             <?php if (!empty($item['updated_at'])): ?>
                                             <p class="text-xs text-gray-500">
@@ -317,7 +317,7 @@ $total_konsultatif = countRows("SELECT COUNT(*) FROM konsultatif");
             <?php else: 
                 $empty_message = 'Belum ada pesan konsultatif yang masuk.'; 
                 if ($search) {
-                    $empty_message = 'Tidak ditemukan hasil untuk "' . htmlspecialchars($search) . '"';
+                    $empty_message = 'Tidak ditemukan hasil untuk "' . $search . '"';
                 } elseif ($filter_status === 'terjawab') {
                     $empty_message = 'Belum ada pertanyaan yang dijawab.';
                 } elseif ($filter_status === 'belum terjawab') {

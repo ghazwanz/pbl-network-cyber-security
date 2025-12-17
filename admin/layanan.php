@@ -201,7 +201,7 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan");
                     if (!empty($existing_types)) {
                         foreach ($existing_types as $type) {
                             $selected = ($filter_tipe === $type['tipe_layanan']) ? 'selected' : '';
-                            echo '<option value="'.htmlspecialchars($type['tipe_layanan']).'" '.$selected.'>'.htmlspecialchars($type['tipe_layanan']).'</option>';
+                            echo '<option value="'.$type['tipe_layanan'].'" '.$selected.'>'.$type['tipe_layanan'].'</option>';
                             if ($type['tipe_layanan'] === 'Jasa') $hasJasa = true;
                         }
                     }
@@ -259,17 +259,17 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan");
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4">
                                     <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 border">
-                                        <img src="<?= !empty($row['gambar_path']) ? UPLOAD_URL . htmlspecialchars($row['gambar_path']) : 'https://via.placeholder.com/150?text=No+Img' ?>" 
+                                        <img src="<?= !empty($row['gambar_path']) ? UPLOAD_URL . $row['gambar_path'] : 'https://via.placeholder.com/150?text=No+Img' ?>" 
                                              alt="Img" class="w-full h-full object-cover">
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 font-semibold text-gray-800 text-sm">
-                                    <?= htmlspecialchars($row['nama_layanan']) ?>
-                                    <div class="text-xs text-gray-400 font-normal mt-1">By: <?= htmlspecialchars($row['created_by_name'] ?? 'System') ?></div>
+                                    <?= $row['nama_layanan'] ?>
+                                    <div class="text-xs text-gray-400 font-normal mt-1">By: <?= $row['created_by_name'] ?? 'System' ?></div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <p class="text-sm text-gray-600 line-clamp-2 max-w-sm">
-                                        <?= htmlspecialchars($row['deskripsi']) ?>
+                                        <?= $row['deskripsi'] ?>
                                     </p>
                                 </td>
                             <td class="px-6 py-4">
@@ -283,7 +283,7 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan");
                                             $initials .= strtoupper(substr($word, 0, 1));
                                             if (strlen($initials) >= 2) break;
                                         }
-                                        echo htmlspecialchars($initials);
+                                        echo $initials;
                                     } else {
                                         echo '?';
                                     }
@@ -291,7 +291,7 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan");
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-800">
-                                        <?php echo $row['created_by_name'] ? htmlspecialchars($row['created_by_name']) : 'Unknown'; ?>
+                                        <?php echo $row['created_by_name'] ? $row['created_by_name'] : 'Unknown'; ?>
                                     </p>
                                     <?php if (!empty($row['created_at'])): ?>
                                     <p class="text-xs text-gray-500">
@@ -306,12 +306,12 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan");
                         </td>
                                 <td class="px-6 py-4">
                                     <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        <?= htmlspecialchars($row['tipe_layanan']) ?>
+                                        <?= $row['tipe_layanan'] ?>
                                     </span>
                                 </td>
                                 <td class="px-6 whitespace-nowrap">
                                     <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold <?php echo ($row['status'] == 'Aktif') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
-                                         <?= htmlspecialchars($row['status']) ?>
+                                         <?= $row['status'] ?>
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-left whitespace-nowrap">
@@ -355,9 +355,9 @@ $count_layanan = countRows("SELECT COUNT(*) FROM layanan");
                 <?php 
                     $empty_message = 'Belum ada data layanan.';
                     if ($search) {
-                        $empty_message = 'Tidak ditemukan layanan untuk "' . htmlspecialchars($search) . '"';
+                        $empty_message = 'Tidak ditemukan layanan untuk "' . $search . '"';
                     } elseif ($filter_tipe) {
-                        $empty_message = 'Tidak ada layanan dengan tipe "' . htmlspecialchars($filter_tipe) . '"';
+                        $empty_message = 'Tidak ada layanan dengan tipe "' . $filter_tipe . '"';
                     }
                 ?>
 

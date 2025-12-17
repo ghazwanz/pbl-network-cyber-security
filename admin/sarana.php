@@ -260,9 +260,9 @@ if ($action === 'list') {
                     <?php foreach ($sarana_list as $item): ?>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4">
-                            <p class="font-semibold text-gray-800"><?php echo htmlspecialchars($item['nama_sarana']); ?></p>
+                            <p class="font-semibold text-gray-800"><?php echo $item['nama_sarana']; ?></p>
                             <?php if ($item['deskripsi']): ?>
-                            <p class="text-sm text-gray-500 mt-1 line-clamp-2"><?php echo htmlspecialchars($item['deskripsi']); ?></p>
+                            <p class="text-sm text-gray-500 mt-1 line-clamp-2"><?php echo $item['deskripsi']; ?></p>
                             <?php endif; ?>
                         </td>
                        <td class="px-6 py-4 text-center">
@@ -270,8 +270,8 @@ if ($action === 'list') {
                                 <?php
                                 $image_url = $item['gambar'];
                                 ?>
-                                <img src="<?php echo UPLOAD_URL . htmlspecialchars($image_url); ?>" 
-                                    alt="<?php echo htmlspecialchars($item['nama_sarana']); ?>" 
+                                <img src="<?php echo UPLOAD_URL . $image_url; ?>" 
+                                    alt="<?php echo $item['nama_sarana']; ?>" 
                                     class="w-16 h-16 object-cover rounded mx-auto"
                                     onerror="this.parentElement.innerHTML='<div class=\'w-16 h-16 bg-gray-200 rounded mx-auto flex items-center justify-center\'><i class=\'fas fa-image text-gray-400\'></i></div>';">
                             <?php else: ?>
@@ -281,7 +281,7 @@ if ($action === 'list') {
                             <?php endif; ?>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600">
-                            <?php echo $item['spesifikasi'] ? htmlspecialchars($item['spesifikasi']) : '-'; ?>
+                            <?php echo $item['spesifikasi'] ? $item['spesifikasi'] : '-'; ?>
                         </td>
                         <td class="px-6 py-4 text-center">
                             <span class="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-semibold">
@@ -295,7 +295,7 @@ if ($action === 'list') {
                                 elseif ($item['kondisi'] === 'Rusak Ringan') echo 'bg-yellow-100 text-yellow-800';
                                 else echo 'bg-red-100 text-red-800';
                                 ?>">
-                                <?php echo htmlspecialchars($item['kondisi']); ?>
+                                <?php echo $item['kondisi']; ?>
                             </span>
                         </td>
                         <td class="px-6 py-4 text-center">
@@ -314,7 +314,7 @@ if ($action === 'list') {
                                             $initials .= strtoupper(substr($word, 0, 1));
                                             if (strlen($initials) >= 2) break;
                                         }
-                                        echo htmlspecialchars($initials);
+                                        echo $initials;
                                     } else {
                                         echo '?';
                                     }
@@ -322,7 +322,7 @@ if ($action === 'list') {
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-800">
-                                        <?php echo $item['created_by_name'] ? htmlspecialchars($item['created_by_name']) : 'Unknown'; ?>
+                                        <?php echo $item['created_by_name'] ? $item['created_by_name'] : 'Unknown'; ?>
                                     </p>
                                     <?php if (!empty($item['created_at'])): ?>
                                     <p class="text-xs text-gray-500">

@@ -302,36 +302,36 @@ if ($action === 'list') {
                             <?php foreach ($pengelola_list as $item): ?>
                                 <tr class="hover:bg-gray-50 transition">
                                     <td class="px-6 py-4 text-center">
-                                        <img src="<?php echo UPLOAD_URL . htmlspecialchars($item['foto_path']); ?>"
-                                            alt="<?php echo htmlspecialchars($item['nama_lengkap']); ?>"
+                                        <img src="<?php echo UPLOAD_URL . $item['foto_path']; ?>"
+                                            alt="<?php echo $item['nama_lengkap']; ?>"
                                             class="w-12 h-12 object-cover rounded-full border border-gray-200 mx-auto"
                                             onerror="this.src='<?php echo ASSETS_URL; ?>/img/no-image.png'">
                                     </td>
                                     <td class="px-6 py-4">
                                         <p class="font-bold text-gray-800 text-sm">
-                                            <?php echo htmlspecialchars($item['nama_lengkap']); ?>
+                                            <?php echo $item['nama_lengkap']; ?>
                                         </p>
                                         <p class="text-xs text-gray-500">NIP/NIDN:
-                                            <?php echo htmlspecialchars($item['nip_nidn']); ?>
+                                            <?php echo $item['nip_nidn']; ?>
                                         </p>
                                         <?php if ($item['bidang_keahlian']): ?>
                                             <p class="text-xs text-blue-600 mt-1 line-clamp-1"><i
-                                                    class="fas fa-graduation-cap mr-1"></i><?php echo htmlspecialchars($item['bidang_keahlian']); ?>
+                                                    class="fas fa-graduation-cap mr-1"></i><?php echo $item['bidang_keahlian']; ?>
                                             </p>
                                         <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
-                                            <?php echo htmlspecialchars($item['jabatan']); ?>
+                                            <?php echo $item['jabatan']; ?>
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-600">
                                         <div class="flex flex-col gap-1">
                                             <span class="flex items-center text-xs"><i class="fas fa-envelope text-blue-500 w-4"></i>
-                                                <?php echo htmlspecialchars($item['email']); ?></span>
+                                                <?php echo $item['email']; ?></span>
                                             <?php if ($item['no_telepon']): ?>
                                                 <span class="flex items-center text-xs"><i class="fas fa-phone text-green-500 w-4"></i>
-                                                    <?php echo htmlspecialchars($item['no_telepon']); ?></span>
+                                                    <?php echo $item['no_telepon']; ?></span>
                                             <?php endif; ?>
                                         </div>
                                     </td>
@@ -351,7 +351,7 @@ if ($action === 'list') {
                                                         $initials .= strtoupper(substr($word, 0, 1));
                                                         if (strlen($initials) >= 2) break;
                                                     }
-                                                    echo htmlspecialchars($initials);
+                                                    echo $initials;
                                                 } else {
                                                     echo '?';
                                                 }
@@ -359,7 +359,7 @@ if ($action === 'list') {
                                             </div>
                                             <div>
                                                 <p class="text-sm font-medium text-gray-800">
-                                                    <?php echo $item['created_by_name'] ? htmlspecialchars($item['created_by_name']) : 'Unknown'; ?>
+                                                    <?php echo $item['created_by_name'] ? $item['created_by_name'] : 'Unknown'; ?>
                                                 </p>
                                                 <?php if (!empty($item['created_at'])): ?>
                                                     <p class="text-xs text-gray-500">

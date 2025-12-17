@@ -343,19 +343,19 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                     ?>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4">
-                            <p class="font-semibold text-gray-800 text-sm"><?php echo htmlspecialchars($item['judul']); ?></p>
+                            <p class="font-semibold text-gray-800 text-sm"><?php echo $item['judul']; ?></p>
                             <?php if ($authors): ?>
                             <p class="text-sm text-blue-600 mt-1 line-clamp-2">
                                 <i class="fas fa-user mr-1"></i>
                                 <?php 
                                 $author_names = array_map(function($a) { return $a['nama_lengkap']; }, $authors);
-                                echo htmlspecialchars(implode(', ', $author_names));
+                                echo implode(', ', $author_names);
                                 ?>
                             </p>
                             <?php endif; ?>
                             <?php if ($item['keywords']): ?>
                             <p class="text-xs text-gray-500 mt-1 line-clamp-2">
-                                <i class="fas fa-tags mr-1"></i><?php echo htmlspecialchars($item['keywords']); ?>
+                                <i class="fas fa-tags mr-1"></i><?php echo $item['keywords']; ?>
                             </p>
                             <?php endif; ?>
                             <?php if ($item['is_featured']): ?>
@@ -373,7 +373,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                             <?php echo $item['tahun_publikasi']; ?>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600">
-                            <?php echo htmlspecialchars($item['penerbit'] ?: '-'); ?>
+                            <?php echo $item['penerbit'] ?: '-'; ?>
                         </td>
                         <td class="px-6 py-4 text-center">
                             <span class="inline-flex items-center gap-1 text-purple-600 font-semibold">
@@ -397,7 +397,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                                             $initials .= strtoupper(substr($part, 0, 1));
                                             if (strlen($initials) >= 2) break;
                                         }
-                                        echo htmlspecialchars($initials);
+                                        echo $initials;
                                     } else {
                                         echo '<i class="fas fa-user text-xs"></i>';
                                     }
@@ -405,7 +405,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-800">
-                                        <?php echo htmlspecialchars($item['created_by_name'] ?? 'Unknown'); ?>
+                                        <?php echo $item['created_by_name'] ?? 'Unknown'; ?>
                                     </p>
                                     <?php if (!empty($item['created_at'])): ?>
                                     <p class="text-xs text-gray-500">
@@ -426,7 +426,7 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                                    title="Lihat Detail">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <a href="<?php echo UPLOAD_URL . htmlspecialchars($item['file_pdf_path']); ?>" 
+                                <a href="<?php echo UPLOAD_URL . $item['file_pdf_path']; ?>" 
                                    target="_blank" 
                                    class="text-green-500 hover:bg-green-50 p-2 rounded-lg transition" 
                                    title="Lihat PDF">
@@ -671,8 +671,8 @@ $pengelola_list = executeQuery("SELECT id, nama_lengkap, jabatan FROM pengelola 
                                     class="mt-1 w-4 h-4 text-blue-600"
                                 >
                                 <div class="ml-3">
-                                    <p class="font-semibold text-gray-800"><?php echo htmlspecialchars($pengelola['nama_lengkap']); ?></p>
-                                    <p class="text-sm text-gray-500"><?php echo htmlspecialchars($pengelola['jabatan']); ?></p>
+                                    <p class="font-semibold text-gray-800"><?php echo $pengelola['nama_lengkap']; ?></p>
+                                    <p class="text-sm text-gray-500"><?php echo $pengelola['jabatan']; ?></p>
                                 </div>
                             </label>
                             <?php endforeach; ?>
