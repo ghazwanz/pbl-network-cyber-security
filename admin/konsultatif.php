@@ -79,10 +79,8 @@ if ($filter_status && in_array($filter_status, ['belum terjawab', 'terjawab'])) 
 }
 
 if ($search) {
-    $where[] = "(k.nama ILIKE ? OR k.email ILIKE ? OR k.subjek ILIKE ? OR k.pesan ILIKE ? OR u.nama_lengkap ILIKE ?)";
+    $where[] = "(k.jawaban ILIKE ? OR k.pertanyaan ILIKE ? OR u.nama_lengkap ILIKE ?)";
     $search_param = '%' . $search . '%';
-    $params[] = $search_param;
-    $params[] = $search_param;
     $params[] = $search_param;
     $params[] = $search_param;
     $params[] = $search_param;

@@ -132,7 +132,7 @@ if ($action === 'list') {
     }
     
     if ($search) {
-        $where[] = "(nama_sarana ILIKE ? OR deskripsi ILIKE ? OR spesifikasi ILIKE ? OR lokasi ILIKE ?)";
+        $where[] = "(nama_sarana ILIKE ? OR deskripsi ILIKE ? OR spesifikasi ILIKE ? OR jumlah::text ILIKE ?)";
         $search_param = '%' . $search . '%';
         $params[] = $search_param;
         $params[] = $search_param;
