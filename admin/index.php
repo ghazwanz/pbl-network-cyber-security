@@ -153,7 +153,7 @@ $agenda_mendatang = executeQuery("SELECT * FROM galeri WHERE tipe = 'agenda' AND
                     <i class="fas fa-building text-3xl text-indigo-600"></i>
                 </div>
             </div>
-            <a href="profil_lab.php" class="text-indigo-600 text-sm font-semibold mt-4 inline-block hover:text-indigo-800">
+            <a href="profil.php" class="text-indigo-600 text-sm font-semibold mt-4 inline-block hover:text-indigo-800">
                 Edit Profil Lab <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>

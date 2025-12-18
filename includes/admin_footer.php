@@ -77,7 +77,7 @@
                 </li>
                 
                 <li>
-                    <a href="<?php echo ADMIN_URL; ?>/profil_lab.php" class="flex items-center px-4 py-3 rounded hover:bg-gray-700 transition">
+                    <a href="<?php echo ADMIN_URL; ?>/profil.php" class="flex items-center px-4 py-3 rounded hover:bg-gray-700 transition">
                         <i class="fas fa-building mr-3"></i>
                         <span>Profil Lab</span>
                     </a>
@@ -87,14 +87,14 @@
         
         <!-- User Info -->
         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-900">
-            <div class="flex items-center">
+            <a href="<?php echo ADMIN_URL; ?>/profil_admin.php" class="flex items-center">
                 <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
                     <i class="fas fa-user"></i>
                 </div>
                 <div class="ml-3">
                     <p class="text-sm font-semibold"><?php echo htmlspecialchars($current_user['nama_lengkap']); ?></p>
                 </div>
-            </div>
+            </a>
         </div>
     </aside>
     
