@@ -93,7 +93,6 @@
                 </div>
                 <div class="ml-3">
                     <p class="text-sm font-semibold"><?php echo htmlspecialchars($current_user['nama_lengkap']); ?></p>
-                    <p class="text-xs text-gray-400"><?php echo htmlspecialchars($current_user['role']); ?></p>
                 </div>
             </div>
         </div>
