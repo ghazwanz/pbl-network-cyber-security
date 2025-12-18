@@ -612,10 +612,10 @@
                             $gambar_path = !empty($item['gambar_path']) ? '../uploads' . $item['gambar_path'] : '../assets/img/no-image.png';
 
                             $item_data = [
-                                'judul' => htmlspecialchars($item['judul']),
-                                'deskripsi' => htmlspecialchars($item['deskripsi'] ?: 'Dokumentasi kegiatan Laboratorium Network & Cyber Security.'),
-                                'tipe' => htmlspecialchars($item['tipe']),
-                                'lokasi' => htmlspecialchars($item['lokasi'] ?? ''),
+                                'judul' => $item['judul'],
+                                'deskripsi' => $item['deskripsi'] ?: 'Dokumentasi kegiatan Laboratorium Network & Cyber Security.',
+                                'tipe' => $item['tipe'],
+                                'lokasi' => $item['lokasi'] ?? '',
                                 'tanggal' => !empty($item['tanggal_kegiatan']) ? date('d F Y', strtotime($item['tanggal_kegiatan'])) : '-',
                                 'gambar' => $gambar_path,
                                 'is_featured' => !empty($item['is_featured'])
