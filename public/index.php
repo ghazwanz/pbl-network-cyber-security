@@ -286,30 +286,6 @@
                 </p>
             </div>
 
-            <!-- Filter Chips -->
-            <div class="flex justify-center mb-12" data-aos="fade-up" data-aos-delay="100">
-                <div class="inline-flex items-center p-1.5 bg-gray-100/80 backdrop-blur-sm rounded-2xl gap-2">
-                    <button type="button" class="arsip-filter-btn active px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300" data-filter="all">
-                        <span class="flex items-center gap-2">
-                            <i class="fas fa-layer-group"></i>
-                            Semua
-                        </span>
-                    </button>
-                    <button type="button" class="arsip-filter-btn px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300" data-filter="penelitian">
-                        <span class="flex items-center gap-2">
-                            <i class="fas fa-flask"></i>
-                            Penelitian
-                        </span>
-                    </button>
-                    <button type="button" class="arsip-filter-btn px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300" data-filter="pengabdian">
-                        <span class="flex items-center gap-2">
-                            <i class="fas fa-hands-helping"></i>
-                            Pengabdian
-                        </span>
-                    </button>
-                </div>
-            </div>
-
             <!-- Cards Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="arsip-grid">
 
@@ -751,42 +727,6 @@
 ?>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Arsip Filter Chips
-        const filterBtns = document.querySelectorAll('.arsip-filter-btn');
-        const arsipCards = document.querySelectorAll('.arsip-card');
-        const arsipGrid = document.getElementById('arsip-grid');
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Remove active from all buttons
-                filterBtns.forEach(b => b.classList.remove('active'));
-                // Add active to clicked button
-                this.classList.add('active');
-
-                const filter = this.getAttribute('data-filter');
-
-                // Animate cards
-                arsipCards.forEach(card => {
-                    const category = card.getAttribute('data-category');
-                    
-                    if (filter === 'all' || category === filter) {
-                        card.classList.remove('hidden-filter');
-                        card.classList.add('show-filter');
-                        card.style.display = '';
-                    } else {
-                        card.classList.add('hidden-filter');
-                        card.classList.remove('show-filter');
-                        setTimeout(() => {
-                            if (card.classList.contains('hidden-filter')) {
-                                card.style.display = 'none';
-                            }
-                        }, 300);
-                    }
-                });
-            });
-        });
-    });
 
     // Fungsi Pop Up Modal Arsip
     function showArsipDetail(data) {
