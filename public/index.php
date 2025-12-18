@@ -630,8 +630,8 @@
                             
                             <!-- Image Container -->
                             <div class="relative h-[360px] bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden">
-                                <img src="<?= htmlspecialchars($gambar_path) ?>" 
-                                     alt="<?= htmlspecialchars($item['judul']) ?>" 
+                                <img src="<?= $gambar_path ?>" 
+                                     alt="<?= $item['judul'] ?>" 
                                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                                 
                                 <!-- Gradient Overlay -->
@@ -645,7 +645,7 @@
                                             ? 'bg-blue-500/90 text-white' 
                                             : 'bg-orange-500/90 text-white'; ?>">
                                         <i class="fas <?= strtolower($item['tipe']) === 'agenda' ? 'fa-calendar-alt' : 'fa-images'; ?> mr-1.5"></i>
-                                        <?= htmlspecialchars($item['tipe']) ?>
+                                        <?= $item['tipe'] ?>
                                     </span>
                                     
                                     <?php if (!empty($item['is_featured'])): ?>
@@ -673,14 +673,14 @@
                                     
                                     <!-- Title -->
                                     <h3 class="text-xl font-medium text-white mb-2 line-clamp-2 leading-tight">
-                                        <?= htmlspecialchars($item['judul']) ?>
+                                        <?= $item['judul'] ?>
                                     </h3>
                                     
                                     <!-- Location -->
                                     <?php if (!empty($item['lokasi'])): ?>
                                     <div class="flex items-center gap-2 text-white/80 text-sm">
                                         <i class="fas fa-map-marker-alt text-orange-400"></i>
-                                        <span class="line-clamp-1"><?= htmlspecialchars($item['lokasi']) ?></span>
+                                        <span class="line-clamp-1"><?= $item['lokasi'] ?></span>
                                     </div>
                                     <?php endif; ?>
                                 </div>
